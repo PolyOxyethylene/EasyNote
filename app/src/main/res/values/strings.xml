@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">EasyNote</string>
+    <string name="title_activity_setting">Setting</string>
+</resources>

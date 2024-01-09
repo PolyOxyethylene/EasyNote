@@ -1,5 +1,7 @@
 package com.oxyethylene.easynotedemo.domain
 
+import com.oxyethylene.easynotedemo.util.FileType
+
 /**
  * Created with IntelliJ IDEA.
  * @Project      : EasyNoteDemo
@@ -43,8 +45,3 @@ open class Dentry {
 
 }
 
-enum class FileType {
-
-    DIRECTORY, FILE
-
-}

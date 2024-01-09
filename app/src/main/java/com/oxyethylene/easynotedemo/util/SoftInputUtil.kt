@@ -3,7 +3,6 @@ package com.oxyethylene.easynotedemo.util
 import android.graphics.Rect
 import android.os.Build
 import android.view.ViewTreeObserver
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
@@ -12,10 +11,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 
@@ -60,21 +55,15 @@ fun imeVisible(): State<Boolean> {
 }
 
 /**
- * 使某个 composition 内点击空白处时可以自动收回软键盘
- *
- * 必须在 @Composable 函数中使用
+ * 重置当前界面的输入框的状态
+ * 主要是为了收起软键盘
  */
-@OptIn(ExperimentalComposeUiApi::class)
-fun Modifier.autoCloseKeyboard(): Modifier = composed {
-    //LocalSoftwareKeyboardController 这个是compose 组件，必须在compose 函数内才能使用
-//    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-    pointerInput(this) {
-        detectTapGestures(
-            onPress = {
-//                keyboardController?.hide()
-                focusManager.clearFocus()
-            }
-        )
-    }
+@Deprecated("暂时没什么用")
+@Composable
+fun resetInput () {
+
+    val manager = LocalFocusManager.current;
+
+    manager.clearFocus()
+
 }

@@ -1,6 +1,7 @@
 package com.oxyethylene.easynotedemo.domain
 
 import com.oxyethylene.easynotedemo.util.DateUtil
+import com.oxyethylene.easynotedemo.util.FileType
 
 /**
  * Created with IntelliJ IDEA.

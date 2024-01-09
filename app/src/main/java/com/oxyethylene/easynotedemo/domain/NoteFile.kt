@@ -1,6 +1,7 @@
 package com.oxyethylene.easynotedemo.domain
 
 import com.oxyethylene.easynotedemo.util.DateUtil
+import com.oxyethylene.easynotedemo.util.FileType
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +20,8 @@ class NoteFile(
     date: String
 ) : Dentry(_id, _fileName, _parent, FileType.FILE, date) {
 
-//    var text : String = ""
+    // 文件是否可访问，用于简单的多线程上锁，并不是很安全
+    var accessible = true
 
     companion object {
 

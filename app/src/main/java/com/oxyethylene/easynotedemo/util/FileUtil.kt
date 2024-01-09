@@ -3,16 +3,13 @@ package com.oxyethylene.easynotedemo.util
 import android.content.Context
 import android.os.Handler
 import android.os.Message
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import com.oxyethylene.easynotedemo.dao.FileDao
 import com.oxyethylene.easynotedemo.database.AppDatabase
 import com.oxyethylene.easynotedemo.domain.Dentry
 import com.oxyethylene.easynotedemo.domain.Dir
-import com.oxyethylene.easynotedemo.domain.FileType
 import com.oxyethylene.easynotedemo.domain.NoteFile
 import com.oxyethylene.easynotedemo.viewmodel.MainViewModel
-import kotlinx.coroutines.NonDisposableHandle.parent
+import java.util.Stack
 import kotlin.concurrent.thread
 
 /**
@@ -27,7 +24,7 @@ import kotlin.concurrent.thread
  */
 
 /**
- *  负责 App 内文件目录的构建、更新，以及文章的单独保存
+ *  负责 App 内文件目录的构建、更新，但是不负责文章的单独保存
  */
 object FileUtil {
 
@@ -187,7 +184,8 @@ object FileUtil {
     }
 
     /**
-     * TODO 将文件（目录或者文章）的目录结构保存到数据库表中
+     *  将文件（目录或者文章）的目录结构保存到数据库表中
+     *  @param file 要保存的目录结点
      */
     fun saveFileEntry (file : Dentry) {
         thread {
@@ -196,24 +194,28 @@ object FileUtil {
     }
 
     /**
-     * TODO 没有完全完成删除功能：文章删除时应该把对应在存储中的文本文件一并删除，这里还没做
      * 将指定的文件（目录或者文章）的目录结构从数据库表中删除
      * @param fileId 要删除的文件的 id
+     * @param context Activity 上下文
      */
-    fun deleteFileEntry (fileId : Int) {
+    fun deleteFileEntry (fileId : Int, context: Context) {
         thread {
 
             // 从数据库中删除文件
             val deleteItem = fileMap.get(fileId)
             deleteItem?.let {
 
-                fileDao?.deleteFile(it.toFileEntity())
+                val path = it.fileId.toString()
 
-                // 如果删除成功，从父目录的文件列表以及映射 fileMap 中将其删除，并通知主线程刷新页面
-                deleteItem.parent?.let {
-                    (it as Dir).getFileList().remove(deleteItem)
+                if (NoteUtil.deleteFile(path, context)) {
+                    // 如果删除成功，则从数据库中删除该文章的记录
+                    fileDao?.deleteFile(it.toFileEntity())
+                    //从父目录的文件列表以及映射 fileMap 中将其删除
+                    deleteItem.parent?.let {
+                        (it as Dir).getFileList().remove(deleteItem)
+                    }
+                    fileMap.remove(fileId)
                 }
-                fileMap.remove(fileId)
 
             }
 
@@ -224,17 +226,22 @@ object FileUtil {
         }
     }
 
-    fun renameFile (fileId: Int, newFileName : String) {
+    /**
+     *  重命名文件
+     *  @param fileId 文件的id
+     *  @param newFileName 文件的新名字
+     */
+    fun renameFile (fileId: Int, newFileName : String, context: Context) {
 
         thread {
 
-            val renameItem = fileMap.get(fileId)
+            val renameItem = fileMap[fileId]
             renameItem?.let {
-
+                // 重命名文件
                 fileDao?.renameFile(fileId, newFileName)
+                it.fileName = newFileName
 
-                fileMap.get(fileId)?.fileName = newFileName
-
+                // 通知主线程更新 UI
                 val msg = Message()
                 msg.what = FILE_RENAME_SUCCESS
                 // 携带要更新的文件对应的 id
@@ -248,13 +255,38 @@ object FileUtil {
     }
 
     /**
-     * TODO 实现从存储中读取一篇文章的内容（开线程异步完成）
+     *  通过文件的 id 查找文件的保存路径
+     *  @param fileId 文件的id
+     *  @param separator 路径分隔符
      */
-    fun loadFile () {}
+    fun getNoteFilePath (fileId: Int, separator: String = "/"): String {
 
-    /**
-     * TODO 将一篇文章的内容写入本地存储（开线程异步完成）
-     */
-    fun saveFile () {}
+        val file = fileMap.get(fileId)
+
+        val stack = Stack<String>()
+
+        val path = StringBuffer()
+
+        file?.let {
+
+            var f = it
+
+            stack.push(f.fileName)
+
+            // 获取父目录的文件名
+            do {
+                f = f.parent!!
+                stack.push("${f.fileName}${separator}")
+            } while (f.fileId != 0)
+            // 拼接字符串得到文件路径
+            while (stack.isNotEmpty()) {
+                path.append(stack.pop())
+            }
+
+        }
+
+        return path.toString()
+
+    }
 
 }

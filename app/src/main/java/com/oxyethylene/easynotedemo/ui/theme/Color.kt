@@ -26,3 +26,6 @@ val Pale = Color(0xfff8f9fa)
 
 // 蓝色 用于突出的组件
 val SkyBlue = Color(0xff0c84ff)
+
+// 珊瑚红
+val Coral = Color(0xffff6666)

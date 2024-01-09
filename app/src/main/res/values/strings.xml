@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">EasyNote</string>
     <string name="title_activity_setting">Setting</string>
+    <string name="title_activity_edit">EditActivity</string>
 </resources>

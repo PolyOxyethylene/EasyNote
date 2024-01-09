@@ -58,9 +58,11 @@ import com.oxyethylene.easynotedemo.ui.theme.SkyBlue
 
 /**
  *  顶部导航栏
+ *  @param title 顶部的标题
+ *  @param modifier 设置导航栏外观
  */
 @Composable
-fun SettingPageTopBar (pageName : String, modifier: Modifier) {
+fun SettingPageTopBar (title : String, modifier: Modifier) {
 
     val context = LocalContext.current
 
@@ -77,7 +79,7 @@ fun SettingPageTopBar (pageName : String, modifier: Modifier) {
             BackIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
         }
 
-        Text(text = pageName, fontSize = 16.sp, fontWeight = FontWeight.Bold,  modifier = Modifier.align(Alignment.Center))
+        Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.Bold,  modifier = Modifier.align(Alignment.Center))
 
     }
 

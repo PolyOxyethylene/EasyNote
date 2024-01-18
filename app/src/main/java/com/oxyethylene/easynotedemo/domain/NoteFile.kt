@@ -13,15 +13,21 @@ import com.oxyethylene.easynotedemo.util.FileType
  * @author       : Polyoxyethylene
  * @Description  :
  */
+/**
+ *  文章类型文件
+ *  @param _id 文章的文件 id
+ *  @param _fileName 文章的文件名
+ *  @param _parent 文章的父目录
+ *  @param date 文章的创建日期
+ *  @param eventId 文章所属的事件的 id，默认为 0（无绑定事件）
+ */
 class NoteFile(
     _id: Int,
     _fileName: String,
     _parent: Dentry?,
-    date: String
+    date: String,
+    var eventId: Int = 0
 ) : Dentry(_id, _fileName, _parent, FileType.FILE, date) {
-
-    // 文件是否可访问，用于简单的多线程上锁，并不是很安全
-    var accessible = true
 
     companion object {
 
@@ -42,10 +48,3 @@ class NoteFile(
 
 }
 
-object NoteDefaults {
-
-    const val defaultTitle = "新文章?"
-
-    const val defaultContent = "请在目录中新建一篇文章再进行编辑"
-
-}

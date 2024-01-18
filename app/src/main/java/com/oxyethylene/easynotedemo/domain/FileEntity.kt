@@ -18,6 +18,8 @@ class FileEntity(
     @PrimaryKey
     var fileId : Int,
 
+    var eventId : Int,
+
     var fileName : String,
 
     var date : String,

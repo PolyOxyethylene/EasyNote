@@ -1,6 +1,8 @@
 package com.oxyethylene.easynotedemo.util
 
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.toArgb
+import com.kongzue.dialogx.util.InputInfo
+import com.oxyethylene.easynotedemo.ui.theme.SkyBlue
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,28 +15,23 @@ import androidx.compose.ui.unit.dp
  * @Description  : 存放一些指示类型的枚举类
  */
 /**
- * 描述可以水平滑动的控件的状态
- */
-enum class SwipeableItemStatus {
-
-    HIDE,   // 隐藏一部分
-    UNFOLD  // 展开隐藏的部分
-
-}
-
-/**
- * 描述滑动控件的锚点
- */
-val anchors = mapOf(
-    0f to SwipeableItemStatus.HIDE,
-    -400.dp.value to SwipeableItemStatus.UNFOLD
-)
-
-/**
  * 描述文件的类型
  */
 enum class FileType {
 
     DIRECTORY, FILE
 
+}
+
+// 指定 App 中部分输入框的外观属性
+val inputInfo = InputInfo().apply {
+    setCursorColor(SkyBlue.toArgb())
+}
+
+/**
+ *  描述App主界面的几种子页面
+ */
+object MainPageRouteConf {
+    const val FOLDER = "folder_page"     // 目录界面
+    const val EVENT = "event_page"      // 事件界面
 }

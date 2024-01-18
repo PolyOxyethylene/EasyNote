@@ -13,7 +13,11 @@ android {
         minSdk = 24
         targetSdk = 33
         versionCode = 1
-        versionName = "0.2.0-beta"
+        versionName = "0.3.0-beta"
+
+        // 使 DialogX 的实时模糊效果生效
+        renderscriptTargetApi = 21
+        renderscriptSupportModeEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -62,11 +66,13 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     debugImplementation("androidx.compose.ui:ui-tooling")
@@ -106,7 +112,15 @@ dependencies {
     // To use Kotlin Symbol Processing (KSP)
 //    ksp("androidx.room:room-compiler:$room_version")
 
-    // 为了使用底部弹窗
-    implementation("androidx.compose.material:material:1.3.1")
+    // 更强大的对话框 DialogX
+    val dialogx_version = "0.0.49"
+    implementation ("com.kongzue.dialogx:DialogX:$dialogx_version")
+    // DialogX MIUI 主题
+    implementation ("com.kongzue.dialogx.style:DialogXMIUIStyle:$dialogx_version")
+    // Dialog IOS 主题
+    implementation ("com.kongzue.dialogx.style:DialogXIOSStyle:$dialogx_version")
+
+    // 解决软键盘遮挡问题
+    implementation ("com.github.liangjingkanji:soft-input-event:1.0.9")
 
 }

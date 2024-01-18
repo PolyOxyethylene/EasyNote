@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.oxyethylene.easynotedemo.domain.FileEntity
 
 /**
@@ -25,11 +26,17 @@ interface FileDao {
     @Query("select * from FileEntity where parentId = :id")
     fun getChildFilesById (id : Int) : List<FileEntity>
 
+    @Query("select * from FileEntity where eventId = :id")
+    fun getChildOfEventById (id: Int) : List<FileEntity>
+
     @Delete
     fun deleteFile (file: FileEntity)
 
     @Query("update FileEntity set fileName = :newFileName where fileId = :id")
     fun renameFile (id: Int, newFileName : String)
+
+    @Update
+    fun updateFile (file: FileEntity)
 
 
 }

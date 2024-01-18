@@ -31,6 +31,12 @@ object FileUtil {
     // 统一管理文件的 id
     private var fileId = 0
 
+    // 目录文件的计数器
+    private var countOfDir = 0
+
+    // 文章的计数器
+    private var countOfNote = 0;
+
     // 根目录
     val root = Dir(0, "根目录", null, "")
 
@@ -84,13 +90,21 @@ object FileUtil {
      *  统一管理创建文件的功能
      *  @param fileName 文件名
      *  @param fileType 文件类型， 1 表示目录，2 表示文章
+     *  @param context Activity 上下文
      */
-    fun createFile (fileName : String, fileType : Int) {
+    fun createFile (fileName : String, fileType : Int, context: Context) {
         fileId++
         var newFile : Dentry? = null
         when (fileType) {
-            1 -> newFile = Dir.createDirectory(fileId, fileName, currentDirectory)
-            2 -> newFile = NoteFile.createFile(fileId, fileName, currentDirectory)
+            1 -> {
+                newFile = Dir.createDirectory(fileId, fileName, currentDirectory)
+                countOfDir++
+            }
+            2 -> {
+                newFile = NoteFile.createFile(fileId, fileName, currentDirectory)
+                NoteUtil.createEmptyFile("${fileId}", context)
+                countOfNote++
+            }
         }
         fileMap.put(fileId, newFile!!)
         saveFileEntry(newFile)
@@ -105,16 +119,6 @@ object FileUtil {
         currentDirectory = fileMap.get(dirId) as Dir
         // 只给 viewModel 提供目录的拷贝
         mainViewModel?.updateCurrentFolder(currentDirectory.clone())
-    }
-
-    /**
-     *  更新当前选中的文件
-     *  @param dirId 目录的文件 id
-     */
-    fun updateSelectedFile (fileId : Int) {
-        val selected = fileMap.get(fileId)
-        // 只给 viewModel 提供目录的拷贝
-        selected?.let { mainViewModel?.updateCurrentSelectedFile(it.clone()) }
     }
 
     /**
@@ -170,12 +174,15 @@ object FileUtil {
                     // 如果子文件是一个目录，那么还需要递归调用该方法初始化子目录
                     FileType.DIRECTORY.ordinal -> {
                         val newDir = Dir.createDirectory(it.fileId, it.fileName, current, it.date)
+                        countOfDir++
                         fileMap.put(newDir.fileId, newDir)
                         _initDirectory(newDir)
                     }
                     // 如果是文章的话只需要初始化然后丢进 fileMap 里面
                     FileType.FILE.ordinal -> {
                         val newNote = NoteFile.createFile(it.fileId, it.fileName, current, it.date)
+                        newNote.eventId = it.eventId
+                        countOfNote++
                         fileMap.put(newNote.fileId, newNote)
                     }
                 }
@@ -201,13 +208,21 @@ object FileUtil {
     fun deleteFileEntry (fileId : Int, context: Context) {
         thread {
 
+            var deleteFileName = ""
+
             // 从数据库中删除文件
             val deleteItem = fileMap.get(fileId)
             deleteItem?.let {
 
+                deleteFileName = it.fileName
+
                 val path = it.fileId.toString()
 
-                if (NoteUtil.deleteFile(path, context)) {
+                if (it is Dir || (it is NoteFile && NoteUtil.deleteFile(path, context))) {
+                    when(it) {
+                        is Dir -> countOfDir--
+                        is NoteFile -> countOfNote--
+                    }
                     // 如果删除成功，则从数据库中删除该文章的记录
                     fileDao?.deleteFile(it.toFileEntity())
                     //从父目录的文件列表以及映射 fileMap 中将其删除
@@ -222,6 +237,7 @@ object FileUtil {
             // 通知主线程
             val msg = Message()
             msg.what = FILE_DELETE_SUCCESS
+            msg.obj = deleteFileName
             handler?.sendMessage(msg)
         }
     }
@@ -231,7 +247,7 @@ object FileUtil {
      *  @param fileId 文件的id
      *  @param newFileName 文件的新名字
      */
-    fun renameFile (fileId: Int, newFileName : String, context: Context) {
+    fun renameFile (fileId: Int, newFileName : String) {
 
         thread {
 
@@ -244,8 +260,6 @@ object FileUtil {
                 // 通知主线程更新 UI
                 val msg = Message()
                 msg.what = FILE_RENAME_SUCCESS
-                // 携带要更新的文件对应的 id
-                msg.arg1 = fileId
                 handler?.sendMessage(msg)
 
             }
@@ -255,9 +269,20 @@ object FileUtil {
     }
 
     /**
+     *  更新文件
+     *  @param file 要更新的文件
+     */
+    fun updateFile (file: Dentry) {
+        thread {
+            fileDao?.updateFile(file.toFileEntity())
+        }
+    }
+
+    /**
      *  通过文件的 id 查找文件的保存路径
      *  @param fileId 文件的id
      *  @param separator 路径分隔符
+     *  @return 使用分隔符拼接的文件路径（相对于根目录 root）
      */
     fun getNoteFilePath (fileId: Int, separator: String = "/"): String {
 
@@ -288,5 +313,17 @@ object FileUtil {
         return path.toString()
 
     }
+
+    /**
+     *  获取文章数量
+     *  @return 文章数量
+     */
+    fun getNoteCount () = countOfNote
+
+    /**
+     *  获取目录数量
+     *  @return 目录数量
+     */
+    fun getDirCount () = countOfDir
 
 }

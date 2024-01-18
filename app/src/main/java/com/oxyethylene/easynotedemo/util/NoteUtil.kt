@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import java.io.BufferedReader
 import java.io.BufferedWriter
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -48,18 +50,37 @@ object NoteUtil {
     fun getTitle () = noteTitle
 
     /**
+     *  产生一个空文件
+     *  @param path 文件路径
+     *  @param context Activity 上下文
+     */
+    fun createEmptyFile (path: String, context: Context) {
+        var output : FileOutputStream? = null
+        try {
+            output = context.openFileOutput(path, ComponentActivity.MODE_PRIVATE)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            output?.close()
+        }
+    }
+
+    /**
      *  保存文章内容
      *  @param context Activity 上下文
      */
     fun saveFile (context: Context) {
+        var output : FileOutputStream? = null
         try {
-            val output = context.openFileOutput(notePath, ComponentActivity.MODE_PRIVATE)
+            output = context.openFileOutput(notePath, ComponentActivity.MODE_PRIVATE)
             val writer = BufferedWriter(OutputStreamWriter(output))
             writer.use {
                 it.write(noteContent)
             }
         } catch (e: IOException) {
             e.printStackTrace()
+        } finally {
+            output?.close()
         }
     }
 
@@ -69,8 +90,9 @@ object NoteUtil {
      */
     fun loadFile (context: Context): String {
         val content = StringBuffer()
+        var input : FileInputStream? = null
         try {
-            val input = context.openFileInput(notePath)
+            input = context.openFileInput(notePath)
             val reader = BufferedReader(InputStreamReader(input))
             reader.use {
                 reader.forEachLine {
@@ -79,6 +101,8 @@ object NoteUtil {
             }
         } catch (e: IOException) {
             e.printStackTrace()
+        } finally {
+            input?.close()
         }
         return content.toString()
     }

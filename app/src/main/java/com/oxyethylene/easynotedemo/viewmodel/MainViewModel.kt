@@ -3,8 +3,8 @@ package com.oxyethylene.easynotedemo.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.oxyethylene.easynotedemo.domain.Dentry
 import com.oxyethylene.easynotedemo.domain.Dir
+import com.oxyethylene.easynotedemo.domain.EventList
 import com.oxyethylene.easynotedemo.util.FileUtil
 
 /**
@@ -26,25 +26,24 @@ class MainViewModel (current : Dir = FileUtil.root) : ViewModel() {
     // 实际更新的 currentFolder
     private val _currentFolder : MutableLiveData<Dir>
 
-    // 用于获取在文件列表选中的某个文件
-    val currentSelectedFile : LiveData<Dentry>
-        get() = _currentSelectedFile
+    // 事件项的列表
+    val eventEntryList : LiveData<EventList>
+        get() = _eventEntryList
 
-    // 实际更新的 currentSelectedFile
-    private val _currentSelectedFile : MutableLiveData<Dentry>
+    private var _eventEntryList : MutableLiveData<EventList>
 
     // 初始化
     init {
         _currentFolder = MutableLiveData(current)
-        _currentSelectedFile = MutableLiveData(current)
+        _eventEntryList = MutableLiveData(EventList())
     }
 
     fun updateCurrentFolder (current: Dir) {
         _currentFolder.value = current
     }
 
-    fun updateCurrentSelectedFile (current: Dentry) {
-        _currentSelectedFile.value = current
+    fun updateEventEntryList (current: EventList) {
+        _eventEntryList.value = current
     }
 
 }

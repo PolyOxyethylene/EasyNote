@@ -75,3 +75,15 @@ fun RecycleIcon(_modifer: Modifier) = Image(painterResource(R.drawable.recycle_i
  */
 @Composable
 fun AlterIcon(_modifer: Modifier) = Image(painterResource(R.drawable.rename_icon),"这是一个修改(重命名)按钮", modifier = _modifer)
+
+/**
+ *  右向箭头图标
+ */
+@Composable
+fun ArrowRightIcon(_modifer: Modifier) = Image(painterResource(R.mipmap.ic_arrow_right), "这是一个修改(重命名)按钮", modifier = _modifer)
+
+/**
+ *  事件图标
+ */
+@Composable
+fun EventIcon (_modifier: Modifier) = Image(painter = painterResource(R.drawable.event_icon), "这是表示事件的图标", modifier = _modifier)

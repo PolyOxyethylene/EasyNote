@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.oxyethylene.easynotedemo.dao.EventDao
 import com.oxyethylene.easynotedemo.dao.FileDao
+import com.oxyethylene.easynotedemo.domain.Event
 import com.oxyethylene.easynotedemo.domain.FileEntity
 
 /**
@@ -17,10 +19,12 @@ import com.oxyethylene.easynotedemo.domain.FileEntity
  * @author       : Polyoxyethylene
  * @Description  :
  */
-@Database(version = 1, entities = [FileEntity::class])
+@Database(version = 1, entities = [FileEntity::class, Event::class])
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun FileDao() : FileDao
+
+    abstract fun EventDao() : EventDao
 
     companion object {
 

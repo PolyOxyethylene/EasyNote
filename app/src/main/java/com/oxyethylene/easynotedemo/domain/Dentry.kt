@@ -34,7 +34,8 @@ open class Dentry {
 
     // 将该类对象转为可持久化的实体类 FileEntity
     fun toFileEntity () : FileEntity {
-        val entity = FileEntity(fileId, fileName, lastModifiedTime, parent!!.fileId, type.ordinal)
+        val eventId = if (this is NoteFile) this.eventId else 0
+        val entity = FileEntity(fileId, eventId, fileName, lastModifiedTime, parent!!.fileId, type.ordinal)
         return entity
     }
 

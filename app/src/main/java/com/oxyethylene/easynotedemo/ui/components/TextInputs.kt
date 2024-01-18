@@ -109,14 +109,14 @@ fun TextArea (modifier: Modifier, inputText : MutableState<String>, enable : Boo
                 modifier = Modifier.clip(RoundedCornerShape(16.dp))
             ){
                 Surface(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     color = Color.White
                 ) {
                     Column (
                         modifier = Modifier.verticalScroll(rememberScrollState())
                     ) {
                         Spacer(Modifier.size(10.dp))
-                        Box(modifier = modifier.fillMaxSize().padding(top = 6.dp, bottom = 6.dp, start = 14.dp, end = 14.dp)) {
+                        Box(modifier = Modifier.fillMaxSize().padding(top = 6.dp, bottom = 6.dp, start = 14.dp, end = 14.dp)) {
                             innerTextField()
                         }
                     }

@@ -18,8 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.oxyethylene.easynotedemo.ui.components.SimpleTitleBar
 import com.oxyethylene.easynotedemo.ui.components.TextArea
-import com.oxyethylene.easynotedemo.ui.settingactivity.SettingPageTopBar
 import com.oxyethylene.easynotedemo.ui.theme.BackGround
 import com.oxyethylene.easynotedemo.ui.theme.GreyDarker
 import com.oxyethylene.easynotedemo.util.NoteUtil
@@ -66,7 +66,7 @@ fun EditPageArea() {
  *  @param modifier 设置导航栏外观
  */
 @Composable
-fun EditPageTopBar (title: String, modifier: Modifier = Modifier) = SettingPageTopBar(title, modifier)
+fun EditPageTopBar (title: String, modifier: Modifier = Modifier) = SimpleTitleBar(title, modifier)
 
 /**
  *  文章的标题栏

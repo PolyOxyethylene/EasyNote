@@ -1,13 +1,12 @@
 package com.oxyethylene.easynotedemo.ui.mainactivity
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,17 +14,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -33,44 +28,37 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import com.oxyethylene.easynotedemo.domain.Dir
-import com.oxyethylene.easynotedemo.domain.NoteFile
-import com.oxyethylene.easynotedemo.ui.components.AlterIcon
+import com.kongzue.dialogx.dialogs.BottomMenu
+import com.kongzue.dialogx.dialogs.InputDialog
+import com.kongzue.dialogx.dialogs.PopNotification
+import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
+import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
+import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
+import com.kongzue.dialogx.style.MIUIStyle
+import com.oxyethylene.easynotedemo.R
 import com.oxyethylene.easynotedemo.ui.components.BackIcon
-import com.oxyethylene.easynotedemo.ui.components.FileIcon
 import com.oxyethylene.easynotedemo.ui.components.FolderIcon
-import com.oxyethylene.easynotedemo.ui.components.InputText
 import com.oxyethylene.easynotedemo.ui.components.MoreIcon
 import com.oxyethylene.easynotedemo.ui.components.MultiSelectIcon
-import com.oxyethylene.easynotedemo.ui.components.RecycleIcon
 import com.oxyethylene.easynotedemo.ui.components.SearchIcon
 import com.oxyethylene.easynotedemo.ui.components.SettingIcon
-import com.oxyethylene.easynotedemo.ui.theme.GreyLighter
-import com.oxyethylene.easynotedemo.ui.theme.SkyBlue
-import com.oxyethylene.easynotedemo.util.FileType
+import com.oxyethylene.easynotedemo.ui.components.TitleBar
 import com.oxyethylene.easynotedemo.util.FileUtil
 import com.oxyethylene.easynotedemo.util.FileUtil.isRootDir
-import com.oxyethylene.easynotedemo.util.FileUtil.root
 import com.oxyethylene.easynotedemo.util.FileUtil.toParentDir
+import com.oxyethylene.easynotedemo.util.inputInfo
 import com.oxyethylene.easynotedemo.viewmodel.MainViewModel
 
 /**
@@ -94,37 +82,19 @@ fun FolderMenuArea(
 
     val context = LocalContext.current
 
-    var dialogType by remember { mutableStateOf(ADD_FILE_DIALOG) }
-
-    var dialogVisibility by remember { mutableStateOf(false) }
-
-    val onDismissRequest = {dialogVisibility = false}
-
-    val onRenameRequest = {
-        onDismissRequest()
-        dialogType = RENAME_FILE_DIALOG
-        dialogVisibility = true
-    }
-
-    Column {
-
-        TopMenuBar(Modifier)
+    Column (modifier) {
 
         FileControllerBar(viewModel)
 
         Box (modifier = Modifier) {
-            FileList(viewModel
-                , onAlterRequest = {
-                    dialogType = ALTER_FILE_DIALOG
-                    dialogVisibility = true
-                }
-            )
+            // 文件列表
+            FileList(viewModel)
 
             /**
              *  悬浮按钮，功能是新建 文件 或者 目录
              */
             FloatingActionButton(
-                modifier = modifier.navigationBarsPadding().padding(end = 24.dp, bottom = 40.dp)
+                modifier = Modifier.navigationBarsPadding().padding(end = 24.dp, bottom = 40.dp)
                     .size(60.dp)
                     .align(Alignment.BottomEnd),
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
@@ -132,26 +102,9 @@ fun FolderMenuArea(
                 containerColor = Color.DarkGray,
                 contentColor = Color.White,
                 onClick = {
-                    dialogType = ADD_FILE_DIALOG
-                    dialogVisibility = true
+                    onAddFileFABClick(context)
                 }) {
                 Icon(Icons.Default.Add, "新建文件或者目录的按钮")
-            }
-        }
-    }
-
-    if (dialogVisibility) {
-        Dialog(
-            onDismissRequest = onDismissRequest,
-        ){
-            Column(
-                modifier = Modifier.clip(RoundedCornerShape(20.dp)).background(Color.White)
-            ){
-                when(dialogType) {
-                    ADD_FILE_DIALOG -> AddFileDialog(onDismissRequest)
-                    ALTER_FILE_DIALOG -> AlterFileDialog(viewModel, onDismissRequest, onRenameRequest)
-                    RENAME_FILE_DIALOG -> RenameFileDialog(viewModel, onDismissRequest)
-                }
             }
         }
     }
@@ -168,52 +121,94 @@ fun FolderMenuArea(
 }
 
 /**
+ *  点击目录界面添加按钮执行的事件
+ */
+fun onAddFileFABClick (context: Context) {
+
+    BottomMenu.build(MIUIStyle())
+        .setTitle("新建文件")
+        .setMenuList(arrayOf("目录", "文章"))
+        .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false) {
+            override fun getIcon(dialog: BottomMenu?, index: Int, menuText: String?): Int {
+                when(menuText) {
+                    "目录" -> return R.drawable.folder_icon
+                    "文章" -> return R.drawable.note_icon
+                }
+                return 0
+            }
+        })
+        .setOnMenuItemClickListener(object : OnMenuItemClickListener<BottomMenu> {
+            override fun onClick(dialog: BottomMenu?, text: CharSequence?, index: Int): Boolean {
+                InputDialog.build(MIUIStyle())
+                    .setInputInfo(inputInfo.setMultipleLines(true))
+                    .setTitle(if (index == 0) "新建目录" else "新建文章")
+                    .setMessage("请输入名称")
+                    .setCancelButton("取消")
+                    .setOkButton("创建")
+                    .setOkButtonClickListener(OnInputDialogButtonClickListener {
+                        dialog, v, inputStr ->
+                        if (inputStr.isBlank() || inputStr.isEmpty()) {
+                            PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的文件名").show()
+                        } else {
+                            // 创建文章
+                            FileUtil.createFile(inputStr.trim(), index + 1, context)
+                        }
+                        return@OnInputDialogButtonClickListener false
+                    })
+                    .show()
+                return false
+            }
+        })
+        .show()
+
+}
+
+
+/**
  *  顶部的选项栏
  */
 @Composable
-fun TopMenuBar(modifier: Modifier) {
+fun TopMenuBar(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    Row(
-        modifier = modifier.statusBarsPadding().fillMaxWidth().padding(top = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        /**
-         *  左上角的设置按钮
-         *  TODO：添加跳转到设置的 Activity
-         */
-        Button(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = Color.DarkGray
-            ),
-            onClick = {
-                Toast.makeText(context, "打开侧边菜单", Toast.LENGTH_SHORT).show()
-                val intent = Intent("com.oxyethylene.SETTING")
-                context.startActivity(intent)
-            }) {
-            SettingIcon(Modifier.size(18.dp).align(Alignment.CenterVertically))
+    TitleBar(
+        modifier = modifier,
+        leftContent = {
+            /**
+             *  左上角的设置按钮
+             *  TODO：添加跳转到设置的 Activity
+             */
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.DarkGray
+                ),
+                onClick = {
+                    val intent = Intent("com.oxyethylene.SETTING")
+                    context.startActivity(intent)
+                }) {
+                SettingIcon(Modifier.size(18.dp).align(Alignment.CenterVertically))
+            }
+        },
+        rightContent = {
+            /**
+             *  顶部右侧的更多选项按钮，暂时没想到做什么功能
+             *  TODO：后续不用的话可能删除
+             */
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.DarkGray
+                ),
+                onClick = {
+                    Toast.makeText(context, "打开更多菜单(还没做)", Toast.LENGTH_SHORT).show()
+                }) {
+                MoreIcon(Modifier.size(24.dp), Color.DarkGray)
+            }
         }
-
+    ) {
         // 标题
         Text(text = "文档", color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-//        Image(painter = painterResource(R.drawable.app_title), "应用标题", modifier = Modifier.height(50.dp).wrapContentWidth(), alignment = Alignment.Center)
-
-        /**
-         *  顶部右侧的更多选项按钮，暂时没想到做什么功能
-         *  TODO：后续不用的话可能删除
-         */
-        Button(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = Color.DarkGray
-            ),
-            onClick = {
-                Toast.makeText(context, "打开更多菜单", Toast.LENGTH_SHORT).show()
-            }) {
-            MoreIcon(Modifier.size(24.dp), Color.DarkGray)
-        }
     }
 
 }
@@ -267,7 +262,7 @@ fun FileControllerBar(viewModel: MainViewModel) {
                 modifier = Modifier.align(Alignment.CenterVertically),
                 animationSpec = tween(durationMillis = 250)
             ) {
-                Text(it.fileName, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(it.fileName, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -283,7 +278,7 @@ fun FileControllerBar(viewModel: MainViewModel) {
                 ),
                 modifier = Modifier.wrapContentWidth(),
                 onClick = {
-                    Toast.makeText(context, "搜索", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "搜索(还没做)", Toast.LENGTH_SHORT).show()
                 }
             ) {
                 SearchIcon(Modifier.size(18.dp).align(Alignment.CenterVertically))
@@ -300,7 +295,7 @@ fun FileControllerBar(viewModel: MainViewModel) {
                 ),
                 modifier = Modifier.wrapContentWidth(),
                 onClick = {
-                    Toast.makeText(context, "多选", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "多选(还没做)", Toast.LENGTH_SHORT).show()
                 }
             ) {
                 MultiSelectIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
@@ -317,7 +312,7 @@ fun FileControllerBar(viewModel: MainViewModel) {
  *  @param onAlterRequest 当点击文件右侧修改按钮时应执行的方法
  */
 @Composable
-fun FileList(viewModel: MainViewModel = MainViewModel(),  onAlterRequest: () -> Unit) {
+fun FileList(viewModel: MainViewModel = MainViewModel()) {
 
     val context = LocalContext.current
 
@@ -331,7 +326,7 @@ fun FileList(viewModel: MainViewModel = MainViewModel(),  onAlterRequest: () -> 
     Crossfade(
         targetState = currentFolder,
         modifier = Modifier.fillMaxSize().wrapContentWidth(Alignment.CenterHorizontally),
-        animationSpec = tween(durationMillis = 250)
+        animationSpec = tween(durationMillis = 250), label = ""
     ) {
 
         if (it.getFileList().size == 0) {
@@ -347,351 +342,16 @@ fun FileList(viewModel: MainViewModel = MainViewModel(),  onAlterRequest: () -> 
     Crossfade(
         targetState = currentFolder,
         modifier = Modifier.fillMaxSize(),
-        animationSpec = tween(durationMillis = 250)
+        animationSpec = tween(durationMillis = 250), label = ""
     ) {
 
         // 文件列表
         LazyColumn() {
             items(it.getFileList()) {
-                item -> ListItem(item, context, onAlterRequest)
+                item -> ListItem(item, context)
             }
         }
 
-    }
-
-}
-
-// 以下常量用于区分底部对话框的类型
-// 表示添加新文件的对话框
-const val ADD_FILE_DIALOG = 1
-
-// 表示修改文件的对话框
-const val ALTER_FILE_DIALOG = 2
-
-// 表示重命名文件的对话框
-const val RENAME_FILE_DIALOG = 3
-
-/**
- * 主页底部弹出的对话框，依照类型 type 分为 添加文件 或 修改文件 两种对话框
- * @param type 对话框的类型，1 为 添加文件的对话框， 2 为 修改文件操作的对话框， 3 为 重命名文件的对话框
- * @param _sheetState 用于改变 bottomSheet 状态
- * @param onCloseRequest 关闭对话框调用的方法
- * @param viewModel 主活动的 viewModel
- * @param content 布局中的内容
- */
-//@OptIn(ExperimentalMaterialApi::class)
-//@Composable
-//fun FileDialog(
-//    type: MutableState<Int>,
-//    _sheetState: ModalBottomSheetState,
-//    onCloseRequest: () -> Unit,
-//    onRenameRequest: () -> Unit,
-//    viewModel: MainViewModel,
-//    content: @Composable () -> Unit
-//) {
-//
-//    ModalBottomSheetLayout(
-//        modifier = Modifier.fillMaxSize(),
-//        sheetState = _sheetState,
-//        sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-//        scrimColor = Color.Black.copy(alpha = 0.1F),
-//        sheetContent = {
-//
-//            when (type.value) {
-//
-//                ADD_FILE_DIALOG -> {
-//                    AddFileDialog(onCloseRequest)
-//                }
-//
-//                ALTER_FILE_DIALOG -> {
-//                    AlterFileDialog(viewModel, onCloseRequest, onRenameRequest)
-//                }
-//
-//                RENAME_FILE_DIALOG -> {
-//                    RenameFileDialog(viewModel, onCloseRequest)
-//                }
-//            }
-//
-//        }
-//    ) {
-//        Column {
-//            content()
-//        }
-//    }
-//
-//}
-
-/**
- *  描述添加文件的对话框
- *  @param onCloseRequest 关闭对话框调用的方法
- */
-@Composable
-fun AddFileDialog(onCloseRequest: () -> Unit) {
-
-    val context = LocalContext.current
-
-    var input = rememberSaveable { mutableStateOf("") }
-
-    var selectType by rememberSaveable { mutableStateOf(1) }
-
-    Column(
-        modifier = Modifier.fillMaxWidth().height(300.dp),
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text(
-            "新建文件",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Column(
-            modifier = Modifier.fillMaxWidth().height(200.dp),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            InputText(
-                Modifier.padding(start = 40.dp, end = 40.dp).fillMaxWidth().height(55.dp),
-                RoundedCornerShape(10.dp),
-                containerColor = GreyLighter,
-                input,
-                "请输入文件名"
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                OutlinedButton(
-                    modifier = Modifier.scale(0.8f),
-                    onClick = {selectType = 1},
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectType == 1) SkyBlue else Color.White
-                    )
-                ) {
-                    FolderIcon(
-                        Modifier.size(16.dp).align(Alignment.CenterVertically))
-                    Text("目录", fontSize = 14.sp,
-                        color = if (selectType == 1) Color.White else Color.DarkGray,
-                        modifier = Modifier.padding(start = 4.dp).align(Alignment.CenterVertically))
-                }
-
-                OutlinedButton(
-                    modifier = Modifier.scale(0.8f),
-                    onClick = {selectType = 2},
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectType == 2) SkyBlue else Color.White
-                    )
-                ) {
-                    FolderIcon(
-                        Modifier.size(16.dp).align(Alignment.CenterVertically))
-                    Text("文件", fontSize = 14.sp,
-                        color = if (selectType == 2) Color.White else Color.DarkGray,
-                        modifier = Modifier.padding(start = 4.dp).align(Alignment.CenterVertically))
-                }
-
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(
-                    modifier = Modifier.width(120.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GreyLighter),
-                    onClick = onCloseRequest
-                ) {
-                    Text("取消", color = Color.Black)
-                }
-
-                Button(
-                    modifier = Modifier.width(120.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(
-                            0xff0c84ff
-                        )
-                    ),
-                    onClick = {
-                        if (input.value.isBlank() || input.value.isEmpty()) {
-                            Toast.makeText(
-                                context,
-                                "请输入包含非空字符的文件名",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            // 创建文章
-                            FileUtil.createFile(input.value, selectType)
-                            onCloseRequest.invoke()
-                        }
-                    }) {
-                    Text("创建")
-                }
-            }
-        }
-    }
-
-}
-
-/**
- *  描述修改文件操作的对话框
- *  @param viewModel 获取主活动的 viewModel
- *  @param onCloseRequest 关闭对话框调用的方法
- *  @param onRenameRequest 打开重命名对话框调用的方法
- */
-@Composable
-fun AlterFileDialog(viewModel: MainViewModel, onCloseRequest: () -> Unit, onRenameRequest: () -> Unit) {
-
-    val currentSelectedFile by viewModel.currentSelectedFile.observeAsState(root)
-
-    val context = LocalContext.current
-
-    Column(
-        modifier = Modifier.fillMaxWidth().height(200.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-
-            if (currentSelectedFile.type == FileType.DIRECTORY) {
-                FolderIcon(Modifier.size(22.dp))
-            } else {
-                FileIcon(Modifier.size(22.dp))
-            }
-
-            Spacer(modifier = Modifier.size(6.dp))
-
-            Text(
-                currentSelectedFile.fileName,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-
-        Column(
-            modifier = Modifier.padding(start = 22.dp, end = 22.dp)
-        ) {
-            Row (
-                modifier = Modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(12.dp))
-                    .clickable {
-                        if (currentSelectedFile is NoteFile || (currentSelectedFile is Dir && (currentSelectedFile as Dir).isEmpty())) {
-                            FileUtil.deleteFileEntry(currentSelectedFile.fileId, context)
-                        } else {
-                            Toast.makeText(context, "目录\" ${currentSelectedFile.fileName} \"内部有其他文件，不能删除", Toast.LENGTH_SHORT).show()
-                        }
-                        onCloseRequest.invoke()
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                RecycleIcon(Modifier.padding(start = 16.dp).size(24.dp))
-
-                Spacer(Modifier.size(10.dp))
-
-                Text("删除", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-
-            }
-
-            Row (
-                modifier = Modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(12.dp))
-                    .clickable {
-                        onCloseRequest.invoke()
-                        onRenameRequest.invoke()
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                AlterIcon(Modifier.padding(start = 16.dp).size(24.dp))
-
-                Spacer(Modifier.size(10.dp))
-
-                Text("重命名文件", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-
-            }
-        }
-
-    }
-
-}
-
-/**
- *  重命名文件的对话框
- * @param viewModel 主活动的 viewModel
- */
-@Composable
-fun RenameFileDialog (viewModel: MainViewModel, onCloseRequest: () -> Unit) {
-
-    var input = rememberSaveable { mutableStateOf("") }
-
-    val currentSelectedFile by viewModel.currentSelectedFile.observeAsState(root)
-
-    val context = LocalContext.current
-
-    Column(
-        modifier = Modifier.fillMaxWidth().height(220.dp),
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text(
-            "重命名",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 12.dp)
-        )
-
-        Column(
-            modifier = Modifier.fillMaxWidth().height(140.dp),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            InputText(
-                Modifier.padding(start = 40.dp, end = 40.dp).fillMaxWidth().height(55.dp),
-                RoundedCornerShape(10.dp),
-                containerColor = GreyLighter,
-                input,
-                currentSelectedFile.fileName
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(
-                    modifier = Modifier.width(120.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GreyLighter),
-                    onClick = onCloseRequest
-                ) {
-                    Text("取消", color = Color.Black)
-                }
-
-                Button(
-                    modifier = Modifier.width(120.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(
-                            0xff0c84ff
-                        )
-                    ),
-                    onClick = {
-                        if (input.value.isBlank() || input.value.isEmpty()) {
-                            Toast.makeText(
-                                context,
-                                "请输入包含非空字符的文件名",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            // 重命名文件
-                            FileUtil.renameFile(currentSelectedFile.fileId, input.value, context)
-                            onCloseRequest.invoke()
-                        }
-                    }) {
-                    Text("修改")
-                }
-            }
-        }
     }
 
 }

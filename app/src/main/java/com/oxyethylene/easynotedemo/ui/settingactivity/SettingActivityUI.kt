@@ -1,15 +1,16 @@
 package com.oxyethylene.easynotedemo.ui.settingactivity
 
-import android.app.Activity
-import android.widget.Toast
+import android.content.Intent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -34,16 +35,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.oxyethylene.easynotedemo.R
 import com.oxyethylene.easynotedemo.domain.DialogSetting
 import com.oxyethylene.easynotedemo.domain.PlainSetting
 import com.oxyethylene.easynotedemo.domain.SettingEntry
 import com.oxyethylene.easynotedemo.domain.SwitchSetting
-import com.oxyethylene.easynotedemo.ui.components.BackIcon
+import com.oxyethylene.easynotedemo.domain.testSettings
+import com.oxyethylene.easynotedemo.ui.components.ArrowRightIcon
 import com.oxyethylene.easynotedemo.ui.components.MoreIcon
+import com.oxyethylene.easynotedemo.ui.components.SimpleTitleBar
 import com.oxyethylene.easynotedemo.ui.theme.GreyDarker
 import com.oxyethylene.easynotedemo.ui.theme.GreyLighter
 import com.oxyethylene.easynotedemo.ui.theme.Pale
 import com.oxyethylene.easynotedemo.ui.theme.SkyBlue
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,6 +60,35 @@ import com.oxyethylene.easynotedemo.ui.theme.SkyBlue
  * @author       : Polyoxyethylene
  * @Description  :
  */
+@Composable
+fun SettingPageArea () {
+
+    val context = LocalContext.current
+
+    val appVersion = context.resources.getString(R.string.app_version_code)
+
+    Column {
+
+        SettingPageTopBar("", Modifier)
+
+        // 中间的 logo
+        Column (
+            modifier = Modifier.height(300.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row () {
+                Text("Easy No", fontSize = 34.sp, fontWeight = FontWeight.Bold)
+                Text("te", fontSize = 34.sp, fontWeight = FontWeight.Bold , color = Color(0xFF2654FF))
+            }
+            Text(appVersion, fontSize = 16.sp, color = GreyDarker, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp))
+        }
+
+        SettingList(testSettings.SettingList, Modifier)
+
+    }
+
+}
 
 /**
  *  顶部导航栏
@@ -62,28 +96,7 @@ import com.oxyethylene.easynotedemo.ui.theme.SkyBlue
  *  @param modifier 设置导航栏外观
  */
 @Composable
-fun SettingPageTopBar (title : String, modifier: Modifier) {
-
-    val context = LocalContext.current
-
-    Box (
-        modifier = modifier.fillMaxWidth().statusBarsPadding().padding(top = 12.dp),
-    ) {
-
-        Button(
-            modifier = Modifier.align(Alignment.TopStart),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.DarkGray),
-            onClick = {
-                (context as Activity).finish()
-            }) {
-            BackIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
-        }
-
-        Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.Bold,  modifier = Modifier.align(Alignment.Center))
-
-    }
-
-}
+fun SettingPageTopBar (title : String, modifier: Modifier = Modifier) = SimpleTitleBar(title, modifier)
 
 /**
  *  设置列表
@@ -97,9 +110,7 @@ fun SettingList (settingList: ArrayList<SettingEntry>, modifier: Modifier) {
     ) {
         SettingSubList(settingList.subList(0, 4), modifier)
 
-        SettingSubList(settingList.subList(4, 8), modifier)
-
-        SettingSubList(settingList.subList(8, 10), modifier)
+        SettingSubList(settingList.subList(4, 5), modifier)
     }
 
 }
@@ -107,7 +118,7 @@ fun SettingList (settingList: ArrayList<SettingEntry>, modifier: Modifier) {
 @Composable
 fun SettingSubList (settingList: MutableList<SettingEntry>, modifier: Modifier) {
     Card (
-        modifier = Modifier.wrapContentHeight().padding(start = 30.dp, end = 30.dp, top = 25.dp).fillMaxWidth(),
+        modifier = Modifier.wrapContentHeight().padding(start = 20.dp, end = 20.dp, top = 25.dp).fillMaxWidth(),
         elevation = CardDefaults.cardElevation(0.dp),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -123,54 +134,96 @@ fun SettingSubList (settingList: MutableList<SettingEntry>, modifier: Modifier) 
     }
 }
 
+/**
+ *  针对不同的设置类型有不同的样式
+ *  @param entry 设置项
+ */
 @Composable
 fun SettingListItem (entry: SettingEntry) {
+    when (entry) {
+        is SwitchSetting -> SwitchSettingItem(entry)
+        is PlainSetting -> PlainSettingItem(entry)
+        is DialogSetting -> DialogSettingItem(entry)
+    }
+}
+
+/**
+ *  开关设置项的外观
+ *  @param entry 设置项
+ */
+@Composable
+fun SwitchSettingItem (entry: SwitchSetting) {
+
+    var _checked by rememberSaveable { mutableStateOf(entry.state) }
+
+    Box (
+        modifier = Modifier.fillMaxWidth().height(60.dp)
+    ) {
+
+        Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterStart).padding(start = 28.dp))
+
+        Switch(
+            checked = _checked,
+            onCheckedChange = {
+                entry.state = it
+                _checked = it },
+            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 10.dp).scale(0.7f),
+            colors = SwitchDefaults.colors(
+                checkedBorderColor = Color.Transparent,
+                uncheckedBorderColor = Color.Transparent,
+                checkedThumbColor = Pale,
+                uncheckedThumbColor = GreyDarker,
+                checkedTrackColor = SkyBlue,
+                uncheckedTrackColor = GreyLighter
+            )
+        )
+    }
+}
+
+/**
+ *  普通设置项的外观，可以点按打开新 Activity
+ *  @param entry 设置项
+ */
+@Composable
+fun PlainSettingItem (entry: PlainSetting) {
 
     val context = LocalContext.current
 
     Box (
-      modifier = Modifier.fillMaxWidth().height(60.dp)
-          .padding(start = 18.dp, top = 2.dp)
-    ) {
-
-        Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterStart))
-
-        when (entry) {
-            is SwitchSetting -> {
-                var _checked by rememberSaveable { mutableStateOf(entry.state) }
-                Switch(
-                    checked = _checked,
-                    onCheckedChange = {
-                        entry.state = it
-                        _checked = it
-                    },
-                    modifier = Modifier.align(Alignment.CenterEnd).padding(end = 20.dp).scale(0.7f),
-                    colors = SwitchDefaults.colors(
-                        checkedBorderColor = Color.Transparent,
-                        uncheckedBorderColor = Color.Transparent,
-                        checkedThumbColor = Pale,
-                        uncheckedThumbColor = GreyDarker,
-                        checkedTrackColor = SkyBlue,
-                        uncheckedTrackColor = GreyLighter
-                    )
-                )
-            }
-
-            is PlainSetting -> {}
-
-            is DialogSetting -> {
-                Button(
-                    modifier = Modifier.align(Alignment.CenterEnd).padding(end = 10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.DarkGray),
-                    onClick = {
-                        Toast.makeText(context, "打开更多菜单", Toast.LENGTH_SHORT).show()
-                    }) {
-                    MoreIcon(Modifier.size(24.dp), Color.DarkGray)
-                }
-            }
+        modifier = Modifier.fillMaxWidth().height(60.dp)
+            .clickable {
+            val intent = Intent(entry.actionName)
+            context.startActivity(intent)
         }
+    ) {
+        Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterStart).padding(start = 28.dp))
 
+        ArrowRightIcon(Modifier.align(Alignment.CenterEnd).padding(end = 20.dp).size(16.dp))
     }
 
+}
 
+/**
+ *  对话框设置项的外观，可以点按打开一个对话框
+ *  @param entry 设置项
+ */
+@Composable
+fun DialogSettingItem (entry: DialogSetting) {
+
+    val context = LocalContext.current
+
+    Box (
+        modifier = Modifier.fillMaxWidth().height(60.dp)
+    ) {
+
+        Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterStart).padding(start = 28.dp))
+
+        Button(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.DarkGray),
+            onClick = entry.dialogAction
+        ) {
+            MoreIcon(Modifier.size(24.dp), Color.DarkGray)
+        }
+    }
 }

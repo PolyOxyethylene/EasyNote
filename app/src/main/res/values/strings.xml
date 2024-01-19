@@ -3,8 +3,9 @@
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
-    <string name="app_version_code">0.3.0-beta</string>
+    <string name="app_version_code">0.3.1-beta</string>
     <string name="app_info">
         你好！\n我是 Easy Note 的开发者，很高兴你能测试使用本应用。\n目前本应用还处于开发阶段，很多功能还没有完成，如果有相关的 bug 可以联系我。
     </string>
+    <string name="title_activity_event">EventActivity</string>
 </resources>

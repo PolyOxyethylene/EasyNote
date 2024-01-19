@@ -42,9 +42,10 @@ class NoteFile(
 
     // 软拷贝
     override fun clone(): NoteFile {
-        val newNote = NoteFile(this.fileId, this.fileName, this.parent, this.lastModifiedTime)
+        val newNote = NoteFile(this.fileId, this.fileName, this.parent, this.lastModifiedTime, this.eventId)
         return newNote
     }
 
 }
 
+data class NoteList (val noteList: MutableList<NoteFile> = ArrayList())

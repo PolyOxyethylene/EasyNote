@@ -42,12 +42,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.BottomMenu
 import com.kongzue.dialogx.dialogs.InputDialog
+import com.kongzue.dialogx.dialogs.MessageDialog
 import com.kongzue.dialogx.dialogs.PopNotification
+import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener
 import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
 import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
 import com.kongzue.dialogx.style.MIUIStyle
+import com.kongzue.dialogx.util.TextInfo
 import com.oxyethylene.easynotedemo.R
+import com.oxyethylene.easynotedemo.domain.Dentry
+import com.oxyethylene.easynotedemo.domain.Dir
+import com.oxyethylene.easynotedemo.domain.NoteFile
 import com.oxyethylene.easynotedemo.ui.components.BackIcon
 import com.oxyethylene.easynotedemo.ui.components.FolderIcon
 import com.oxyethylene.easynotedemo.ui.components.MoreIcon
@@ -55,6 +61,7 @@ import com.oxyethylene.easynotedemo.ui.components.MultiSelectIcon
 import com.oxyethylene.easynotedemo.ui.components.SearchIcon
 import com.oxyethylene.easynotedemo.ui.components.SettingIcon
 import com.oxyethylene.easynotedemo.ui.components.TitleBar
+import com.oxyethylene.easynotedemo.util.EventUtil
 import com.oxyethylene.easynotedemo.util.FileUtil
 import com.oxyethylene.easynotedemo.util.FileUtil.isRootDir
 import com.oxyethylene.easynotedemo.util.FileUtil.toParentDir
@@ -117,49 +124,6 @@ fun FolderMenuArea(
             (context as Activity).finish()
         }
     }
-
-}
-
-/**
- *  点击目录界面添加按钮执行的事件
- */
-fun onAddFileFABClick (context: Context) {
-
-    BottomMenu.build(MIUIStyle())
-        .setTitle("新建文件")
-        .setMenuList(arrayOf("目录", "文章"))
-        .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false) {
-            override fun getIcon(dialog: BottomMenu?, index: Int, menuText: String?): Int {
-                when(menuText) {
-                    "目录" -> return R.drawable.folder_icon
-                    "文章" -> return R.drawable.note_icon
-                }
-                return 0
-            }
-        })
-        .setOnMenuItemClickListener(object : OnMenuItemClickListener<BottomMenu> {
-            override fun onClick(dialog: BottomMenu?, text: CharSequence?, index: Int): Boolean {
-                InputDialog.build(MIUIStyle())
-                    .setInputInfo(inputInfo.setMultipleLines(true))
-                    .setTitle(if (index == 0) "新建目录" else "新建文章")
-                    .setMessage("请输入名称")
-                    .setCancelButton("取消")
-                    .setOkButton("创建")
-                    .setOkButtonClickListener(OnInputDialogButtonClickListener {
-                        dialog, v, inputStr ->
-                        if (inputStr.isBlank() || inputStr.isEmpty()) {
-                            PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的文件名").show()
-                        } else {
-                            // 创建文章
-                            FileUtil.createFile(inputStr.trim(), index + 1, context)
-                        }
-                        return@OnInputDialogButtonClickListener false
-                    })
-                    .show()
-                return false
-            }
-        })
-        .show()
 
 }
 
@@ -348,10 +312,127 @@ fun FileList(viewModel: MainViewModel = MainViewModel()) {
         // 文件列表
         LazyColumn() {
             items(it.getFileList()) {
-                item -> ListItem(item, context)
+                item -> ListItem(item, context) { onAlterButtonClick(item, context) }
             }
         }
 
     }
+
+}
+
+/**
+ *  点击目录界面添加按钮执行的事件
+ */
+fun onAddFileFABClick (context: Context) {
+
+    BottomMenu.build(MIUIStyle())
+        .setTitle("新建文件")
+        .setMenuList(arrayOf("目录", "文章"))
+        .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false) {
+            override fun getIcon(dialog: BottomMenu?, index: Int, menuText: String?): Int {
+                when(menuText) {
+                    "目录" -> return R.drawable.folder_icon
+                    "文章" -> return R.drawable.note_icon
+                }
+                return 0
+            }
+        })
+        .setOnMenuItemClickListener(object : OnMenuItemClickListener<BottomMenu> {
+            override fun onClick(dialog: BottomMenu?, text: CharSequence?, index: Int): Boolean {
+                InputDialog.build(MIUIStyle())
+                    .setInputInfo(inputInfo.setMultipleLines(true))
+                    .setTitle(if (index == 0) "新建目录" else "新建文章")
+                    .setMessage("请输入名称")
+                    .setCancelButton("取消")
+                    .setOkButton("创建")
+                    .setOkButtonClickListener(OnInputDialogButtonClickListener {
+                            dialog, v, inputStr ->
+                        if (inputStr.isBlank() || inputStr.isEmpty()) {
+                            PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的文件名").show()
+                        } else {
+                            // 创建文章
+                            FileUtil.createFile(inputStr.trim(), index + 1, context)
+                        }
+                        return@OnInputDialogButtonClickListener false
+                    })
+                    .show()
+                return false
+            }
+        })
+        .show()
+
+}
+
+/**
+ *  当普通的列表项的修改按钮点击时执行的方法
+ *  @param item 列表项要使用的类对象
+ *  @param context 应用上下文
+ */
+fun onAlterButtonClick (item: Dentry, context: Context) {
+
+    BottomMenu.build(MIUIStyle())
+        .setMenuList(if(item is Dir) arrayOf("删除", "重命名") else arrayOf("删除", "重命名", "绑定事件", "解除绑定"))
+        .setTitle(item.fileName)
+        .setTitleTextInfo(TextInfo().setMaxLines(1).setShowEllipsis(true).setBold(true))
+        .setOnMenuItemClickListener(object : OnMenuItemClickListener<BottomMenu> {
+            override fun onClick(
+                dialog: BottomMenu?,
+                text: CharSequence?,
+                index: Int
+            ): Boolean {
+                when (text) {
+                    "删除" ->
+                        if (item is Dir && !item.isEmpty()) {
+                            PopNotification.build(MIUIStyle()).setMessage("目录 \"${item.fileName}\" 内部有其他文件，不能删除").show()
+                        }
+                        else if (item is NoteFile && item.eventId != 0) {
+                            MessageDialog.build(MIUIStyle())
+                                .setTitle("删除文章")
+                                .setMessage("当前文章已绑定事件，是否删除?")
+                                .setCancelButton("取消")
+                                .setOkButton("确定")
+                                .setOkButtonClickListener(
+                                    OnDialogButtonClickListener {
+                                        dialog, v ->
+                                        EventUtil.unbindNote(item)
+                                        FileUtil.deleteFileEntry(item.fileId, context)
+                                        return@OnDialogButtonClickListener false
+                                    }
+                                ).show()
+                        } else {
+                            FileUtil.deleteFileEntry(item.fileId, context)
+                        }
+                    "重命名" -> {
+                        InputDialog.build(MIUIStyle())
+                            .setTitle("重命名文件")
+                            .setInputInfo(inputInfo)
+                            .setCancelButton("取消")
+                            .setOkButton("重命名")
+                            .setOkButtonClickListener(OnInputDialogButtonClickListener {
+                                    dialog, v, inputStr ->
+                                if (inputStr.isBlank() || inputStr.isEmpty()) {
+                                    PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的文件名").show()
+                                } else {
+                                    // 重命名文件
+                                    FileUtil.renameFile(item.fileId, inputStr.trim())
+                                }
+                                return@OnInputDialogButtonClickListener false
+                            })
+                            .show()
+                    }
+                    "绑定事件" -> {
+                        showEventBindingDialog(item as NoteFile)
+                    }
+                    "解除绑定" -> {
+                        if (EventUtil.unbindNote(item as NoteFile)) {
+                            PopNotification.build(MIUIStyle()).setMessage("解除绑定成功").show()
+                        } else {
+                            PopNotification.build(MIUIStyle()).setMessage("解绑失败，该文章可能没有绑定过文章").show()
+                        }
+                    }
+                }
+                return false
+            }
+        }).show()
 
 }

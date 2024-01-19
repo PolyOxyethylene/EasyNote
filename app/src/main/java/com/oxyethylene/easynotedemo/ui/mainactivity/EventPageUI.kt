@@ -1,7 +1,5 @@
 package com.oxyethylene.easynotedemo.ui.mainactivity
 
-import android.content.Context
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +45,6 @@ import com.oxyethylene.easynotedemo.viewmodel.MainViewModel
  * @author       : Polyoxyethylene
  * @Description  :
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EventPageArea (modifier: Modifier, viewModel: MainViewModel) {
 
@@ -62,7 +59,6 @@ fun EventPageArea (modifier: Modifier, viewModel: MainViewModel) {
     ) {
 
 
-
         Column (
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly
@@ -75,7 +71,7 @@ fun EventPageArea (modifier: Modifier, viewModel: MainViewModel) {
                     .clip(RoundedCornerShape(12.dp))
                     .background(SkyBlue)
                     .clickable {
-                        onAddEventFABClick(context)
+                        onAddEventFABClick()
                     },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -85,7 +81,7 @@ fun EventPageArea (modifier: Modifier, viewModel: MainViewModel) {
 
             // 事件列表
             LazyColumn (Modifier.fillMaxSize()) {
-                items(eventList.getList()) {
+                items(eventList.eventList) {
                     item -> EventListItem(item, context)
                 }
             }
@@ -99,7 +95,7 @@ fun EventPageArea (modifier: Modifier, viewModel: MainViewModel) {
 /**
  *  点击悬浮按钮执行的事件
  */
-fun onAddEventFABClick (context: Context) {
+fun onAddEventFABClick () {
 
     InputDialog.build(MIUIStyle())
         .setInputInfo(InputInfo().setCursorColor(SkyBlue.toArgb()))
@@ -112,6 +108,8 @@ fun onAddEventFABClick (context: Context) {
             dialog, v, inputStr ->
             if (inputStr.isBlank() || inputStr.isEmpty()) {
                 PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的事件名").show()
+            } else if (EventUtil.getEventNames().contains(inputStr)) {
+                PopNotification.build(MIUIStyle()).setMessage("不允许创建同名事件").show()
             } else {
                 // 创建文章
                 EventUtil.createEvent(inputStr)

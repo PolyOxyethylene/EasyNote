@@ -24,7 +24,7 @@ class MainViewModel (current : Dir = FileUtil.root) : ViewModel() {
         get() = _currentFolder
 
     // 实际更新的 currentFolder
-    private val _currentFolder : MutableLiveData<Dir>
+    private var _currentFolder : MutableLiveData<Dir>
 
     // 事件项的列表
     val eventEntryList : LiveData<EventList>
@@ -47,42 +47,3 @@ class MainViewModel (current : Dir = FileUtil.root) : ViewModel() {
     }
 
 }
-
-
-
-//    // 获取当前编辑的文章标题
-//    val currentNoteTitle : LiveData<String>
-//        get() = _currentNoteTitle
-//    // 实际更新的 currentNotTitle
-//    private val _currentNoteTitle : MutableLiveData<String>
-//
-//    // 获取当前编辑的内容
-//    val currentNoteContent : LiveData<String>
-//        get() = _currentNoteContent
-//    // 实际更新的 currentNoteContent
-//    private val _currentNoteContent : MutableLiveData<String>
-//
-//    val writable : LiveData<Boolean>
-//        get() = _writable
-//
-//    private val _writable : MutableLiveData<Boolean>
-
-//    fun updateCurrentTitle (current: String) {
-//        _currentNoteTitle.value = current
-//    }
-//
-//    fun updateCurrentContent (current: String) {
-//        _currentNoteContent.value = current
-//    }
-//
-//    // 无参方法，清空内容用
-//    fun updateCurrentContent () {
-//        _currentNoteContent.value = ""
-//    }
-//
-//    // 检查是否修改
-//    fun isContentChanged () = NoteDefaults.defaultContent.equals(currentNoteContent)
-//
-//    fun enableWrite () {
-//        _writable.value = true
-//    }

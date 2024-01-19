@@ -1,6 +1,7 @@
 package com.oxyethylene.easynotedemo.ui.mainactivity
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,9 +31,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kongzue.dialogx.dialogs.BottomMenu
 import com.kongzue.dialogx.dialogs.InputDialog
-import com.kongzue.dialogx.dialogs.PopNotification
+import com.kongzue.dialogx.dialogs.MessageDialog
+import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
+import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
 import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.dialogx.util.InputInfo
 import com.oxyethylene.easynotedemo.domain.Event
@@ -40,6 +44,7 @@ import com.oxyethylene.easynotedemo.ui.components.EventIcon
 import com.oxyethylene.easynotedemo.ui.theme.GreyDarker
 import com.oxyethylene.easynotedemo.ui.theme.SkyBlue
 import com.oxyethylene.easynotedemo.util.EventUtil
+import com.oxyethylene.easynotedemo.util.FileUtil
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,7 +67,9 @@ fun EventListItem (item: Event, context: Context) {
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
             .clickable {
-                PopNotification.build(MIUIStyle()).setMessage("打开事件界面（还没做）").show()
+                val intent = Intent("com.oxyethylene.EVENT")
+                intent.putExtra("event_id", item.eventId)
+                context.startActivity(intent)
             }
             .padding(start = 14.dp)
     ) {
@@ -116,17 +123,57 @@ fun EventListItem (item: Event, context: Context) {
 
 fun updateEventDescDialog (item: Event) {
 
-    InputDialog.build(MIUIStyle())
-        .setTitle("修改事件描述")
-        .setInputText(item.description)
-        .setInputInfo(InputInfo().setCursorColor(SkyBlue.toArgb()).setMultipleLines(true))
-        .setCancelButton("取消")
-        .setOkButton("修改")
-        .setOkButtonClickListener(OnInputDialogButtonClickListener{
-            dialog, v, inputStr ->
-            EventUtil.updateEventDesc(item.eventId, inputStr)
-            return@OnInputDialogButtonClickListener false
-        })
-        .show()
+    BottomMenu.build(MIUIStyle())
+        .setTitle("修改事件属性")
+        .setMenuList(arrayOf("修改事件名称", "修改事件描述", "解散事件"))
+        .setOnMenuItemClickListener(
+            object : OnMenuItemClickListener<BottomMenu> {
+                override fun onClick(
+                    dialog: BottomMenu?,
+                    text: CharSequence?,
+                    index: Int
+                ): Boolean {
+                    when (text) {
+                        "解散事件" ->
+                            if (item.noteCount > 0) {
+                                MessageDialog.build(MIUIStyle())
+                                    .setTitle(text)
+                                    .setMessage("该事件包含绑定的文章\n解散事件将解除文章的绑定关系\n确认解散事件?")
+                                    .setCancelButton("取消")
+                                    .setOkButton("确定")
+                                    .setOkButtonClickListener(
+                                        OnDialogButtonClickListener { dialog, v ->
+                                            FileUtil.getNotesByEventId(item.eventId).forEach {
+                                                EventUtil.unbindNote(it)
+                                            }
+                                            EventUtil.deleteEvent(item.eventId)
+                                            return@OnDialogButtonClickListener false
+                                        }).show()
+                            } else {
+                                EventUtil.deleteEvent(item.eventId)
+                            }
+
+                        else ->
+                            InputDialog.build(MIUIStyle())
+                            .setTitle(text)
+                            .setInputText(if ("修改事件描述".equals(text)) item.description else item.eventName)
+                            .setInputInfo(InputInfo().setCursorColor(SkyBlue.toArgb()).setMultipleLines(true))
+                            .setCancelButton("取消")
+                            .setOkButton("修改")
+                            .setOkButtonClickListener(OnInputDialogButtonClickListener{
+                                    dialog, v, inputStr ->
+                                when (text) {
+                                    "修改事件描述" -> EventUtil.updateEventDesc(item.eventId, inputStr)
+                                    "修改事件名称" -> EventUtil.renameEvent(item.eventId, inputStr)
+                                }
+                                return@OnInputDialogButtonClickListener false
+                            })
+                            .show()
+
+                    }
+                    return false
+                }
+            }
+        ).show()
 
 }

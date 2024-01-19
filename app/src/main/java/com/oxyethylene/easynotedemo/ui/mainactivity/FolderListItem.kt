@@ -28,13 +28,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.BottomMenu
-import com.kongzue.dialogx.dialogs.InputDialog
 import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
-import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
 import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
 import com.kongzue.dialogx.style.MIUIStyle
-import com.kongzue.dialogx.util.TextInfo
 import com.oxyethylene.easynotedemo.R
 import com.oxyethylene.easynotedemo.domain.Dentry
 import com.oxyethylene.easynotedemo.domain.Dir
@@ -45,7 +42,6 @@ import com.oxyethylene.easynotedemo.ui.components.MoreIcon
 import com.oxyethylene.easynotedemo.util.EventUtil
 import com.oxyethylene.easynotedemo.util.FileUtil
 import com.oxyethylene.easynotedemo.util.NoteUtil
-import com.oxyethylene.easynotedemo.util.inputInfo
 
 /**
  * Created with IntelliJ IDEA.
@@ -64,7 +60,7 @@ import com.oxyethylene.easynotedemo.util.inputInfo
  *  @param onAlterRequest 右侧按钮打开“更改”菜单的方法
  */
 @Composable
-fun ListItem(item: Dentry, context: Context) {
+fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
 
     Row(
         modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)
@@ -124,7 +120,7 @@ fun ListItem(item: Dentry, context: Context) {
                     containerColor = Color.Transparent
                 ),
                 onClick = {
-                    onAlterButtonClick(item, context)
+                    onAlterRequest()
                 }) {
                 MoreIcon(Modifier.size(24.dp), Color.DarkGray)
             }
@@ -135,71 +131,6 @@ fun ListItem(item: Dentry, context: Context) {
 
 }
 
-/**
- *  当普通的列表项的修改按钮点击时执行的方法
- *  @param item 列表项要使用的类对象
- *  @param context 应用上下文
- */
-fun onAlterButtonClick (item: Dentry, context: Context) {
-
-    BottomMenu.build(MIUIStyle())
-        .setMenuList(if(item is Dir) arrayOf("删除", "重命名") else arrayOf("删除", "重命名", "绑定事件"))
-        .setTitle(item.fileName)
-        .setTitleTextInfo(TextInfo().setMaxLines(1).setShowEllipsis(true).setBold(true))
-//        .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false) {
-//            override fun getIcon(
-//                dialog: BottomMenu?,
-//                index: Int,
-//                menuText: String?
-//            ): Int {
-//                when (menuText) {
-//                    "删除" -> return R.drawable.recycle_icon
-//                    "重命名" -> return R.drawable.rename_icon
-//                    else -> return 0
-//                }
-//                return 0
-//            }
-//        })
-        .setOnMenuItemClickListener(object : OnMenuItemClickListener<BottomMenu> {
-            override fun onClick(
-                dialog: BottomMenu?,
-                text: CharSequence?,
-                index: Int
-            ): Boolean {
-                when (text) {
-                    "删除" ->
-                        if (item is NoteFile || (item is Dir && item.isEmpty())) {
-                            FileUtil.deleteFileEntry(item.fileId, context)
-                        } else {
-                            PopNotification.build(MIUIStyle()).setMessage("目录 \"${item.fileName}\" 内部有其他文件，不能删除").show()
-                        }
-                    "重命名" -> {
-                        InputDialog.build(MIUIStyle())
-                            .setTitle("重命名文件")
-                            .setInputInfo(inputInfo)
-                            .setCancelButton("取消")
-                            .setOkButton("重命名")
-                            .setOkButtonClickListener(OnInputDialogButtonClickListener {
-                                dialog, v, inputStr ->
-                                if (inputStr.isBlank() || inputStr.isEmpty()) {
-                                    PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的文件名").show()
-                                } else {
-                                    // 重命名文件
-                                    FileUtil.renameFile(item.fileId, inputStr.trim())
-                                }
-                                return@OnInputDialogButtonClickListener false
-                            })
-                            .show()
-                    }
-                    "绑定事件" -> {
-                        showEventBindingDialog(item as NoteFile)
-                    }
-                }
-                return false
-            }
-        }).show()
-
-}
 
 /**
  *  选择要为文章绑定的事件的列表菜单（单选）

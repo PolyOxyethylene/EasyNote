@@ -68,7 +68,8 @@ fun TitleBar(
 @Composable
 fun SimpleTitleBar (
     title: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    rightContent: @Composable () -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -84,7 +85,7 @@ fun SimpleTitleBar (
                 BackIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
             }
         },
-        rightContent = {}
+        rightContent = rightContent
     ) {
         Text(text = title, color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold)
     }

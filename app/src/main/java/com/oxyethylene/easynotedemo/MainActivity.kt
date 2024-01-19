@@ -31,6 +31,7 @@ import com.oxyethylene.easynotedemo.ui.theme.BackGround
 import com.oxyethylene.easynotedemo.ui.theme.EasyNoteTheme
 import com.oxyethylene.easynotedemo.util.DIRECTORY_INIT_SUCCESS
 import com.oxyethylene.easynotedemo.util.EVENTLIST_INIT_SUCCESS
+import com.oxyethylene.easynotedemo.util.EVENT_DELETE_SUCCESS
 import com.oxyethylene.easynotedemo.util.EVENT_UPDATE_SUCCESS
 import com.oxyethylene.easynotedemo.util.EventUtil.initEventList
 import com.oxyethylene.easynotedemo.util.EventUtil.initEventUtil
@@ -65,10 +66,7 @@ class MainActivity : ComponentActivity() {
                 FILE_RENAME_SUCCESS -> {
                     updateDirectory()        // 刷新当前目录
                 }
-                EVENT_UPDATE_SUCCESS -> {
-                    updateEventList()
-                }
-                EVENTLIST_INIT_SUCCESS -> {
+                EVENT_UPDATE_SUCCESS, EVENT_DELETE_SUCCESS, EVENTLIST_INIT_SUCCESS -> {
                     updateEventList()
                 }
             }
@@ -98,31 +96,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = BackGround
                 ) {
-//                    Box {
-                        // 控制页面的导航
-//                        val navController = rememberNavController()
-
-//                        Column(
-//                            Modifier.align(Alignment.TopCenter).padding(bottom = 55.dp)
-//                        ) {
-
-
-//                            NavHost(
-//                                navController = navController,
-//                                startDestination = MainPageRouteConf.FOLDER
-//                            ) {
-//                                 目录界面
-//                                composable(route = MainPageRouteConf.FOLDER) {
-
-//                                }
-//                                // 事件界面
-//                                composable(route = MainPageRouteConf.EVENT) {
-//                                    EventPageArea(Modifier, viewModel)
-//                                }
-//                            }
-
-//                        }
-
                     val currentPage = rememberSaveable { mutableStateOf(MainPageRouteConf.FOLDER) }
 
                     Box {
@@ -144,7 +117,6 @@ class MainActivity : ComponentActivity() {
 
                         MainPageNavBar(currentPage, Modifier.align(Alignment.BottomCenter))
                     }
-
 
                 }
             }

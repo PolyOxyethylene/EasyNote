@@ -50,18 +50,18 @@ object EventUtil {
     /**
      *  初始化 viewModel 和 context
      */
-    fun initEventUtil(viewModel: MainViewModel, _database: AppDatabase, _handler: Handler) {
-        if (mainViewModel == null || mainViewModel != viewModel) {
-            mainViewModel = viewModel
+    fun initEventUtil(viewModel: MainViewModel, database: AppDatabase, handler: Handler) {
+        if (this.mainViewModel == null || this.mainViewModel != viewModel) {
+            this.mainViewModel = viewModel
         }
-        if (database == null) {
-            database = _database
+        if (this.database == null) {
+            this.database = database
         }
-        if (handler == null) {
-            handler = _handler
+        if (this.handler == null) {
+            this.handler = handler
         }
         // 初始化 fileDao
-        database?.let {
+        this.database?.let {
             eventDao =  it.EventDao()
         }
     }
@@ -90,8 +90,16 @@ object EventUtil {
      *  刷新主界面事件列表
      */
     fun updateEventList() {
-        mainViewModel?.updateEventEntryList(EventList(eventMap.values.toList()))
+        val list = EventList(eventMap.values.toList())
+        println(list)
+        mainViewModel?.updateEventEntryList(list)
     }
+
+    /**
+     *  根据 id 获取对应的 event
+     *  @param eventId 事件的 id
+     */
+    fun getEvent (eventId: Int) = eventMap.get(eventId)
 
     /**
      *  初始化事件列表
@@ -189,7 +197,23 @@ object EventUtil {
 
     }
 
-    fun deleteEvent (id: Int){}
+    fun deleteEvent (id: Int) {
+
+        eventMap.get(id)?.let {
+            thread {
+                eventDao?.deleteEvent(it)
+
+                eventMap.remove(it.eventId)
+                eventName2IdMap.remove(it.eventName)
+
+                // 通知主线程更新 UI
+                val msg = Message()
+                msg.what = EVENT_DELETE_SUCCESS
+                handler?.sendMessage(msg)
+            }
+        }
+
+    }
 
     /**
      *  更新事件
@@ -198,6 +222,10 @@ object EventUtil {
     fun updateEvent (event: Event) {
         thread {
             eventDao?.updateEvent(event)
+            // 通知主线程更新 UI
+//            val msg = Message()
+//            msg.what = EVENT_UPDATE_SUCCESS
+//            handler?.sendMessage(msg)
         }
     }
 
@@ -226,6 +254,31 @@ object EventUtil {
                 FileUtil.updateFile(note)
             }
             updateEventList()
+            return true
+        }
+
+        return false
+    }
+
+    /**
+     *  解除文章和事件的绑定关系
+     *  @param note 需要解绑的文章
+     */
+    fun unbindNote (note: NoteFile): Boolean {
+
+        if (note.eventId == 0) return false
+
+        eventMap.get(note.eventId)?.let {
+
+            it.noteCount--
+
+            note.eventId = 0
+
+            // 更新数据库
+            FileUtil.updateFile(note)
+            updateEvent(it)
+            updateEventList()
+
             return true
         }
 

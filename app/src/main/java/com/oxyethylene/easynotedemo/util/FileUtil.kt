@@ -92,7 +92,7 @@ object FileUtil {
      *  @param fileType 文件类型， 1 表示目录，2 表示文章
      *  @param context Activity 上下文
      */
-    fun createFile (fileName : String, fileType : Int, context: Context) {
+    fun createFile (fileName : String, fileType : Int, context: Context): Dentry? {
         fileId++
         var newFile : Dentry? = null
         when (fileType) {
@@ -109,6 +109,7 @@ object FileUtil {
         fileMap.put(fileId, newFile!!)
         saveFileEntry(newFile)
         mainViewModel?.updateCurrentFolder(currentDirectory.clone())
+        return newFile
     }
 
     /**
@@ -249,23 +250,20 @@ object FileUtil {
      */
     fun renameFile (fileId: Int, newFileName : String) {
 
-        thread {
+        val renameItem = fileMap[fileId]
+        renameItem?.let {
+            it.fileName = newFileName
 
-            val renameItem = fileMap[fileId]
-            renameItem?.let {
+            thread {
                 // 重命名文件
                 fileDao?.renameFile(fileId, newFileName)
-                it.fileName = newFileName
-
                 // 通知主线程更新 UI
                 val msg = Message()
                 msg.what = FILE_RENAME_SUCCESS
                 handler?.sendMessage(msg)
-
             }
 
         }
-
     }
 
     /**
@@ -312,6 +310,27 @@ object FileUtil {
 
         return path.toString()
 
+    }
+
+    /**
+     *  根据绑定的事件 id 来获取对应的文章
+     *  @param eventId 事件的 id
+     */
+    fun getNotesByEventId (eventId: Int): MutableList<NoteFile> {
+
+        val noteList = ArrayList<NoteFile>()
+
+        fileMap.values.forEach {
+
+            if (it is NoteFile && it.eventId == eventId) {
+
+                noteList.add(it)
+
+            }
+
+        }
+
+        return noteList
     }
 
     /**

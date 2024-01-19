@@ -27,8 +27,4 @@ data class Event(@PrimaryKey val eventId: Int, var eventName: String, var descri
 /**
  *  只是为了让 State 正常观察一个列表但是又不想用 MutableStateList 而写的套娃类，实在是太若只了
  */
-class EventList (private val eventList: List<Event> = ArrayList()) {
-
-    fun getList () = eventList
-
-}
+class EventList (val eventList: List<Event> = ArrayList())

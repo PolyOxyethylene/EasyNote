@@ -223,9 +223,9 @@ object EventUtil {
         thread {
             eventDao?.updateEvent(event)
             // 通知主线程更新 UI
-//            val msg = Message()
-//            msg.what = EVENT_UPDATE_SUCCESS
-//            handler?.sendMessage(msg)
+            val msg = Message()
+            msg.what = EVENT_UPDATE_SUCCESS
+            handler?.sendMessage(msg)
         }
     }
 
@@ -277,7 +277,6 @@ object EventUtil {
             // 更新数据库
             FileUtil.updateFile(note)
             updateEvent(it)
-            updateEventList()
 
             return true
         }

@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 33
         versionCode = 1
-        versionName = "0.3.1-beta"
+        versionName = "0.3.2"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21

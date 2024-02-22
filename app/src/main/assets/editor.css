@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'SmileySans';
+    src: url('fonts/SmileySans-Oblique.ttf') format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
+#editor {
+    line-height: 1.5;
+    /*font-family: 'SmileySans';*/
+}

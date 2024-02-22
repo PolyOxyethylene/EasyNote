@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.oxyethylene.easynotedemo"
+    namespace = "com.oxyethylene.easynote"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.oxyethylene.easynotedemo"
+        applicationId = "com.oxyethylene.easynote"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
-        versionName = "0.3.2"
+        versionName = "0.4.2.1-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -68,11 +68,21 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
@@ -84,9 +94,6 @@ dependencies {
     // viewmodel + livedata + Jetpack Compose State 整合
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation ("androidx.compose.runtime:runtime-livedata:1.5.1")
-
-    // 自定义 Dialog
-//    implementation("io.github.TheMelody:any_pop_dialog_compose:1.0.0")
 
     // navigation
     val nav_version = "2.5.3"
@@ -119,10 +126,9 @@ dependencies {
     implementation ("com.kongzue.dialogx:DialogX:$dialogx_version")
     // DialogX MIUI 主题
     implementation ("com.kongzue.dialogx.style:DialogXMIUIStyle:$dialogx_version")
-    // Dialog IOS 主题
-    implementation ("com.kongzue.dialogx.style:DialogXIOSStyle:$dialogx_version")
 
-    // 解决软键盘遮挡问题
-    implementation ("com.github.liangjingkanji:soft-input-event:1.0.9")
+    // 富文本编辑器
+    implementation ("jp.wasabeef:richeditor-android:2.0.0")
+
 
 }

@@ -12,20 +12,74 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyNoteDemo"
         tools:targetApi="31">
-        <!--事件详情页面-->
+        <activity
+            android:name=".LicenseInfoActivity"
+            android:exported="false"
+            android:label="@string/title_activity_license_info"
+            android:theme="@style/Theme.EasyNoteDemo" >
+            <intent-filter>
+                <action android:name="com.oxyethylene.OPENSOURCE_INFO" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!-- 实验性功能设置页面 -->
+        <activity
+            android:name=".LabSettingActivity"
+            android:exported="false"
+            android:label="@string/title_activity_lab_setting"
+            android:theme="@style/Theme.EasyNoteDemo">
+            <intent-filter>
+                <action android:name="com.oxyethylene.LAB" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity> <!-- 备份设置页面 -->
+        <activity
+            android:name=".BackupActivity"
+            android:exported="false"
+            android:label="@string/title_activity_backup"
+            android:theme="@style/Theme.EasyNoteDemo">
+            <intent-filter>
+                <action android:name="com.oxyethylene.BACKUP" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity> <!-- 统计页面 -->
+        <activity
+            android:name=".StatisticsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_statistics"
+            android:theme="@style/Theme.EasyNoteDemo">
+            <intent-filter>
+                <action android:name="com.oxyethylene.STATISTICS" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity> <!-- 编辑器设置界面 -->
+        <activity
+            android:name=".EditorSettingActivity"
+            android:exported="false"
+            android:label="@string/title_activity_editor_setting"
+            android:theme="@style/Theme.EasyNoteDemo">
+            <intent-filter>
+                <action android:name="com.oxyethylene.EDITOR_SETTING" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity> <!-- 事件详情页面 -->
         <activity
             android:name=".EventActivity"
             android:exported="false"
             android:label="@string/title_activity_event"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.EasyNoteDemo">
+            android:theme="@style/Theme.EasyNoteDemo"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="com.oxyethylene.EVENT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
-        <!-- "关于应用"界面 -->
+        </activity> <!-- "关于应用"界面 -->
         <activity
             android:name=".AppInfoActivity"
             android:exported="false"

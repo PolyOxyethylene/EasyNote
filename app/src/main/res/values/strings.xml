@@ -1,11 +1,25 @@
 <resources>
     <string name="app_name">EasyNote</string>
+    <string name="app_version_code">0.4.2.1-beta</string>
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
-    <string name="app_version_code">0.3.2</string>
+    <string name="title_activity_event">EventActivity</string>
+    <string name="title_activity_editor_setting">EditorSettingActivity</string>
+    <string name="title_activity_statistics">StatisticsActivity</string>
+    <string name="title_activity_backup">BackupActivity</string>
+    <string name="title_activity_lab_setting">LabSettingActivity</string>
+    <string name="title_activity_license_info">LicenseInfoActivity</string>
     <string name="app_info">
         你好！\n我是 Easy Note 的开发者，很高兴你能测试使用本应用。\n目前本应用还处于开发阶段，很多功能还没有完成，如果有相关的 bug 可以联系我。
     </string>
-    <string name="title_activity_event">EventActivity</string>
+    <string name="open_source_license">
+        This document contains notices for open source software used in this product.\n\nWarranty Disclaimer\nThe open source software in this product is offered without any warranty, including but not limited to the general usability or fitness for a particular purpose.
+    </string>
+    <string name="open_source_software_info">
+        Android Jetpack^https://developer.android.google.cn/jetpack|DialogX^https://github.com/kongzue/DialogX|richeditor-android^https://github.com/wasabeef/richeditor-android
+    </string>
+    <string name="app_design_info">
+        CopyRight © 2023 PolyOxyethylene. All Rights Reserved.\n\n本应用所使用图标部分来自 iconfont 图标库\n\n本应用使用的第三方字体 得意黑 来自 https://atelier-anchor.com/\n\n软件界面风格基于 纯纯写作 以及 椒盐笔记 二次创作\n\n软件部分对话框界面设计风格参照 MIUI (来自开源库 DialogX-MIUIStyle)
+    </string>
 </resources>

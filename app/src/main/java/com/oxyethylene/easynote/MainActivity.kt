@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -18,6 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.kongzue.dialogx.DialogX
 import com.kongzue.dialogx.dialogs.PopNotification
@@ -44,10 +44,12 @@ import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.FileUtil.initDirectory
 import com.oxyethylene.easynote.util.FileUtil.initFileUtil
 import com.oxyethylene.easynote.util.FileUtil.updateDirectory
+import com.oxyethylene.easynote.util.PermissionUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import com.oxyethylene.easynote.viewmodel.factory.MainViewModelFactory
 
-class MainActivity : ComponentActivity() {
+
+class MainActivity : FragmentActivity() {
 
     lateinit var viewModel: MainViewModel
 
@@ -90,6 +92,8 @@ class MainActivity : ComponentActivity() {
         initEventList()
 
         DialogX.init(this)
+
+        PermissionUtil.init(this)
 
         setContent {
             EasyNoteTheme {

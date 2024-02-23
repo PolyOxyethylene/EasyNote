@@ -25,8 +25,12 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.kongzue.albumdialog.PhotoAlbumDialog
+import com.kongzue.albumdialog.util.SelectPhotoCallback
 import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.style.MIUIStyle
+import com.kongzue.filedialog.FileDialog
+import com.kongzue.filedialog.interfaces.FileSelectCallBack
 import com.oxyethylene.easynote.common.arrays.headerSizeList
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarButton
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarMenu
@@ -36,7 +40,9 @@ import com.oxyethylene.easynote.ui.theme.BackGround
 import com.oxyethylene.easynote.ui.theme.EasyNoteTheme
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.NoteUtil
+import com.oxyethylene.easynote.util.dpToPx
 import jp.wasabeef.richeditor.RichEditor
+import java.io.File
 
 class EditActivity : ComponentActivity() {
 
@@ -46,7 +52,6 @@ class EditActivity : ComponentActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         setContent {
             EasyNoteTheme {
@@ -120,15 +125,47 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 插入图片
                                 EditActionBarButton(R.mipmap.ic_insert_photo) {
-                                    PopNotification.build(MIUIStyle()).setMessage("该功能待完成!").show()
+                                    PhotoAlbumDialog.build()
+                                        .setMaxSelectPhotoCount(1)
+                                        .setCompressQuality(100)
+                                        .setCompressPhoto(true)
+                                        .setClip(true)
+                                        .setMaxSize(200)
+                                        .setMaxWidth(200)
+                                        .setMaxHeight(200)
+                                        .setCallback(
+                                            object : SelectPhotoCallback() {
+                                                override fun selectedPhoto(selectedPhotos: String?) {
+                                                    PopNotification.build(MIUIStyle()).setMessage(selectedPhotos).show()
+                                                    richEditor.insertImage(selectedPhotos, "啊哈哈这个照片出错了")
+                                                }
+                                            }
+                                        )
+                                        .setDialogDialogImplCallback {
+                                            dialog ->
+                                            dialog.setRadius(dpToPx(this@EditActivity, 16))
+                                        }
+                                        .show(this@EditActivity)
                                 }
                                 // 插入视频
                                 EditActionBarButton(R.mipmap.ic_insert_video) {
-                                    PopNotification.build(MIUIStyle()).setMessage("该功能待完成!").show()
+                                    FileDialog.build().setSuffixArray(arrayOf(".mp4")).selectFile(
+                                        object : FileSelectCallBack(){
+                                            override fun onSelect(file: File?, filePath: String?) {
+                                                richEditor.insertVideo(filePath, 200)
+                                            }
+                                        }
+                                    )
                                 }
                                 // 插入音频
                                 EditActionBarButton(R.mipmap.ic_insert_audio) {
-                                    PopNotification.build(MIUIStyle()).setMessage("该功能待完成!").show()
+                                    FileDialog.build().setSuffixArray(arrayOf(".ogg", ".mp3", ".flac")).selectFile(
+                                        object : FileSelectCallBack(){
+                                            override fun onSelect(file: File?, filePath: String?) {
+                                                richEditor.insertAudio(filePath)
+                                            }
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -139,6 +176,7 @@ class EditActivity : ComponentActivity() {
                                         LayoutInflater.from(context).inflate(R.layout.richtext_editor_layout, null).apply {
                                             richEditor = findViewById(R.id.editor)
                                             richEditor.setBackgroundColor(Color.Transparent.toArgb())
+                                            richEditor.getSettings().setAllowFileAccess(true);
                                             // 加载已有内容
                                             richEditor.html = NoteUtil.loadFile(this@EditActivity)
                                             // 修改富文本编辑器的界面布局

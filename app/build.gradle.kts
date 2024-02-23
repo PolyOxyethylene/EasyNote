@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 33
         versionCode = 1
-        versionName = "0.4.2.1-beta"
+        versionName = "0.4.2.4-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -122,13 +122,31 @@ dependencies {
 //    ksp("androidx.room:room-compiler:$room_version")
 
     // 更强大的对话框 DialogX
-    val dialogx_version = "0.0.49"
-    implementation ("com.kongzue.dialogx:DialogX:$dialogx_version")
+    val dialogx_version_release = "0.0.49"
+    val dialogx_version_beta = "0.0.50.beta8"
+    // 正式版
+//    implementation ("com.kongzue.dialogx:DialogX:$dialogx_version_release")
+    // 测试版
+    implementation ("com.github.kongzue.DialogX:DialogX:$dialogx_version_beta")
+
     // DialogX MIUI 主题
-    implementation ("com.kongzue.dialogx.style:DialogXMIUIStyle:$dialogx_version")
+    // 正式版
+//    implementation ("com.kongzue.dialogx.style:DialogXMIUIStyle:$dialogx_version_release")
+    // 测试版
+    implementation ("com.github.kongzue.DialogX:DialogXMIUIStyle:$dialogx_version_beta")
+
+    // DialogX 扩展组件
+    val dialogx_sample_version = "0.0.12"
+    //文件选择对话框
+    implementation ("com.github.kongzue.DialogXSample:FileDialog:$dialogx_sample_version")
+    //照片选择器
+    implementation ("com.github.kongzue.DialogXSample:AlbumDialog:$dialogx_sample_version")
 
     // 富文本编辑器
     implementation ("jp.wasabeef:richeditor-android:2.0.0")
+
+    // PermissionX
+    implementation ("com.guolindev.permissionx:permissionx:1.7.1")
 
 
 }

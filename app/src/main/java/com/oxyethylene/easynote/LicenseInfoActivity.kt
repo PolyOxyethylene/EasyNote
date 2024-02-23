@@ -37,7 +37,7 @@ class LicenseInfoActivity : ComponentActivity() {
                     val openSourceInfo = context.resources.getString(R.string.open_source_license)
 
                     // 开放源代码信息列表
-                    val softwareInfoList = context.resources.getString(R.string.open_source_software_info).split('|')
+                    val softwareInfoList = context.resources.getStringArray(R.array.open_source_software_info)
 
                     Column {
                         SimpleTitleBar("开放源代码许可")

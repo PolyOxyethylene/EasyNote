@@ -140,10 +140,6 @@ fun TopMenuBar(modifier: Modifier = Modifier) {
     TitleBar(
         modifier = modifier,
         leftContent = {
-            /**
-             *  左上角的设置按钮
-             *  TODO：添加跳转到设置的 Activity
-             */
             Button(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
@@ -226,7 +222,7 @@ fun FileControllerBar(viewModel: MainViewModel) {
             Crossfade(
                 targetState = currentFolder,
                 modifier = Modifier.align(Alignment.CenterVertically),
-                animationSpec = tween(durationMillis = 250)
+                animationSpec = tween(durationMillis = 250), label = ""
             ) {
                 Text(it.fileName, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold)
             }

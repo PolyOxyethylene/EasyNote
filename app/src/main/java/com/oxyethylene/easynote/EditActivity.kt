@@ -127,7 +127,7 @@ class EditActivity : ComponentActivity() {
                                 EditActionBarButton(R.mipmap.ic_insert_photo) {
                                     PhotoAlbumDialog.build()
                                         .setMaxSelectPhotoCount(1)
-                                        .setCompressQuality(100)
+                                        .setCompressQuality(70)
                                         .setCompressPhoto(true)
                                         .setClip(true)
                                         .setMaxSize(200)

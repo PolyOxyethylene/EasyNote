@@ -2,6 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Android 13 及以上的新权限 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO "/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <!-- 读写外部存储 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,8 +20,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_easy_note_round"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.EasyNoteDemo"
         tools:targetApi="31">
+        
+        <!-- 开放源代码许可界面 -->
         <activity
             android:name=".LicenseInfoActivity"
             android:exported="false"

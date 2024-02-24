@@ -130,5 +130,10 @@ class MainActivity : FragmentActivity() {
 
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        PermissionUtil.checkAgain(this)
+    }
+
 }
 

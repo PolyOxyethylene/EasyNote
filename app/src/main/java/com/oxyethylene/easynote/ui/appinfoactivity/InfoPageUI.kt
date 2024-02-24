@@ -103,7 +103,7 @@ fun InfoPageArea () {
                 DialogSetting("更新软件") {
                     MessageDialog.build(MIUIStyle())
                         .setTitle("获取更新")
-                        .setMessage("毕设需求是写不出来的，更新是不会有的\n请联系开发者获取最新版本软件")
+                        .setMessage(R.string.app_update_info)
                         .setOkButton("确认")
                         .show()
                 }

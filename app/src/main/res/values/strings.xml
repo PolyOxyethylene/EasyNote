@@ -25,9 +25,15 @@
     <string name="app_design_info">
         CopyRight © 2023 PolyOxyethylene. All Rights Reserved.\n\n本应用所使用图标部分来自 iconfont 图标库\n\n本应用使用的第三方字体 得意黑 来自 https://atelier-anchor.com/\n\n软件界面风格基于 纯纯写作 以及 椒盐笔记 二次创作\n\n软件部分对话框界面设计风格参照 MIUI (来自开源库 DialogX-MIUIStyle)
     </string>
+    <string name="permission_request_info">
+        本程序需要您授予如下权限才能正常运行, \n请前往应用权限设置检查权限是否已同意
+    </string>
     <string-array name="permission_request_list">
         <item>
-            Android™ 存储访问框架-根据您的系统版本请求访问设备外部存储的权限，用于文章的备份、保存、导出以及多媒体文件的读取
+            Android™ 存储访问框架-用于文章的备份、保存、导出以及多媒体文件的读取
         </item>
     </string-array>
+    <string name="app_update_info">
+        毕设需求是写不出来的，更新是不会有的\n请联系开发者获取最新版本软件
+    </string>
 </resources>

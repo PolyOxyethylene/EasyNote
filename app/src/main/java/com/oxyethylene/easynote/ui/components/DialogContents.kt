@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oxyethylene.easynote.R
 
 /**
@@ -28,16 +31,16 @@ fun PermissionDialog() {
     val permissionInfoList = context.resources.getStringArray(R.array.permission_request_list)
 
     Column (
-        Modifier.padding(start = 20.dp, end = 20.dp).fillMaxSize()
+        Modifier.padding(top = 10.dp, start = 30.dp, end = 30.dp, bottom = 20.dp).fillMaxSize()
     ) {
 
-        Text("为保证软件的正常运行, Easy Note 将会请求以下权限")
+//        Text("为保证软件的正常运行, Easy Note 将会请求以下权限")
 
         permissionInfoList.forEach {
             info ->
             val i = info.indexOf('-')
-            Text(info.substring(0, i))
-            Text(info.substring(i+1))
+            Text(info.substring(0, i), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
+            Text(info.substring(i+1), fontSize = 14.sp, color = Color.Gray)
         }
 
     }

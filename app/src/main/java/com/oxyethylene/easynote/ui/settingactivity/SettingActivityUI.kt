@@ -86,14 +86,32 @@ fun SettingPageArea () {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                // app logo
                 Row () {
                     Text("Easy No", fontSize = 34.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily(Font(R.font.smileysans_oblique)))
                     Text("te", fontSize = 34.sp, fontWeight = FontWeight.Bold , color = Color(0xFF2654FF), fontFamily = FontFamily(Font(R.font.smileysans_oblique)))
                 }
-                Text(appVersion, fontSize = 16.sp, color = GreyDarker, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp), fontFamily = FontFamily(Font(R.font.smileysans_oblique)))
+
+                // 版本号
+                Text(
+                    text = appVersion,
+                    fontSize = 16.sp,
+                    color = GreyDarker,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 10.dp)
+                        .clickable {
+                            MessageDialog.build(MIUIStyle())
+                                .setTitle("版本更新内容")
+                                .setMessage(R.string.version_sketch)
+                                .setOkButton("确认")
+                                .show()
+                        },
+                    fontFamily = FontFamily(Font(R.font.smileysans_oblique))
+                )
 
             }
 
+            // 设置列表
             SettingList(mainSettingList)
         }
 

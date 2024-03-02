@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 33
         versionCode = 1
-        versionName = "0.4.2.4-beta"
+        versionName = "0.4.2.5-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -73,6 +73,7 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(project(mapOf("path" to ":DrawerBox")))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -123,7 +124,7 @@ dependencies {
 
     // 更强大的对话框 DialogX
     val dialogx_version_release = "0.0.49"
-    val dialogx_version_beta = "0.0.50.beta8"
+    val dialogx_version_beta = "0.0.50.beta10"
     // 正式版
 //    implementation ("com.kongzue.dialogx:DialogX:$dialogx_version_release")
     // 测试版

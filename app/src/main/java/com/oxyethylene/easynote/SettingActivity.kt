@@ -21,7 +21,6 @@ class SettingActivity : ComponentActivity() {
 
         setContent {
             EasyNoteTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = BackGround

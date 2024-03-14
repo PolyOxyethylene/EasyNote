@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.kongzue.dialogx.DialogX
 import com.oxyethylene.easynote.ui.settingactivity.SettingPageArea
 import com.oxyethylene.easynote.ui.theme.BackGround
 import com.oxyethylene.easynote.ui.theme.EasyNoteTheme
@@ -15,9 +14,6 @@ class SettingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 初始化 DialogX
-        DialogX.init(this)
 
         setContent {
             EasyNoteTheme {

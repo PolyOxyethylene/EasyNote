@@ -55,85 +55,98 @@ fun InfoPageArea () {
 
     val designInfo = context.resources.getString(R.string.app_design_info)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize().navigationBarsPadding()
-            .verticalScroll(rememberScrollState())
+    Column (
+        Modifier.fillMaxSize().navigationBarsPadding()
     ) {
 
         InfoPageTopBar("关于", Modifier)
 
-        Text("作者", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
+        Column(
+            Modifier.verticalScroll(rememberScrollState())
+        ) {
 
-        Row (
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                .fillMaxWidth().height(60.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.White),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Image(painter = painterResource(R.drawable.developer_avatar), "this is developer's GitHub account avatar.", modifier = Modifier.padding(start = 16.dp).size(40.dp).clip(CircleShape))
-            Text("PolyOxyethylene", fontSize = 16.sp, modifier = Modifier.padding(start = 12.dp))
-        }
+            Text("作者", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
 
-        Row (
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.White)
+            Row (
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp)
+                    .fillMaxWidth().height(60.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Image(painter = painterResource(R.drawable.developer_avatar), "this is developer's GitHub account avatar.", modifier = Modifier.padding(start = 16.dp).size(40.dp).clip(CircleShape))
+                Text("PolyOxyethylene", fontSize = 16.sp, modifier = Modifier.padding(start = 12.dp))
+            }
+
+            Row (
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
                 ,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Text(aboutApp, fontSize = 16.sp, color = Color.DarkGray, modifier = Modifier.padding(20.dp))
-        }
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Text(aboutApp, fontSize = 16.sp, color = Color.DarkGray, modifier = Modifier.padding(20.dp))
+            }
 
-        Text("更新软件", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
+            Text("更新软件", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
 
-        Row(
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.White)
-        ) {
+            Row(
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+            ) {
 
-            DialogSettingItem(
-                DialogSetting("更新软件") {
-                    MessageDialog.build(MIUIStyle())
-                        .setTitle("获取更新")
-                        .setMessage(R.string.app_update_info)
-                        .setOkButton("确认")
-                        .show()
-                }
+                DialogSettingItem(
+                    DialogSetting("更新软件") {
+                        MessageDialog.build(MIUIStyle())
+                            .setTitle("获取更新")
+                            .setMessage(R.string.app_update_info)
+                            .setOkButton("确认")
+                            .show()
+                    }
+                )
+
+            }
+
+            Text("致谢", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
+
+            Row(
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+            ) {
+                PlainSettingItem(PlainSetting("内测参与者", "com.oxyethylene.THANKS"))
+            }
+
+            Text("法律信息", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
+
+            Row(
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+            ) {
+                PlainSettingItem(PlainSetting("开放源代码许可", "com.oxyethylene.OPENSOURCE_INFO"))
+            }
+
+            Text(
+                text = designInfo,
+                fontSize = 12.sp,
+                color = Color.Gray,
+                lineHeight = 14.sp,
+                letterSpacing = 0.sp,
+                modifier = Modifier.padding(start = 36.dp, end = 36.dp, top = 20.dp, bottom = 20.dp)
             )
 
         }
-
-        Text("法律信息", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
-
-        Row(
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.White)
-        ) {
-
-            PlainSettingItem(PlainSetting("开放源代码许可", "com.oxyethylene.OPENSOURCE_INFO"))
-
-        }
-
-        Text(
-            text = designInfo,
-            fontSize = 12.sp,
-            color = Color.Gray,
-            lineHeight = 14.sp,
-            letterSpacing = 0.sp,
-            modifier = Modifier.padding(start = 36.dp, end = 36.dp, top = 20.dp, bottom = 20.dp)
-        )
-
     }
 
 }

@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.oxyethylene.easynote.dao.EventDao
 import com.oxyethylene.easynote.dao.FileDao
 import com.oxyethylene.easynote.domain.Event
-import com.oxyethylene.easynote.domain.FileEntity
+import com.oxyethylene.easynote.domain.entity.FileEntity
 
 /**
  * Created with IntelliJ IDEA.

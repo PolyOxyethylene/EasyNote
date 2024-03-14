@@ -1,9 +1,10 @@
 package com.oxyethylene.easynote.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,11 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.oxyethylene.easynote.R
 import com.oxyethylene.easynote.ui.theme.SkyBlue
 
 /**
@@ -41,21 +44,25 @@ import com.oxyethylene.easynote.ui.theme.SkyBlue
  */
 /**
  *  自定义的文本输入框
- *  @param inputText 输入框的文本
+ *  @param modifier 设置输入框的长宽和边距
  *  @param shape 输入框的形状
- *  @param hint 提示性信息
- *  @param modifier 设置输入框的长宽
+ *  @param containerColor 输入框的颜色，默认为白色
+ *  @param inputText 输入框的文本
+ *  @param hint 提示性信息，默认为空
+ *  @param singleLine 是否为单行，默认为 true
+ *  @param onTextChange 当输入文本发生改变时执行的额外操作，默认什么都不做
  */
 @Composable
-fun InputText (modifier: Modifier, shape: Shape, containerColor: Color, inputText : MutableState<String>, hint : String) {
+fun InputText (modifier: Modifier, shape: Shape, containerColor: Color = Color.White, inputText : MutableState<String>, hint : String = "", singleLine: Boolean = true, onTextChange: () -> Unit = {}) {
 
     BasicTextField(
         value = inputText.value,
         modifier = modifier,
         onValueChange = {
             inputText.value = it
+            onTextChange()
         },
-        singleLine = true,
+        singleLine = singleLine,
         textStyle = TextStyle(fontSize = 16.sp),
         decorationBox = { innerTextField ->
             Box {
@@ -63,14 +70,27 @@ fun InputText (modifier: Modifier, shape: Shape, containerColor: Color, inputTex
                     modifier = Modifier.fillMaxSize(),
                     shape = shape
                 ) {
-                    Row(
+                    Box(
                         modifier = Modifier.background(containerColor).padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Box(modifier = Modifier.padding(start = 16.dp, end = 4.dp)) {
+                        Box(modifier = Modifier.padding(start = 16.dp, end = 40.dp).align(Alignment.CenterStart)) {
                             if (inputText.value.isEmpty()) Text(text = hint, color = Color(0x88000000), fontSize = 16.sp)
                             innerTextField()
+                        }
+
+                        if (inputText.value.isNotEmpty()) {
+                            Image(
+                                painter = painterResource(R.mipmap.ic_clean_all),
+                                contentDescription = "清空输入框",
+                                modifier = Modifier.padding(end = 10.dp)
+                                    .size(24.dp)
+                                    .align(Alignment.CenterEnd)
+                                    .clickable {
+                                        inputText.value = ""
+                                        onTextChange()
+                                    }
+                            )
                         }
 
                     }

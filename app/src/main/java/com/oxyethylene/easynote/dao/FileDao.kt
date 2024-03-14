@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.oxyethylene.easynote.domain.FileEntity
+import com.oxyethylene.easynote.domain.entity.FileEntity
 
 /**
  * Created with IntelliJ IDEA.

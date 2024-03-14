@@ -1,6 +1,9 @@
 package com.oxyethylene.easynote.ui.editactivity
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.DropdownMenu
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,17 +33,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.components.TextArea
+import com.oxyethylene.easynote.ui.theme.AliceBlue
 import com.oxyethylene.easynote.ui.theme.BackGround
 import com.oxyethylene.easynote.ui.theme.GreyDarker
+import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.NoteUtil
+import me.saket.cascade.CascadeDropdownMenu
 
 /**
  * Created with IntelliJ IDEA.
@@ -89,7 +96,6 @@ fun EditPageTopBar (title: String, modifier: Modifier = Modifier) = SimpleTitleB
  *  文章的标题栏
  *  @param noteTitle 文章的标题
  *  @param modifier 定制组件外观
- *  @param viewModel
  */
 @Composable
 fun TitleLine(noteTitle: String, modifier: Modifier) {
@@ -100,8 +106,7 @@ fun TitleLine(noteTitle: String, modifier: Modifier) {
         Text(
             text = noteTitle,
             fontSize = 26.sp,
-            fontWeight = FontWeight.ExtraBold,
-//            fontFamily = FontFamily(Font(R.font.smileysans_oblique))
+            fontWeight = FontWeight.ExtraBold
         )
         Text(text = FileUtil.getNoteUpdateTime(NoteUtil.getNoteId()), fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 10.dp))
     }
@@ -115,12 +120,11 @@ fun EditableArea(input: MutableState<String>) {
         TextArea(
             Modifier,
             input,
-            true,
-            {
-                input.value = it
-                NoteUtil.noteContent = it
-            }
-        )
+            true
+        ) {
+            input.value = it
+            NoteUtil.noteContent = it
+        }
     }
 
 }
@@ -180,21 +184,16 @@ fun EditActionBarMenu (menuList: List<Pair<Int, String>>, changeButtonIcon: Bool
                 contentDescription = "编辑栏按钮",
                 modifier = Modifier.size(24.dp).align(Alignment.Center)
             )
-            DropdownMenu(
-                modifier = Modifier.background(Color.White),
+            CascadeDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                shape = RoundedCornerShape(12.dp)
             ) {
                 menuList.subList(1, menuList.size).forEach {
                     pair ->
                     DropdownMenuItem(
-                        text = {
-                            Row (verticalAlignment = Alignment.CenterVertically) {
-                                Image(painter = painterResource(pair.first), contentDescription = "编辑栏菜单选项", modifier = Modifier.size(18.dp))
-                                Spacer(Modifier.size(5.dp))
-                                Text(pair.second)
-                            }
-                        },
+                        leadingIcon = {Image(painter = painterResource(pair.first), contentDescription = "编辑栏菜单选项", modifier = Modifier.size(18.dp))},
+                        text = { Text(pair.second) },
                         onClick = {
                             expanded = false
                             if (changeButtonIcon) buttonIconResId = pair.first
@@ -206,6 +205,45 @@ fun EditActionBarMenu (menuList: List<Pair<Int, String>>, changeButtonIcon: Bool
             }
 
         }
+    }
+}
+
+/**
+ * 用于提示工具栏可以横划
+ * @param modifier 设置提示的位置
+ * @param state 工具栏的滑动状态
+ */
+@Composable
+fun EditActionBarHelper (modifier: Modifier, state: ScrollState) {
+
+    Crossfade(
+        targetState = state.value in 0 .. 200,
+        modifier = modifier,
+        label = "",
+        animationSpec = tween(durationMillis = 300)
+    ) {
+
+        if (it) {
+
+            Row (
+                Modifier.wrapContentWidth(Alignment.CenterHorizontally)
+                    .wrapContentHeight(Alignment.CenterVertically)
+                    .clip(CircleShape)
+                    .background(AliceBlue)
+                    .padding(top = 6.dp, bottom = 6.dp, start = 10.dp, end = 10.dp)
+            ) {
+
+                Text(
+                    text = "右划更多工具",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = SkyBlue
+                )
+
+            }
+
+        }
+
     }
 
 }

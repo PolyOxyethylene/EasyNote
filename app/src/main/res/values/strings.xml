@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">EasyNote</string>
-    <string name="app_version_code">0.4.2.5-beta</string>
+    <string name="app_version_code">0.4.3.0-beta</string>
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
@@ -10,6 +10,7 @@
     <string name="title_activity_backup">BackupActivity</string>
     <string name="title_activity_lab_setting">LabSettingActivity</string>
     <string name="title_activity_license_info">LicenseInfoActivity</string>
+    <string name="title_activity_thanks">ThanksActivity</string>
     <string name="app_info">
         你好！\n我是 Easy Note 的开发者，很高兴你能测试使用本应用。\n目前本应用还处于开发阶段，很多功能还没有完成，如果有相关的 bug 可以联系我。
     </string>
@@ -26,17 +27,43 @@
         CopyRight © 2023 PolyOxyethylene. All Rights Reserved.\n\n本应用所使用图标部分来自 iconfont 图标库\n\n本应用使用的第三方字体 得意黑 来自 https://atelier-anchor.com/\n\n软件界面风格基于 纯纯写作 以及 椒盐笔记 二次创作\n\n软件部分对话框界面设计风格参照 MIUI (来自开源库 DialogX-MIUIStyle)
     </string>
     <string name="permission_request_info">
-        本程序需要您授予如下权限才能正常运行, \n请前往应用权限设置检查权限是否已同意
+        本应用需要您授予如下权限才能正常运行, \n请前往应用权限设置\n检查以下所有权限是否已同意\n\n本应用完全在本地运行，\n不会收集您的个人信息和本地内容
     </string>
     <string-array name="permission_request_list">
         <item>
             Android™ 存储访问框架-用于文章的备份、保存、导出以及多媒体文件的读取
         </item>
+        <item>
+            管理所有文件的权限-Android 11 及以上版本需要授予，以保证本应用正常的存储访问
+        </item>
+        <item>
+            访问设备上的照片-Android 13 及以上版本需要授予，以保证本应用可以读取设备中的图片、视频
+        </item>
+        <item>
+            访问设备上的音频-Android 13 及以上版本需要授予，以保证本应用可以读取设备中的音频文件
+        </item>
     </string-array>
     <string name="app_update_info">
         毕设需求是写不出来的，更新是不会有的\n请联系开发者获取最新版本软件
     </string>
-    <string name="version_sketch">
-        更新了第三方库版本
+    <string name="thanks_page_info">
+        以下是在本应用开发过程中\n参与了测试工作或提出宝贵建议的朋友\n感谢你们的帮助\n(名字无先后顺序)
     </string>
+    <string name="version_sketch">
+        去除了运行时权限的强制检查\n优化了 UI
+    </string>
+<!--    <string-array name="very_thanks_list">-->
+<!--        <item>🍸</item>-->
+<!--    </string-array>-->
+    <string-array name="thanks_list_close_beta_1">
+        <item>🍸</item>
+        <item>fansteio</item>
+        <item>Onion</item>
+        <item>^O^</item>
+        <item>机房在逃路由器</item>
+        <item>微笑道歉</item>
+        <item>逐</item>
+        <item>国宝</item>
+    </string-array>
+    
 </resources>

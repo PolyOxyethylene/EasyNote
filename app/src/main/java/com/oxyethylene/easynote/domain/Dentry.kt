@@ -1,6 +1,7 @@
 package com.oxyethylene.easynote.domain
 
 import com.oxyethylene.easynote.common.enumeration.FileType
+import com.oxyethylene.easynote.domain.entity.FileEntity
 
 /**
  * Created with IntelliJ IDEA.

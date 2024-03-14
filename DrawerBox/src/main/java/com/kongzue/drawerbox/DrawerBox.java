@@ -20,13 +20,26 @@ public class DrawerBox {
     DrawerBoxDialog dialog;
     int minHeight = 0;
     
-    public DrawerBox() {
-        minHeight = dip2px(55);
+    public DrawerBox() {}
+
+    /**
+     * 创建一个默认最小高度为 height 的底部抽屉，height 单位为 dp
+     * @param height 抽屉的最小高度
+     */
+    public DrawerBox(Integer height) {
+        minHeight = dip2px(height);
     }
     
     public static DrawerBox build() {
         return new DrawerBox();
     }
+
+    /**
+     * 创建一个默认最小高度为 height 的底部抽屉，height 单位为 dp
+     * @param height 抽屉的最小高度
+     * @return 创建的抽屉
+     */
+    public static DrawerBox build(Integer height) {return new DrawerBox(height);}
     
     public DrawerBox show(OnBindView<DrawerBoxDialog> onBindView) {
         dialog = DrawerBoxDialog.build(onBindView)

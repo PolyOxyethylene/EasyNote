@@ -6,10 +6,14 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,23 +24,27 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,7 +60,11 @@ import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
 import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.dialogx.util.InputInfo
 import com.kongzue.dialogx.util.TextInfo
+import com.leinardi.android.speeddial.compose.FabWithLabel
+import com.leinardi.android.speeddial.compose.SpeedDial
+import com.leinardi.android.speeddial.compose.SpeedDialState
 import com.oxyethylene.easynote.R
+import com.oxyethylene.easynote.common.enumeration.FileType
 import com.oxyethylene.easynote.domain.Dentry
 import com.oxyethylene.easynote.domain.Dir
 import com.oxyethylene.easynote.domain.NoteFile
@@ -68,7 +80,9 @@ import com.oxyethylene.easynote.util.EventUtil
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.FileUtil.isRootDir
 import com.oxyethylene.easynote.util.FileUtil.toParentDir
+import com.oxyethylene.easynote.util.SearchBoxUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
+import me.saket.cascade.CascadeDropdownMenu
 
 /**
  * Created with IntelliJ IDEA.
@@ -83,6 +97,7 @@ import com.oxyethylene.easynote.viewmodel.MainViewModel
 /**
  * 文件目录界面
  */
+@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun FolderMenuArea(
     modifier: Modifier,
@@ -95,26 +110,75 @@ fun FolderMenuArea(
 
         FileControllerBar(viewModel)
 
-        Box (modifier = Modifier) {
+        var speedDialState by rememberSaveable { mutableStateOf(SpeedDialState.Collapsed) }
+
+        Box (
+            modifier = Modifier.pointerInput(Unit) {
+                detectTapGestures {
+                    if (speedDialState.isExpanded()) {
+                        speedDialState = speedDialState.toggle()
+                    }
+                }
+            }
+        ) {
             // 文件列表
             FileList(viewModel)
 
             /**
              *  悬浮按钮，功能是新建 文件 或者 目录
              */
-            FloatingActionButton(
-                modifier = Modifier.navigationBarsPadding().padding(end = 24.dp, bottom = 40.dp)
-                    .size(60.dp)
-                    .align(Alignment.BottomEnd),
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
-                shape = CircleShape,
-                containerColor = Color.DarkGray,
-                contentColor = Color.White,
-                onClick = {
-                    onAddFileFABClick(context)
-                }) {
-                Icon(Icons.Default.Add, "新建文件或者目录的按钮")
+//            Button(
+//                modifier = Modifier.navigationBarsPadding().padding(bottom = 10.dp)
+//                    .align(Alignment.BottomCenter),
+//                colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+//                onClick = {
+//                    onAddFileFABClick(context)
+//                }) {
+//                Icon(Icons.Default.Add, "新建文件或者目录的按钮")
+//            }
+
+            SpeedDial(
+                modifier = Modifier.navigationBarsPadding().padding(bottom = 20.dp, end = 30.dp).align(Alignment.BottomEnd),
+                fabElevation = androidx.compose.material.FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp),
+                state = speedDialState,
+                onFabClick = { expanded ->
+                    speedDialState = speedDialState.toggle()
+                },
+                fabOpenedBackgroundColor = Color.Black,
+                fabClosedBackgroundColor = Color.Black,
+                fabOpenedContentColor = Color.White,
+                fabClosedContentColor = Color.White
+            ) {
+                item {
+                    FabWithLabel(
+                        onClick = {
+                            speedDialState = speedDialState.toggle()
+                            onAddFileFABClick(FileType.FILE.ordinal, context)
+                        },
+                        fabElevation = androidx.compose.material.FloatingActionButtonDefaults.elevation(defaultElevation = 1.dp),
+                        fabBackgroundColor = Color.White,
+                        labelContainerElevation = 1.dp,
+                        labelContent = { Text(text = "新建文章") },
+                    ) {
+                        Icon(painter = painterResource(R.mipmap.ic_add_note), contentDescription = null, modifier = Modifier.size(22.dp))
+                    }
+                }
+                item {
+                    FabWithLabel(
+                        onClick = {
+                            speedDialState = speedDialState.toggle()
+                            onAddFileFABClick(FileType.DIRECTORY.ordinal, context)
+                        },
+                        fabElevation = androidx.compose.material.FloatingActionButtonDefaults.elevation(defaultElevation = 1.dp),
+                        fabBackgroundColor = Color.White,
+                        labelContainerElevation = 1.dp,
+                        labelContent = { Text(text = "新建目录") },
+                    ) {
+                        Icon(painter = painterResource(R.mipmap.ic_add_folder), contentDescription = null, modifier = Modifier.size(24.dp))
+                    }
+                }
             }
+
         }
     }
 
@@ -157,16 +221,7 @@ fun TopMenuBar(modifier: Modifier = Modifier) {
              *  顶部右侧的更多选项按钮，暂时没想到做什么功能
              *  TODO：后续不用的话可能删除
              */
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.DarkGray
-                ),
-                onClick = {
-                    Toast.makeText(context, "打开更多菜单(还没做)", Toast.LENGTH_SHORT).show()
-                }) {
-                MoreIcon(Modifier.size(24.dp), Color.DarkGray)
-            }
+            MoreFeatureButton()
         }
     ) {
         // 标题
@@ -231,7 +286,7 @@ fun FileControllerBar(viewModel: MainViewModel) {
         Row {
             /**
              *  搜索功能按钮
-             *  TODO：搜索功能还没添加
+             *  TODO：搜索功能待优化
              */
             Button(
                 colors = ButtonDefaults.buttonColors(
@@ -240,7 +295,8 @@ fun FileControllerBar(viewModel: MainViewModel) {
                 ),
                 modifier = Modifier.wrapContentWidth(),
                 onClick = {
-                    Toast.makeText(context, "搜索(还没做)", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(context, "搜索(还没做)", Toast.LENGTH_SHORT).show()
+                    SearchBoxUtil.show()
                 }
             ) {
                 SearchIcon(Modifier.size(18.dp).align(Alignment.CenterVertically))
@@ -362,6 +418,30 @@ fun onAddFileFABClick (context: Context) {
 }
 
 /**
+ *  点击目录界面添加按钮执行的事件
+ */
+fun onAddFileFABClick (fileType: Int, context: Context) {
+
+    InputDialog.build(MIUIStyle())
+        .setInputInfo(InputInfo().setCursorColor(SkyBlue.toArgb()).setMultipleLines(true))
+        .setTitle(if (fileType == FileType.FILE.ordinal) "新建文章" else "新建目录")
+        .setMessage("请输入名称")
+        .setCancelButton("取消")
+        .setOkButton("创建")
+        .setOkButtonClickListener(OnInputDialogButtonClickListener {
+                dialog, v, inputStr ->
+            if (inputStr.isBlank() || inputStr.isEmpty()) {
+                PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的文件名").show()
+            } else {
+                // 创建文章
+                FileUtil.createFile(inputStr.trim(), fileType, context)
+            }
+            return@OnInputDialogButtonClickListener false
+        })
+        .show()
+}
+
+/**
  *  当普通的列表项的修改按钮点击时执行的方法
  *  @param item 列表项要使用的类对象
  *  @param context 应用上下文
@@ -432,5 +512,138 @@ fun onAlterButtonClick (item: Dentry, context: Context) {
                 return false
             }
         }).show()
+
+}
+
+/**
+ * 主页右上角的更多选项菜单
+ */
+@Composable
+fun MoreFeatureButton () {
+
+    var expanded by remember { mutableStateOf(false) }
+
+    Box{
+        Button(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.DarkGray
+            ),
+            onClick = {expanded = true}
+        ) {
+            MoreIcon(Modifier.size(24.dp), Color.DarkGray)
+        }
+        CascadeDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            shape = RoundedCornerShape(12.dp),
+        ) {
+
+            // 关键词选项
+            DropdownMenuItem(
+                leadingIcon = { Image(painter = painterResource(R.mipmap.ic_keywords), contentDescription = "", modifier = Modifier.size(18.dp)) },
+                text = {
+                    Row (verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "关键词", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
+                    }
+                },
+                onClick = {
+                    expanded = false
+                    PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                },
+                contentPadding = PaddingValues(10.dp)
+            )
+
+            // 导出文件选项
+            DropdownMenuItem(
+                leadingIcon = { Image(painter = painterResource(R.mipmap.ic_export), contentDescription = "", modifier = Modifier.size(18.dp)) },
+                text = {
+                    Row (verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "导出为", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
+                    }
+                },
+                contentPadding = PaddingValues(10.dp),
+                children = {
+
+                    // 导出为 PDF
+                    DropdownMenuItem(
+                        leadingIcon = { Image(painter = painterResource(R.drawable.pdf_icon), contentDescription = "", modifier = Modifier.size(18.dp)) },
+                        text = {
+                            Row (verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "导出为 PDF", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
+                            }
+                        },
+                        onClick = {
+                            expanded = false
+                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                        },
+                        contentPadding = PaddingValues(10.dp)
+                    )
+
+                    // 导出为图片
+                    DropdownMenuItem(
+                        leadingIcon = { Image(painter = painterResource(R.drawable.image_icon), contentDescription = "", modifier = Modifier.size(18.dp)) },
+                        text = {
+                            Row (verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "导出为图片", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
+                            }
+                        },
+                        onClick = {
+                            expanded = false
+                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                        },
+                        contentPadding = PaddingValues(10.dp)
+                    )
+
+                    // 导出为纯文本
+                    DropdownMenuItem(
+                        leadingIcon = { Image(painter = painterResource(R.drawable.txt_icon), contentDescription = "", modifier = Modifier.size(18.dp)) },
+                        text = {
+                            Row (verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = "导出为 txt", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
+                            }
+                        },
+                        onClick = {
+                            expanded = false
+                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                        },
+                        contentPadding = PaddingValues(10.dp)
+                    )
+
+                }
+            )
+
+            // 常见问题
+            DropdownMenuItem(
+                leadingIcon = { Image(painter = painterResource(R.mipmap.ic_qa), contentDescription = "", modifier = Modifier.size(18.dp)) },
+                text = {
+                    Row (verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Q&A", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
+                    }
+                },
+                onClick = {
+                    expanded = false
+                    PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                },
+                contentPadding = PaddingValues(10.dp)
+            )
+
+            // 权限检查
+            DropdownMenuItem(
+                leadingIcon = { Image(painter = painterResource(R.mipmap.ic_permission_check), contentDescription = "", modifier = Modifier.size(18.dp)) },
+                text = {
+                    Row (verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "应用权限检查", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
+                    }
+                },
+                onClick = {
+                    expanded = false
+                    PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                },
+                contentPadding = PaddingValues(10.dp)
+            )
+        }
+
+    }
 
 }

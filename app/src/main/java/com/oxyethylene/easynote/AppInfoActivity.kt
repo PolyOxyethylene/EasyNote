@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.kongzue.dialogx.DialogX
 import com.oxyethylene.easynote.ui.appinfoactivity.InfoPageArea
 import com.oxyethylene.easynote.ui.theme.BackGround
 import com.oxyethylene.easynote.ui.theme.EasyNoteTheme
@@ -16,11 +15,8 @@ class AppInfoActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        DialogX.init(this)
-
         setContent {
             EasyNoteTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = BackGround

@@ -2,6 +2,7 @@ package com.oxyethylene.easynote.ui.settingactivity
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -99,13 +100,17 @@ fun SettingPageArea () {
                     color = GreyDarker,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 10.dp)
-                        .clickable {
+                        .clickable (
+                            onClick = {
                             MessageDialog.build(MIUIStyle())
                                 .setTitle("版本更新内容")
                                 .setMessage(R.string.version_sketch)
                                 .setOkButton("确认")
                                 .show()
-                        },
+                                      },
+                            indication = null,
+                            interactionSource = MutableInteractionSource()
+                        ),
                     fontFamily = FontFamily(Font(R.font.smileysans_oblique))
                 )
 

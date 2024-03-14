@@ -94,18 +94,18 @@ object FileUtil {
     /**
      *  统一管理创建文件的功能
      *  @param fileName 文件名
-     *  @param fileType 文件类型， 1 表示目录，2 表示文章
+     *  @param fileType 文件类型， 0 表示目录，1 表示文章
      *  @param context Activity 上下文
      */
     fun createFile (fileName : String, fileType : Int, context: Context): Dentry? {
         fileId++
         var newFile : Dentry? = null
         when (fileType) {
-            1 -> {
+            FileType.DIRECTORY.ordinal -> {
                 newFile = Dir.createDirectory(fileId, fileName, currentDirectory)
                 countOfDir++
             }
-            2 -> {
+            FileType.FILE.ordinal -> {
                 newFile = NoteFile.createFile(fileId, fileName, currentDirectory)
                 NoteUtil.createEmptyFile("${fileId}", context)
                 countOfNote++
@@ -364,6 +364,24 @@ object FileUtil {
                 }
             }
         }
+    }
+
+    /**
+     * 根据文件名搜索对应文件
+     * @param fileName 文件名
+     * @return 查询到的文件列表
+     */
+    fun searchFileByName (fileName: String): List<Dentry> {
+        val resultList = ArrayList<Dentry>()
+        val searchName = fileName.trim()
+        if (fileName.isNotEmpty() && fileName.isNotBlank()) {
+            fileMap.values.forEach {
+                if (it.fileName.contains(searchName)) {
+                    resultList.add(it)
+                }
+            }
+        }
+        return resultList
     }
 
     /**

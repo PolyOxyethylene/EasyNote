@@ -6,12 +6,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -33,6 +33,7 @@ import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
 import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
 import com.kongzue.dialogx.style.MIUIStyle
 import com.oxyethylene.easynote.R
+import com.oxyethylene.easynote.common.enumeration.FileType
 import com.oxyethylene.easynote.domain.Dentry
 import com.oxyethylene.easynote.domain.Dir
 import com.oxyethylene.easynote.domain.NoteFile
@@ -92,7 +93,6 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
                 ) else FileIcon(
                     Modifier.padding(top = 12.dp).size(18.dp)
                 )
-                Spacer(modifier = Modifier.size(6.dp))
                 Text(
                     text = item.fileName,
                     color = Color.DarkGray,
@@ -100,7 +100,7 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 12.dp)
+                    modifier = Modifier.padding(top = 12.dp, start = 6.dp)
                 )
             }
 
@@ -173,158 +173,48 @@ fun showEventBindingDialog (item: NoteFile) {
 
 }
 
-/**
- *  可左滑显示更多选项的列表项
- *  @param item 对应的列表项对象
- */
-//@OptIn(ExperimentalMaterialApi::class)
-//@Composable
-//fun SwipeableListItem(modifier: Modifier, item: Dentry) {
-//
-//    val swipeableState = rememberSwipeableState(initialValue = SwipeableItemStatus.HIDE)
-//
-//    val context = LocalContext.current
-//
-//    Box(
-//        modifier = modifier.fillMaxSize()
-//            .swipeable(
-//                state = swipeableState,
-//                anchors = anchors,
-//                orientation = Orientation.Horizontal,
-//                thresholds = { from, to ->
-//                    if (from == SwipeableItemStatus.HIDE) {
-//                        FractionalThreshold(0.3f)
-//                    } else {
-//                        FractionalThreshold(0.5f)
-//                    }
-//                }
-//            )
-//    ) {
-//
-//        // 背景的两个按钮：删除、重命名
-//        Row(modifier = Modifier.matchParentSize()) {
-//            // 每个文件用一个单独的 Card 组件显示
-//            Card(
-//                modifier = Modifier.height(70.dp)
-//                    .fillMaxWidth()
-//                    .padding(start = 20.dp, end = 20.dp, top = 12.dp),
-//                shape = RoundedCornerShape(12.dp),
-//                colors = CardDefaults.cardColors(containerColor = Color.White)
-//            ) {
-//                Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.End) {
-//
-//                    // 文件删除按钮
-//                    Row(
-//                        modifier = Modifier.fillMaxHeight().wrapContentWidth()
-//                            .clip(RoundedCornerShape(12.dp))
-//                            .clickable {
-//                                if (item is NoteFile || (item is Dir && item.isEmpty())) {
-//                                    FileUtil.deleteFileEntry(item.fileId, context)
-//                                } else {
-//                                    Toast.makeText(
-//                                        context,
-//                                        "目录\" ${item.fileName} \"内部有其他文件，不能删除",
-//                                        Toast.LENGTH_SHORT
-//                                    ).show()
-//                                }
-//                            },
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        RecycleIcon(Modifier.padding(start = 10.dp).size(18.dp))
-//                        Text(
-//                            "删除",
-//                            fontSize = 10.sp,
-//                            modifier = Modifier.padding(start = 4.dp, end = 10.dp)
-//                        )
-//                    }
-//
-//                    // 文件重命名按钮
-//                    Row(
-//                        modifier = Modifier.fillMaxHeight().wrapContentWidth()
-//                            .clip(RoundedCornerShape(12.dp))
-//                            .clickable {
-////                                FileUtil.setRenameRequest(item.fileId)
-//                            },
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        AlterIcon(Modifier.padding(start = 10.dp).size(18.dp))
-//                        Text(
-//                            "重命名",
-//                            fontSize = 10.sp,
-//                            modifier = Modifier.padding(start = 4.dp, end = 10.dp)
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//
-//        // 前景可左滑的按钮
-//        Row(modifier = Modifier.offset { IntOffset(swipeableState.offset.value.toInt(), 0) }) {
-//            // 每个文件用一个单独的 Card 组件显示
-//            Card(
-//                modifier = Modifier.height(70.dp)
-//                    .fillMaxWidth()
-//                    .padding(start = 20.dp, end = 20.dp, top = 12.dp),
-//                shape = RoundedCornerShape(12.dp),
-//                colors = CardDefaults.cardColors(containerColor = Color.White)
-//            ) {
-//                // 点击目录项会切换当前展示的目录
-//                Box(modifier = Modifier.fillMaxSize().clickable {
-//                    // 切换当前操作目录
-//                    if (item is Dir) {
-//                        FileUtil.updateDirectory(item.fileId)
-//                    }
-//                }) {
-//                    // 左上角显示 文件类型图标 以及 文件名 的部分
-//                    Row(modifier = Modifier.align(Alignment.TopStart).padding(start = 14.dp)) {
-//                        if (item is Dir) FolderIcon(
-//                            Modifier.padding(
-//                                top = 12.dp,
-//                            ).size(18.dp)
-//                        ) else FileIcon(
-//                            Modifier.padding(top = 12.dp).size(18.dp)
-//                        )
-//                        Spacer(modifier = Modifier.size(6.dp))
-//                        Text(
-//                            text = item.fileName,
-//                            color = Color.DarkGray,
-//                            fontSize = 14.sp,
-//                            fontWeight = FontWeight.Bold,
-//                            modifier = Modifier.padding(top = 12.dp)
-//                        )
-//                    }
-//
-//                    // 左下角显示 文件修改时间 的部分
-//                    Text(
-//                        "修改于 ${item.lastModifiedTime}",
-//                        fontSize = 10.sp,
-//                        color = Color.Gray,
-//                        modifier = Modifier.align(Alignment.BottomStart)
-//                            .padding(bottom = 10.dp, start = 14.dp)
-//                    )
-//
-//                }
-//            }
-//        }
-//
-//    }
-//
-//}
 
-///**
-// * 描述可以水平滑动的控件的状态
-// */
-//enum class SwipeableItemStatus {
-//
-//    HIDE,   // 隐藏一部分
-//    UNFOLD  // 展开隐藏的部分
-//
-//}
-//
-///**
-// * 描述滑动控件的锚点
-// */
-//val anchors = mapOf(
-//    0f to SwipeableItemStatus.HIDE,
-//    -400.dp.value to SwipeableItemStatus.UNFOLD
-//)
+/**
+ * 底部搜索对话框的搜索结果列表
+ */
+@Composable
+fun SearchListItem (item: Dentry, context: Context, onItemClick: () -> Unit = {}) {
+
+    Row (
+        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .clickable {
+                // 如果是目录，则切换当前操作目录
+                if (item is Dir) {
+                    FileUtil.updateDirectory(item.fileId)
+                }
+                // 如果是文件，就打开编辑界面
+                else {
+                    val intent = Intent("com.oxyethylene.EDIT")
+                    NoteUtil.beforeEdit(item.fileName, item.fileId)
+                    context.startActivity(intent)
+                }
+                // 其他操作由外部定义
+                onItemClick()
+            }.padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 50.dp)
+    ) {
+
+        if (item.type == FileType.DIRECTORY) {
+            FolderIcon(Modifier.size(18.dp))
+        } else {
+            FileIcon(Modifier.size(18.dp))
+        }
+
+        Text(
+            text = item.fileName,
+            color = Color.DarkGray,
+            fontSize = 14.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(start = 10.dp)
+        )
+
+    }
+
+}

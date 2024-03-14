@@ -29,3 +29,6 @@ val SkyBlue = Color(0xff0c84ff)
 
 // 茄红
 val Tomato = Color(0xffff6347)
+
+// 浅蓝
+val AliceBlue = Color(0xfff0f8ff)

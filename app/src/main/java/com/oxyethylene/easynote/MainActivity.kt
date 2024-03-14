@@ -45,6 +45,8 @@ import com.oxyethylene.easynote.util.FileUtil.initDirectory
 import com.oxyethylene.easynote.util.FileUtil.initFileUtil
 import com.oxyethylene.easynote.util.FileUtil.updateDirectory
 import com.oxyethylene.easynote.util.PermissionUtil
+import com.oxyethylene.easynote.util.SearchBoxUtil
+import com.oxyethylene.easynote.util.SearchBoxUtil.initSearchBoxUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import com.oxyethylene.easynote.viewmodel.factory.MainViewModelFactory
 
@@ -83,17 +85,24 @@ class MainActivity : FragmentActivity() {
 
         database = AppDatabase.getDatabase(this)
 
-        // 初始化工具类 FileUtil
+        // 初始化工具类
         initFileUtil(viewModel, database, handler)
         initEventUtil(viewModel, database, handler)
+        initSearchBoxUtil(handler)
 
         // 初始化目录结构
         initDirectory()
         initEventList()
 
+        // 初始化 DialogX
         DialogX.init(this)
+        DialogX.autoShowInputKeyboard = false
 
+        // 进行权限检查/请求
         PermissionUtil.init(this)
+
+        // 底部搜索框初始化
+        handler.postDelayed({ SearchBoxUtil.init() }, 100)
 
         setContent {
             EasyNoteTheme {
@@ -105,7 +114,7 @@ class MainActivity : FragmentActivity() {
 
                     Box {
                         Column(
-                            Modifier.align(Alignment.TopCenter).padding(bottom = 55.dp)
+                            Modifier.align(Alignment.TopCenter).padding(bottom = 60.dp)
                         ) {
                             TopMenuBar()
                             Crossfade(
@@ -132,7 +141,7 @@ class MainActivity : FragmentActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        PermissionUtil.checkAgain(this)
+//        PermissionUtil.checkAgain(this)
     }
 
 }

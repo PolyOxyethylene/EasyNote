@@ -53,8 +53,8 @@ fun MainPageNavBar (
         Row(Modifier.fillMaxWidth().height(1.dp).background(GreyLighter)) {  }
 
         Row(
-            modifier = Modifier.navigationBarsPadding().fillMaxWidth().height(55.dp).background(Color.Transparent),
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.navigationBarsPadding().fillMaxWidth().height(60.dp).background(Color.Transparent),
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
 

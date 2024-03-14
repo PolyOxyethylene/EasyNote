@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace = "com.oxyethylene.easynote"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.oxyethylene.easynote"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
-        versionName = "0.4.2.5-beta"
+        versionName = "0.4.3.0-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -74,11 +74,13 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(project(mapOf("path" to ":DrawerBox")))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
@@ -122,6 +124,9 @@ dependencies {
     // To use Kotlin Symbol Processing (KSP)
 //    ksp("androidx.room:room-compiler:$room_version")
 
+    // 老版的 Material Design2
+    implementation("androidx.compose.material:material:1.6.3")
+
     // 更强大的对话框 DialogX
     val dialogx_version_release = "0.0.49"
     val dialogx_version_beta = "0.0.50.beta10"
@@ -149,5 +154,14 @@ dependencies {
     // PermissionX
     implementation ("com.guolindev.permissionx:permissionx:1.7.1")
 
+    // 关键词提取，暂时不可用
+    implementation (files("libs/jar/ahanlp-1.3.jar"))
+
+    // Cascade 下拉菜单
+    val cascade_version = "2.3.0"
+    implementation ("me.saket.cascade:cascade-compose:$cascade_version")
+
+    // 支持子菜单的 FAB
+    implementation("com.leinardi.android:speed-dial.compose:1.0.0-alpha04")
 
 }

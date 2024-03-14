@@ -1,4 +1,4 @@
-package com.oxyethylene.easynote.domain
+package com.oxyethylene.easynote.domain.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

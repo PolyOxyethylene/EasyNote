@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +19,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Surface
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kongzue.albumdialog.PhotoAlbumDialog
@@ -33,6 +33,7 @@ import com.kongzue.filedialog.FileDialog
 import com.kongzue.filedialog.interfaces.FileSelectCallBack
 import com.oxyethylene.easynote.common.arrays.headerSizeList
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarButton
+import com.oxyethylene.easynote.ui.editactivity.EditActionBarHelper
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarMenu
 import com.oxyethylene.easynote.ui.editactivity.EditPageTopBar
 import com.oxyethylene.easynote.ui.editactivity.TitleLine
@@ -49,9 +50,10 @@ class EditActivity : ComponentActivity() {
     // 富文本编辑器
     private lateinit var richEditor: RichEditor
 
-    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
 
         setContent {
             EasyNoteTheme {
@@ -60,19 +62,23 @@ class EditActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = BackGround
                 ) {
-                    val keyboardController = LocalSoftwareKeyboardController.current
+                    val scrollState = rememberScrollState()
+
                     Column(
                         modifier = Modifier.statusBarsPadding().fillMaxWidth().wrapContentHeight()
                     ) {
                         Column{
                             EditPageTopBar("")
-                            TitleLine(NoteUtil.getTitle(), Modifier.padding(top = 10.dp))
+                            Box {
+                                TitleLine(NoteUtil.getTitle(), Modifier.align(Alignment.TopStart).padding(top = 10.dp, end = 100.dp))
+                                EditActionBarHelper(Modifier.align(Alignment.BottomEnd).padding(end = 14.dp, bottom = 4.dp), scrollState)
+                            }
                             Row (
                                 modifier = Modifier.padding(top = 10.dp)
                                     .padding(start = 10.dp, end = 10.dp)
                                     .fillMaxWidth()
                                     .height(40.dp)
-                                    .horizontalScroll(rememberScrollState())
+                                    .horizontalScroll(scrollState)
                             ) {
                                 // 标题文字
                                 EditActionBarMenu(headerSizeList, false) {
@@ -115,14 +121,6 @@ class EditActivity : ComponentActivity() {
                                 EditActionBarButton(R.mipmap.ic_set_align_center) {
                                     richEditor.setAlignCenter()
                                 }
-                                // 撤销
-                                EditActionBarButton(R.mipmap.ic_set_undo) {
-                                    richEditor.undo()
-                                }
-                                // 重做
-                                EditActionBarButton(R.mipmap.ic_set_redo) {
-                                    richEditor.redo()
-                                }
                                 // 插入图片
                                 EditActionBarButton(R.mipmap.ic_insert_photo) {
                                     PhotoAlbumDialog.build()
@@ -142,7 +140,7 @@ class EditActivity : ComponentActivity() {
                                             }
                                         )
                                         .setDialogDialogImplCallback {
-                                            dialog ->
+                                                dialog ->
                                             dialog.setRadius(dpToPx(this@EditActivity, 16))
                                         }
                                         .show(this@EditActivity)
@@ -166,6 +164,14 @@ class EditActivity : ComponentActivity() {
                                             }
                                         }
                                     )
+                                }
+                                // 撤销
+                                EditActionBarButton(R.mipmap.ic_set_undo) {
+                                    richEditor.undo()
+                                }
+                                // 重做
+                                EditActionBarButton(R.mipmap.ic_set_redo) {
+                                    richEditor.redo()
                                 }
                             }
                         }

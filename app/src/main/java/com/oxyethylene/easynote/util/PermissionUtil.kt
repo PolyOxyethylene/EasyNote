@@ -1,19 +1,8 @@
 package com.oxyethylene.easynote.util
 
 import android.Manifest
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.provider.Settings
-import android.view.View
-import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.FragmentActivity
-import com.kongzue.dialogx.dialogs.MessageDialog
-import com.kongzue.dialogx.interfaces.OnBindView
-import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener
-import com.kongzue.dialogx.style.MIUIStyle
-import com.oxyethylene.easynote.R
-import com.oxyethylene.easynote.ui.components.PermissionDialog
 import com.permissionx.guolindev.PermissionX
 
 /**
@@ -43,44 +32,54 @@ object PermissionUtil {
         }
     }
 
+    /**
+     * 主界面初始化时执行，请求所需运行时权限
+     * 如果权限请求未通过的话直接结束活动
+     * @param activity 主活动
+     */
     fun init(activity: FragmentActivity) {
         PermissionX.init(activity)
             .permissions(requestList)
             .request { allGranted, grantedList, deniedList ->
-                if (!allGranted) {
-                    MessageDialog.build(MIUIStyle())
-                        .setTitle("关于权限设置")
-                        .setMessage(R.string.permission_request_info)
-                        .setCustomView(object : OnBindView<MessageDialog>(R.layout.permission_dialog_layout){
-                            override fun onBind(dialog: MessageDialog?, v: View?) {
-                                val composeView = v?.findViewById<ComposeView>(R.id.permission_dialog_compose_view)
-
-                                composeView?.setContent { PermissionDialog() }
-                            }
-                        })
-                        .setCancelButton("拒绝")
-                        .setCancelButtonClickListener(object : OnDialogButtonClickListener<MessageDialog> {
-                            override fun onClick(dialog: MessageDialog?, v: View?): Boolean {
-                                activity.finish()
-                                return false
-                            }
-                        })
-                        .setOkButton("同意")
-                        .setOkButtonClickListener(object : OnDialogButtonClickListener<MessageDialog> {
-                            override fun onClick(dialog: MessageDialog?, v: View?): Boolean {
-                                val intent = Intent()
-                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                val uri = Uri.fromParts("package", activity.packageName, null)
-                                intent.data = uri
-                                activity.startActivity(intent)
-                                return false
-                            }
-                        })
-                        .show()
-                }
+//                if (!allGranted) {
+//                    MessageDialog.build(MIUIStyle())
+//                        .setTitle("关于权限设置")
+//                        .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
+//                        .setMessage(R.string.permission_request_info)
+//                        .setCustomView(object : OnBindView<MessageDialog>(R.layout.permission_dialog_layout){
+//                            override fun onBind(dialog: MessageDialog?, v: View?) {
+//                                val composeView = v?.findViewById<ComposeView>(R.id.permission_dialog_compose_view)
+//
+//                                composeView?.setContent { PermissionDialog() }
+//                            }
+//                        })
+//                        .setCancelButton("拒绝")
+//                        .setCancelButtonClickListener(object : OnDialogButtonClickListener<MessageDialog> {
+//                            override fun onClick(dialog: MessageDialog?, v: View?): Boolean {
+////                                activity.finish()
+//                                return false
+//                            }
+//                        })
+//                        .setOkButton("同意")
+//                        .setOkButtonClickListener(object : OnDialogButtonClickListener<MessageDialog> {
+//                            override fun onClick(dialog: MessageDialog?, v: View?): Boolean {
+//                                val intent = Intent()
+//                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//                                val uri = Uri.fromParts("package", activity.packageName, null)
+//                                intent.data = uri
+//                                activity.startActivity(intent)
+//                                return false
+//                            }
+//                        })
+//                        .show()
+//                }
             }
     }
 
+    /**
+     * 对应用所请求权限是否全部通过的再检查
+     * @param activity 主活动
+     */
     fun checkAgain (activity: FragmentActivity) {
         PermissionX.init(activity)
             .permissions(requestList)

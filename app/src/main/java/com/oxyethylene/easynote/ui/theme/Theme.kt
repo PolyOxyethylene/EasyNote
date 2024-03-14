@@ -23,9 +23,11 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = SkyBlue,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
+    primary = Color.White,
+    background = Color.White,
+    surface = Color.White,
+//    onSurface = Color.White,
+//    onSurfaceVariant = Color.White,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -73,9 +75,6 @@ fun EasyNoteTheme(
             WindowCompat.setDecorFitsSystemWindows(window, false)
         }
     }
-
-    // 设置全局字体为 得意黑
-
 
     MaterialTheme(
         colorScheme = colorScheme,

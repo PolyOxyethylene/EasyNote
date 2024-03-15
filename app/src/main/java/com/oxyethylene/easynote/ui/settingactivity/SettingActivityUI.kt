@@ -69,6 +69,7 @@ import com.oxyethylene.easynote.ui.theme.Tomato
  * @author       : Polyoxyethylene
  * @Description  :
  */
+
 @Composable
 fun SettingPageArea () {
 
@@ -238,9 +239,10 @@ fun PlainSettingItem (entry: PlainSetting) {
     Box (
         modifier = Modifier.fillMaxWidth().wrapContentHeight()
             .clickable {
-            val intent = Intent(entry.actionName)
-            context.startActivity(intent)
-        }
+                val intent = Intent(entry.actionName)
+                entry.commonActivityTitle?.let { intent.putExtra("title", it) }
+                context.startActivity(intent)
+            }
     ) {
         Column(
             modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)

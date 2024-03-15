@@ -7,8 +7,8 @@ import com.oxyethylene.easynote.common.constant.EVENT_DELETE_SUCCESS
 import com.oxyethylene.easynote.common.constant.EVENT_UPDATE_SUCCESS
 import com.oxyethylene.easynote.dao.EventDao
 import com.oxyethylene.easynote.database.AppDatabase
-import com.oxyethylene.easynote.domain.Event
-import com.oxyethylene.easynote.domain.EventList
+import com.oxyethylene.easynote.domain.entity.Event
+import com.oxyethylene.easynote.domain.entity.EventList
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import java.util.TreeMap

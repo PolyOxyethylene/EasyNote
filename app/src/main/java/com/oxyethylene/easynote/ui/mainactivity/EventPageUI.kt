@@ -30,7 +30,7 @@ import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
 import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.dialogx.util.InputInfo
-import com.oxyethylene.easynote.domain.EventList
+import com.oxyethylene.easynote.domain.entity.EventList
 import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.util.EventUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel

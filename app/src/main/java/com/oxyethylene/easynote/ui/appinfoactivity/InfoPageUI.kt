@@ -122,7 +122,7 @@ fun InfoPageArea () {
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.White)
             ) {
-                PlainSettingItem(PlainSetting("内测参与者", "com.oxyethylene.THANKS"))
+                PlainSettingItem(PlainSetting("内测参与者", "com.oxyethylene.COMMON", "thanks"))
             }
 
             Text("法律信息", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
@@ -134,7 +134,7 @@ fun InfoPageArea () {
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.White)
             ) {
-                PlainSettingItem(PlainSetting("开放源代码许可", "com.oxyethylene.OPENSOURCE_INFO"))
+                PlainSettingItem(PlainSetting("开放源代码许可", "com.oxyethylene.COMMON", "opensource"))
             }
 
             Text(

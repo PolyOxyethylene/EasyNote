@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.oxyethylene.easynote.domain.Dir
-import com.oxyethylene.easynote.domain.EventList
+import com.oxyethylene.easynote.domain.entity.EventList
 import com.oxyethylene.easynote.util.FileUtil
 
 /**

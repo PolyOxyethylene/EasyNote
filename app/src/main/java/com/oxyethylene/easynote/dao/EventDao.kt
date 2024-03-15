@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.oxyethylene.easynote.domain.Event
+import com.oxyethylene.easynote.domain.entity.Event
 
 /**
  * Created with IntelliJ IDEA.

@@ -39,7 +39,7 @@ import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
 import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
 import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.dialogx.util.InputInfo
-import com.oxyethylene.easynote.domain.Event
+import com.oxyethylene.easynote.domain.entity.Event
 import com.oxyethylene.easynote.ui.components.EventIcon
 import com.oxyethylene.easynote.ui.theme.GreyDarker
 import com.oxyethylene.easynote.ui.theme.SkyBlue

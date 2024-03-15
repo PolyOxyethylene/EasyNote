@@ -31,10 +31,11 @@ class SwitchSetting (settingName : String, var state : Boolean = false, descript
  * 打开一个新的页面的设置项
  * @param settingName 设置项的名称
  * @param actionName 点击该设置项可以启动的 Activity 的 action name
+ * @param commonActivityTitle 如果不为 null，即为 CommonActivity 中 UI 的名字
  * @param description 设置项的描述
  * @param warning 设置项的警示信息
  */
-class PlainSetting (settingName : String, val actionName: String, description: String? = null, warning: String? = null) : SettingEntry(settingName, description, warning)
+class PlainSetting (settingName : String, val actionName: String, val commonActivityTitle: String? = null, description: String? = null, warning: String? = null) : SettingEntry(settingName, description, warning)
 
 /**
  * 打开一个对话框的设置项

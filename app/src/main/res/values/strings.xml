@@ -52,9 +52,9 @@
     <string name="version_sketch">
         去除了运行时权限的强制检查\n优化了 UI
     </string>
-<!--    <string-array name="very_thanks_list">-->
-<!--        <item>🍸</item>-->
-<!--    </string-array>-->
+    <!--    <string-array name="very_thanks_list">-->
+    <!--        <item>🍸</item>-->
+    <!--    </string-array>-->
     <string-array name="thanks_list_close_beta_1">
         <item>🍸</item>
         <item>fansteio</item>
@@ -65,5 +65,6 @@
         <item>逐</item>
         <item>国宝</item>
     </string-array>
-    
+    <string name="title_activity_common">CommonActivity</string>
+
 </resources>

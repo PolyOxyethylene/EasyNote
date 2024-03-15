@@ -46,7 +46,7 @@ import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.dialogx.util.InputInfo
 import com.kongzue.dialogx.util.TextInfo
 import com.oxyethylene.easynote.R
-import com.oxyethylene.easynote.domain.Event
+import com.oxyethylene.easynote.domain.entity.Event
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.mainactivity.ListItem

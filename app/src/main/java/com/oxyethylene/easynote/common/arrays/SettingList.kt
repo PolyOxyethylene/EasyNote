@@ -18,10 +18,10 @@ import com.oxyethylene.easynote.domain.SwitchSetting
 // 主设置界面的设置列表
 val mainSettingList =
     listOf<SettingEntry>(
-        PlainSetting("编辑器设置", "com.oxyethylene.EDITOR_SETTING", warning = "还没做, 点进去纯看样子"),
-        PlainSetting("统计", "com.oxyethylene.STATISTICS"),
-        PlainSetting("备份与恢复", "com.oxyethylene.BACKUP", warning = "还没做, 点进去纯看样子"),
-        PlainSetting("实验性功能", "com.oxyethylene.LAB", warning = "还没做, 点进去纯看样子"),
+        PlainSetting("编辑器设置", "com.oxyethylene.COMMON", "editor-setting", warning = "还没做, 点进去纯看样子"),
+        PlainSetting("统计", "com.oxyethylene.COMMON", "statistics"),
+        PlainSetting("备份与恢复", "com.oxyethylene.COMMON", "backup", warning = "还没做, 点进去纯看样子"),
+        PlainSetting("实验性功能", "com.oxyethylene.COMMON", "lab", warning = "还没做, 点进去纯看样子"),
         PlainSetting("关于应用", "com.oxyethylene.INFO")
     )
 

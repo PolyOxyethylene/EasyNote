@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">EasyNote</string>
-    <string name="app_version_code">0.4.4.0-beta</string>
+    <string name="app_version_code">0.4.4.1-beta</string>
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
@@ -55,7 +55,7 @@
         以下是在本应用开发过程中\n参与了测试工作或提出宝贵建议的朋友\n感谢你们的帮助\n(名字无先后顺序)
     </string>
     <string name="version_sketch">
-        新增关键词（只能增删改，还未绑定文章）
+        关键词可以绑定文章了
     </string>
     <!--    <string-array name="very_thanks_list">-->
     <!--        <item>🍸</item>-->

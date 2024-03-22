@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.4.4.0-beta"
+        versionName = "0.4.4.1-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -157,7 +157,7 @@ dependencies {
     implementation ("com.guolindev.permissionx:permissionx:1.7.1")
 
     // 关键词提取，暂时不可用
-    implementation (files("libs/jar/ahanlp-1.3.jar"))
+//    implementation (files("libs/jar/ahanlp-1.3.jar"))
 
     // Cascade 下拉菜单
     val cascade_version = "2.3.0"

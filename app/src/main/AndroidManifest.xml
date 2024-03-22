@@ -22,10 +22,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyNoteDemo"
         tools:targetApi="31">
+        <!--通用界面-->
         <activity
             android:name=".CommonActivity"
             android:exported="false"
             android:label="@string/title_activity_common"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.EasyNoteDemo">
             <intent-filter>
                 <action android:name="com.oxyethylene.COMMON" />

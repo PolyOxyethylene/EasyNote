@@ -32,3 +32,5 @@ val Tomato = Color(0xffff6347)
 
 // 浅蓝
 val AliceBlue = Color(0xfff0f8ff)
+
+val LightBlue = Color(0xff0099ff)

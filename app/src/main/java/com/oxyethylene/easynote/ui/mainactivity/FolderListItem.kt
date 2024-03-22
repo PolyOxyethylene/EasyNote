@@ -106,7 +106,10 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
 
             // 左下角显示 文件修改时间 的部分
             Text(
-                item.lastModifiedTime,
+                if (item is NoteFile && item.updateTime != null)
+                    "修改于 ${item.updateTime}"
+                else
+                    "创建于 ${item.createTime}",
                 fontSize = 10.sp,
                 color = Color.Gray,
                 modifier = Modifier.align(Alignment.BottomStart).padding(bottom = 10.dp)
@@ -147,9 +150,9 @@ fun showEventBindingDialog (item: NoteFile) {
         .setMenuList(menuList)
         .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false){
             override fun getIcon(dialog: BottomMenu?, index: Int, menuText: String?): Int {
-                when(index) {
-                    0 -> return R.drawable.cancel_icon
-                    else -> return R.drawable.event_icon
+                return when(index) {
+                    0 -> R.drawable.cancel_icon
+                    else -> R.drawable.event_icon
                 }
             }
         })
@@ -191,9 +194,10 @@ fun SearchListItem (item: Dentry, context: Context, onItemClick: () -> Unit = {}
                 }
                 // 如果是文件，就打开编辑界面
                 else {
-                    val intent = Intent("com.oxyethylene.EDIT")
-                    NoteUtil.beforeEdit(item.fileName, item.fileId)
-                    context.startActivity(intent)
+//                    val intent = Intent("com.oxyethylene.EDIT")
+//                    NoteUtil.beforeEdit(item.fileName, item.fileId)
+//                    context.startActivity(intent)
+                    FileUtil.updateDirectory(item.parent?.fileId?: FileUtil.root.fileId)
                 }
                 // 其他操作由外部定义
                 onItemClick()
@@ -207,7 +211,7 @@ fun SearchListItem (item: Dentry, context: Context, onItemClick: () -> Unit = {}
         }
 
         Text(
-            text = item.fileName,
+            text = FileUtil.getNoteFilePath(item.fileId),
             color = Color.DarkGray,
             fontSize = 14.sp,
             maxLines = 1,

@@ -3,6 +3,7 @@ package com.oxyethylene.easynote.ui.components
 import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,9 +40,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TitleBar(
     modifier: Modifier = Modifier,
-    leftContent: @Composable () -> Unit,
-    rightContent: @Composable () -> Unit,
-    centerContent: @Composable () -> Unit
+    leftContent: @Composable RowScope.() -> Unit,
+    rightContent: @Composable RowScope.() -> Unit,
+    centerContent: @Composable RowScope.() -> Unit
 ) {
 
     Box(
@@ -85,7 +86,7 @@ fun SimpleTitleBar (
                 BackIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
             }
         },
-        rightContent = rightContent
+        rightContent = { rightContent() }
     ) {
         Text(text = title, color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold)
     }

@@ -15,6 +15,7 @@ import com.oxyethylene.easynote.domain.Dir
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import java.util.Stack
+import java.util.TreeMap
 import kotlin.concurrent.thread
 
 /**
@@ -69,7 +70,7 @@ object FileUtil {
     // 必要的初始化
     init {
         currentDirectory = root
-        fileMap.put(0, root)
+        fileMap[0] = root
     }
 
     /**
@@ -97,7 +98,7 @@ object FileUtil {
      *  @param fileType 文件类型， 0 表示目录，1 表示文章
      *  @param context Activity 上下文
      */
-    fun createFile (fileName : String, fileType : Int, context: Context): Dentry? {
+    fun createFile (fileName : String, fileType : Int, context: Context): Dentry {
         fileId++
         var newFile : Dentry? = null
         when (fileType) {
@@ -175,19 +176,21 @@ object FileUtil {
             val fileList = it.getChildFilesById(current.fileId)
             // 将所有子文件挂载到当前目录中
             fileList.forEach {
-                if (it.fileId > fileId) fileId = it.fileId
-                when(it.fileType) {
+                file ->
+                if (file.fileId > fileId) fileId = file.fileId
+                when(file.fileType) {
                     // 如果子文件是一个目录，那么还需要递归调用该方法初始化子目录
                     FileType.DIRECTORY.ordinal -> {
-                        val newDir = Dir.createDirectory(it.fileId, it.fileName, current, it.date)
+                        val newDir = Dir.createDirectory(file.fileId, file.fileName, current, file.createTime)
                         countOfDir++
                         fileMap.put(newDir.fileId, newDir)
                         _initDirectory(newDir)
                     }
-                    // 如果是文章的话只需要初始化然后丢进 fileMap 里面
+                    // 如果是文章的话需要初始化然后丢进 fileMap 里面，然后检查是否有关键词绑定关系
                     FileType.FILE.ordinal -> {
-                        val newNote = NoteFile.createFile(it.fileId, it.fileName, current, it.date)
-                        newNote.eventId = it.eventId
+                        val newNote = NoteFile.createFileFromDB(file.fileId, file.fileName, current, file.createTime, file.updateTime, file.eventId, file.keywordList!!)
+                        // 初始化关键词集合
+                        KeywordUtil.initKw2NoteMap(newNote.fileId, newNote.keywordList)
                         countOfNote++
                         fileMap.put(newNote.fileId, newNote)
                     }
@@ -272,7 +275,7 @@ object FileUtil {
     }
 
     /**
-     *  更新文件
+     *  更新文件记录到数据库
      *  @param file 要更新的文件
      */
     fun updateFile (file: Dentry) {
@@ -289,7 +292,9 @@ object FileUtil {
      */
     fun getNoteFilePath (fileId: Int, separator: String = "/"): String {
 
-        val file = fileMap.get(fileId)
+        if (fileId == 0) return root.fileName
+
+        val file = fileMap[fileId]
 
         val stack = Stack<String>()
 
@@ -334,8 +339,29 @@ object FileUtil {
             }
 
         }
-
         return noteList
+    }
+
+    /**
+     * 获取没有绑定过事件的文章，返回一个 map，键是文章名，值是文章 id
+     * @param isFullPathName 是否返回完整路径，如果是 false 则仅返回文件名
+     */
+    fun getEventUnbindedNotes (isFullPathName: Boolean): Map<String, Int> {
+        val noteMap = TreeMap<String, Int>()
+        if (isFullPathName) {
+            fileMap.values.forEach {
+                if (it is NoteFile && it.eventId == 0) {
+                    noteMap[getNoteFilePath(it.fileId)] = it.fileId
+                }
+            }
+        } else {
+            fileMap.values.forEach {
+                if (it is NoteFile && it.eventId == 0) {
+                    noteMap[it.fileName] = it.fileId
+                }
+            }
+        }
+        return noteMap
     }
 
     /**
@@ -345,16 +371,23 @@ object FileUtil {
     fun getNoteUpdateTime (fileId: Int): String {
         fileMap.get(fileId)?.let {
             if (it is NoteFile) {
-                return it.lastModifiedTime
+                it.updateTime?.apply {
+                    return "修改于 $this"
+                }
+                return "创建于 ${it.createTime}"
             }
         }
         return "该操作暂时不支持目录"
     }
 
+    /**
+     * 更新文章的修改时间
+     * @param fileId 文章 id
+     */
     fun setNoteUpdateTime (fileId: Int) {
         fileMap.get(fileId)?.let {
             if (it is NoteFile) {
-                it.lastModifiedTime = "修改于 ${DateUtil.getCurrentDateTime()}"
+                it.updateTime = DateUtil.getCurrentDateTime()
                 thread {
                     fileDao?.updateFile(it.toFileEntity())
 
@@ -385,6 +418,52 @@ object FileUtil {
     }
 
     /**
+     * 绑定关键词到文章
+     * @param keywordId 关键词的 id
+     * @param noteId 文章的 id
+     */
+    fun bindKeyword2Note (keywordId: Int, noteId: Int): Boolean {
+        val note = fileMap[noteId] as NoteFile
+        note.apply {
+            if (keywordList.add(keywordId)) {
+                updateFile(this)
+            }
+        }
+        return true
+    }
+
+    /**
+     * 解绑关键词（文章侧），一次只解除一个绑定关系
+     * @param keywordId 关键词的 id
+     * @param noteId 文章的 id
+     * */
+    fun unbindKwFromNote (keywordId: Int, noteId: Int) {
+        val note = fileMap[noteId] as NoteFile
+        note.apply {
+            if (keywordList.remove(keywordId)) {
+                updateFile(this)
+            }
+        }
+    }
+
+    /**
+     * 解绑关键词（文章侧），批量解绑
+     * @param keywordIdSet 关键词的 id 集合
+     * @param noteId 文章的 id
+     * */
+    fun unbindKwFromNote (keywordIdSet: HashSet<Int>, noteId: Int) {
+        val note = fileMap[noteId] as NoteFile
+        var res = true
+        note.apply {
+            keywordIdSet.forEach {
+                res = res.and(keywordList.remove(it))
+            }
+            if (res) updateFile(this)
+        }
+
+    }
+
+    /**
      *  获取文章数量
      *  @return 文章数量
      */
@@ -395,5 +474,38 @@ object FileUtil {
      *  @return 目录数量
      */
     fun getDirCount () = countOfDir
+
+    /**
+     * 获取文章
+     * @param noteId 文章 id
+     * @return 如果有对应文章则返回该文章对象，否则返回 null
+     */
+    fun getNote(noteId: Int): NoteFile? {
+        fileMap[noteId]?.let {
+            if (it is NoteFile) {
+                return it
+            }
+        }
+        return null
+    }
+
+    /**
+     * 获取文章
+     * @param noteIdList 包含文章 id 的集合
+     */
+    fun getNotes(noteIdList: Collection<Int>): List<NoteFile> {
+
+        val list = ArrayList<NoteFile>(10)
+
+        noteIdList.forEach {
+            val item = fileMap[it]
+            item?.apply {
+                if (this is NoteFile) {
+                    list.add(this)
+                }
+            }
+        }
+        return list
+    }
 
 }

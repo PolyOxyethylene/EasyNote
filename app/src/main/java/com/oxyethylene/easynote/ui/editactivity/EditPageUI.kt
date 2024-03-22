@@ -1,31 +1,34 @@
 package com.oxyethylene.easynote.ui.editactivity
 
+import android.annotation.SuppressLint
+import android.view.View
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,17 +37,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.oxyethylene.easynote.ui.components.SimpleTitleBar
-import com.oxyethylene.easynote.ui.components.TextArea
-import com.oxyethylene.easynote.ui.theme.AliceBlue
-import com.oxyethylene.easynote.ui.theme.BackGround
+import com.kongzue.dialogx.dialogs.BottomMenu
+import com.kongzue.dialogx.dialogs.InputDialog
+import com.kongzue.dialogx.dialogs.MessageDialog
+import com.kongzue.dialogx.dialogs.PopNotification
+import com.kongzue.dialogx.interfaces.OnBindView
+import com.kongzue.dialogx.interfaces.OnBottomMenuButtonClickListener
+import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
+import com.kongzue.dialogx.interfaces.OnMenuItemSelectListener
+import com.kongzue.dialogx.style.MIUIStyle
+import com.oxyethylene.easynote.R
+import com.oxyethylene.easynote.domain.NoteFile
+import com.oxyethylene.easynote.ui.components.ShowKeywordsDialog
 import com.oxyethylene.easynote.ui.theme.GreyDarker
-import com.oxyethylene.easynote.ui.theme.SkyBlue
+import com.oxyethylene.easynote.ui.theme.GreyLighter
+import com.oxyethylene.easynote.ui.theme.LightBlue
 import com.oxyethylene.easynote.util.FileUtil
+import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NoteUtil
 import me.saket.cascade.CascadeDropdownMenu
 
@@ -59,72 +74,58 @@ import me.saket.cascade.CascadeDropdownMenu
  * @Description  :
  */
 
-/**
- *  编辑界面的 ui 界面
- *  @param viewModel 编辑活动的 viewModel
- */
-@Composable
-fun EditPageArea() {
-
-    var input = rememberSaveable { mutableStateOf(NoteUtil.noteContent) }
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .background(BackGround),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        EditPageTopBar("")
-
-        TitleLine(NoteUtil.getTitle(), Modifier.padding(top = 10.dp))
-
-        EditableArea(input)
-
-    }
-
-}
-
-/**
- *  顶部导航栏
- *  @param title 顶部的标题
- *  @param modifier 设置导航栏外观
- */
-@Composable
-fun EditPageTopBar (title: String, modifier: Modifier = Modifier) = SimpleTitleBar(title, modifier)
 
 /**
  *  文章的标题栏
  *  @param noteTitle 文章的标题
  *  @param modifier 定制组件外观
  */
+@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
-fun TitleLine(noteTitle: String, modifier: Modifier) {
+fun TitleLine(note: NoteFile, keywordMap: HashMap<String, Int>, modifier: Modifier) {
 
     Column (
         modifier = modifier.fillMaxWidth().wrapContentHeight().padding(start = 30.dp)
     ) {
+        // 标题
         Text(
-            text = noteTitle,
+            text = note.fileName,
             fontSize = 26.sp,
             fontWeight = FontWeight.ExtraBold
         )
-        Text(text = FileUtil.getNoteUpdateTime(NoteUtil.getNoteId()), fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 10.dp))
-    }
 
-}
+        // 显示前两个绑定的关键词
+        Row (
+            Modifier.padding(top = 4.dp)
+                .clickable(
+                    onClick =  {
+                    MessageDialog.build(MIUIStyle())
+                        .setTitle("相关关键词")
+                        .setCustomView(object : OnBindView<MessageDialog>(R.layout.show_keyword_dialog_layout){
+                            override fun onBind(dialog: MessageDialog?, v: View?) {
+                                val composeView = v?.findViewById<ComposeView>(R.id.show_keywords_compose_view)
 
-@Composable
-fun EditableArea(input: MutableState<String>) {
-
-    Column (modifier = Modifier.padding(20.dp).navigationBarsPadding()) {
-        TextArea(
-            Modifier,
-            input,
-            true
+                                composeView?.setContent { ShowKeywordsDialog(keywordMap) }
+                            }
+                        })
+                        .setOkButton("确定")
+                        .show()
+                    },
+                    indication = null,
+                    interactionSource = MutableInteractionSource()
+                )
         ) {
-            input.value = it
-            NoteUtil.noteContent = it
+            keywordMap.keys.forEachIndexed { index, keyword ->
+                if (index < 2) {
+                    Row (Modifier.wrapContentSize(Alignment.Center).padding(end = 10.dp).clip(RoundedCornerShape(4.dp)).background(GreyLighter)) {
+                        Text(text = keyword, color = Color.DarkGray, fontSize = 12.sp, modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp))
+                    }
+                }
+            }
+            if (keywordMap.isNotEmpty()) Image(painter = painterResource(R.mipmap.ic_arrow_right), contentDescription = null, modifier = Modifier.align(Alignment.CenterVertically).size(14.dp))
         }
+
+        Text(text = FileUtil.getNoteUpdateTime(NoteUtil.getNoteId()), fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 10.dp))
     }
 
 }
@@ -229,15 +230,15 @@ fun EditActionBarHelper (modifier: Modifier, state: ScrollState) {
                 Modifier.wrapContentWidth(Alignment.CenterHorizontally)
                     .wrapContentHeight(Alignment.CenterVertically)
                     .clip(CircleShape)
-                    .background(AliceBlue)
-                    .padding(top = 6.dp, bottom = 6.dp, start = 10.dp, end = 10.dp)
+                    .background(LightBlue)
+                    .padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp)
             ) {
 
                 Text(
                     text = "右划更多工具",
-                    fontSize = 12.sp,
+                    fontSize = 8.sp,
                     fontWeight = FontWeight.Bold,
-                    color = SkyBlue
+                    color = Color.White
                 )
 
             }
@@ -245,5 +246,184 @@ fun EditActionBarHelper (modifier: Modifier, state: ScrollState) {
         }
 
     }
+
+}
+
+/**
+ * 编辑页右上角关键词功能按钮
+ * @param noteId 当前编辑的文章的 id
+ * @param onKeywordUpdate 当执行关键词相关的更新操作时，执行的额外操作
+ */
+@Composable
+fun KeywordUtilButton (noteId: Int, onKeywordUpdate: () -> Unit = {}) {
+
+    var expended by remember { mutableStateOf(false) }
+
+    Box {
+
+        Button (
+            onClick = {expended = true},
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+        ) {
+            Image(painter = painterResource(R.mipmap.ic_keywords), contentDescription = "", modifier = Modifier.size(18.dp))
+        }
+
+        CascadeDropdownMenu(
+            expanded = expended,
+            onDismissRequest = {expended = false},
+            shape = RoundedCornerShape(12.dp)
+        ) {
+
+            // 绑定已有关键词
+            DropdownMenuItem(
+                text = {Text(text = "绑定已有关键词", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)},
+                onClick = {
+                    expended = false
+                    showKeywordBindingDialog(noteId) {onKeywordUpdate()}
+                }
+            )
+
+            // 新建一个关键词并绑定
+            DropdownMenuItem(
+                text = {Text(text = "新建一个关键词并绑定", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)},
+                onClick = {
+                    expended = false
+                    InputDialog.build(MIUIStyle())
+                            .setTitle("创建关键词")
+                            .setMessage("请输入关键词(不超过 10 个字)")
+                            .setOkButton("添加")
+                            .setOkButtonClickListener {
+                                    _, _, inputStr ->
+                                val keyword = inputStr.trim()
+                                if (keyword.length <= 10) {
+                                    val keywordId = KeywordUtil.addKeyword(keyword)
+                                    // 关键词和文章的绑定
+                                    KeywordUtil.bindNote2Keyword(keywordId, noteId)
+                                    FileUtil.bindKeyword2Note(keywordId, noteId)
+                                } else {
+                                    PopNotification.build(MIUIStyle()).setMessage("关键词过长").show()
+                                }
+                                onKeywordUpdate()
+                                return@setOkButtonClickListener false
+                            }
+                            .setCancelButton("取消")
+                            .show()
+                }
+            )
+
+            // 解绑关键词
+            DropdownMenuItem(
+                text = {Text(text = "解除绑定关键词", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)},
+                onClick = {
+                    expended = false
+                    showKeywordUnbindingDialog(noteId) {onKeywordUpdate()}
+                }
+            )
+
+        }
+
+    }
+
+}
+
+/**
+ * 关键词和文章的绑定对话框
+ * @param item 指定的文章
+ * @param onKeywordUpdate 当执行关键词相关的更新操作时，执行的额外操作
+ */
+fun showKeywordBindingDialog (noteId: Int, onKeywordUpdate: () -> Unit = {}) {
+
+    val map = KeywordUtil.getUnbindedKeywords(FileUtil.getNote(noteId)!!.keywordList)
+
+    val menuList = ArrayList<CharSequence>().apply {
+        addAll(map.keys)
+    }
+
+    var selectedKeywords: Array<out CharSequence>? = null
+
+    BottomMenu.build(MIUIStyle())
+        .setTitle("绑定已有关键词")
+        .setMenuList(menuList)
+        .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false){
+            override fun getIcon(dialog: BottomMenu?, index: Int, menuText: String?): Int = R.drawable.tags_icon
+        })
+        .setOnMenuItemClickListener(object : OnMenuItemSelectListener<BottomMenu>() {
+            override fun onMultiItemSelect(
+                dialog: BottomMenu?,
+                text: Array<out CharSequence>?,
+                indexArray: IntArray?
+            ) {
+                selectedKeywords = text
+            }
+        })
+        .setMultiSelection()
+        .setOkButton("确认添加",
+            OnBottomMenuButtonClickListener { _, _ ->
+                selectedKeywords?.apply {
+                    if (isNotEmpty()) {
+                        forEach {
+                            KeywordUtil.bindNote2Keyword(map[it]!!, noteId)
+                            FileUtil.bindKeyword2Note(map[it]!!, noteId)
+                        }
+                    }
+                    KeywordUtil.update()
+                }
+                onKeywordUpdate()
+                return@OnBottomMenuButtonClickListener false
+            })
+        .setCancelButton("取消")
+        .show()
+
+}
+
+/**
+ * 关键词和文章的解除绑定对话框
+ * @param item 指定的文章
+ * @param onKeywordUpdate 当执行关键词相关的更新操作时，执行的额外操作
+ */
+fun showKeywordUnbindingDialog (noteId: Int, onKeywordUpdate: () -> Unit = {}) {
+
+    val map = KeywordUtil.getBindedKeywords(FileUtil.getNote(noteId)!!.keywordList)
+
+    val menuList = ArrayList<CharSequence>().apply {
+        addAll(map.keys)
+    }
+
+    var selectedKeywords: Array<out CharSequence>? = null
+
+    BottomMenu.build(MIUIStyle())
+        .setTitle("解绑已有关键词")
+        .setMenuList(menuList)
+        .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false){
+            override fun getIcon(dialog: BottomMenu?, index: Int, menuText: String?): Int = R.drawable.tags_icon
+        })
+        .setOnMenuItemClickListener(object : OnMenuItemSelectListener<BottomMenu>() {
+            override fun onMultiItemSelect(
+                dialog: BottomMenu?,
+                text: Array<out CharSequence>?,
+                indexArray: IntArray?
+            ) {
+                selectedKeywords = text
+            }
+        })
+        .setMultiSelection()
+        .setOkButton("确认解绑",
+            OnBottomMenuButtonClickListener { _, _ ->
+                selectedKeywords?.apply {
+                    if (isNotEmpty()) {
+                        val set = HashSet<Int>()
+                        forEach {
+                            KeywordUtil.unbindNoteFromKw(map[it]!!, noteId)
+                            set.add(map[it]!!)
+                        }
+                        FileUtil.unbindKwFromNote(set, noteId)
+                    }
+                    KeywordUtil.update()
+                }
+                onKeywordUpdate()
+                return@OnBottomMenuButtonClickListener false
+            })
+        .setCancelButton("取消")
+        .show()
 
 }

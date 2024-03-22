@@ -19,6 +19,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,19 +31,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kongzue.albumdialog.PhotoAlbumDialog
 import com.kongzue.albumdialog.util.SelectPhotoCallback
-import com.kongzue.dialogx.dialogs.PopNotification
-import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.filedialog.FileDialog
 import com.kongzue.filedialog.interfaces.FileSelectCallBack
 import com.oxyethylene.easynote.common.arrays.headerSizeList
+import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarButton
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarHelper
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarMenu
-import com.oxyethylene.easynote.ui.editactivity.EditPageTopBar
+import com.oxyethylene.easynote.ui.editactivity.KeywordUtilButton
 import com.oxyethylene.easynote.ui.editactivity.TitleLine
 import com.oxyethylene.easynote.ui.theme.BackGround
 import com.oxyethylene.easynote.ui.theme.EasyNoteTheme
 import com.oxyethylene.easynote.util.FileUtil
+import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NoteUtil
 import com.oxyethylene.easynote.util.dpToPx
 import jp.wasabeef.richeditor.RichEditor
@@ -50,10 +54,11 @@ class EditActivity : ComponentActivity() {
     // 富文本编辑器
     private lateinit var richEditor: RichEditor
 
+    // 获取当前编辑的文章
+    val note = FileUtil.getNote(NoteUtil.getNoteId())
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
 
         setContent {
             EasyNoteTheme {
@@ -62,16 +67,24 @@ class EditActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = BackGround
                 ) {
+                    // 工具栏的滑动状态
                     val scrollState = rememberScrollState()
+
+                    // 用于显示的关键词集合
+                    var keywordMap by remember { mutableStateOf(KeywordUtil.getBindedKeywords(note!!.keywordList)) }
 
                     Column(
                         modifier = Modifier.statusBarsPadding().fillMaxWidth().wrapContentHeight()
                     ) {
                         Column{
-                            EditPageTopBar("")
+                            SimpleTitleBar("") {
+                                KeywordUtilButton(NoteUtil.getNoteId()) {
+                                    keywordMap = KeywordUtil.getBindedKeywords(note!!.keywordList)
+                                }
+                            }
                             Box {
-                                TitleLine(NoteUtil.getTitle(), Modifier.align(Alignment.TopStart).padding(top = 10.dp, end = 100.dp))
-                                EditActionBarHelper(Modifier.align(Alignment.BottomEnd).padding(end = 14.dp, bottom = 4.dp), scrollState)
+                                TitleLine(note!!, keywordMap, Modifier.align(Alignment.TopStart).padding(top = 10.dp, end = 100.dp))
+                                EditActionBarHelper(Modifier.align(Alignment.BottomEnd).padding(end = 14.dp), scrollState)
                             }
                             Row (
                                 modifier = Modifier.padding(top = 10.dp)
@@ -125,24 +138,20 @@ class EditActivity : ComponentActivity() {
                                 EditActionBarButton(R.mipmap.ic_insert_photo) {
                                     PhotoAlbumDialog.build()
                                         .setMaxSelectPhotoCount(1)
-                                        .setCompressQuality(70)
+                                        .setCompressQuality(100)
                                         .setCompressPhoto(true)
                                         .setClip(true)
-                                        .setMaxSize(200)
-                                        .setMaxWidth(200)
-                                        .setMaxHeight(200)
+                                        .setMaxSize(300)
+                                        .setMaxWidth(300)
+                                        .setMaxHeight(300)
                                         .setCallback(
                                             object : SelectPhotoCallback() {
                                                 override fun selectedPhoto(selectedPhotos: String?) {
-                                                    PopNotification.build(MIUIStyle()).setMessage(selectedPhotos).show()
                                                     richEditor.insertImage(selectedPhotos, "啊哈哈这个照片出错了")
                                                 }
                                             }
                                         )
-                                        .setDialogDialogImplCallback {
-                                                dialog ->
-                                            dialog.setRadius(dpToPx(this@EditActivity, 16))
-                                        }
+                                        .setDialogDialogImplCallback { dialog -> dialog.setRadius(dpToPx(this@EditActivity, 16)) }
                                         .show(this@EditActivity)
                                 }
                                 // 插入视频

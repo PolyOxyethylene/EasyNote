@@ -1,6 +1,6 @@
 package com.oxyethylene.easynote.domain
 
-import java.util.TreeSet
+import java.io.Serializable
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,12 +18,4 @@ import java.util.TreeSet
  * @param keywordId 关键词的 id
  * @param keyword 关键词的内容
  */
-class Keyword (val keywordId: Int, var keyword: String) {
-
-    // 本关键词关联的文章 id 集合
-    val noteSet = TreeSet<Int>()
-
-    // 关键词关联的事件 id
-    var eventId = -1
-
-}
+class Keyword (val keywordId: Int, var keyword: String) : Serializable

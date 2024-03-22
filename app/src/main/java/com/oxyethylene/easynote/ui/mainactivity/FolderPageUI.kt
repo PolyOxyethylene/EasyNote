@@ -8,13 +8,12 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,18 +23,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,7 +50,6 @@ import com.kongzue.dialogx.dialogs.InputDialog
 import com.kongzue.dialogx.dialogs.MessageDialog
 import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener
-import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
 import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
 import com.kongzue.dialogx.style.MIUIStyle
@@ -70,7 +65,6 @@ import com.oxyethylene.easynote.domain.Dir
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.ui.components.BackIcon
 import com.oxyethylene.easynote.ui.components.FolderIcon
-import com.oxyethylene.easynote.ui.components.MoreIcon
 import com.oxyethylene.easynote.ui.components.MultiSelectIcon
 import com.oxyethylene.easynote.ui.components.SearchIcon
 import com.oxyethylene.easynote.ui.components.SettingIcon
@@ -80,9 +74,9 @@ import com.oxyethylene.easynote.util.EventUtil
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.FileUtil.isRootDir
 import com.oxyethylene.easynote.util.FileUtil.toParentDir
+import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.SearchBoxUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
-import me.saket.cascade.CascadeDropdownMenu
 
 /**
  * Created with IntelliJ IDEA.
@@ -127,21 +121,11 @@ fun FolderMenuArea(
             /**
              *  悬浮按钮，功能是新建 文件 或者 目录
              */
-//            Button(
-//                modifier = Modifier.navigationBarsPadding().padding(bottom = 10.dp)
-//                    .align(Alignment.BottomCenter),
-//                colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-//                onClick = {
-//                    onAddFileFABClick(context)
-//                }) {
-//                Icon(Icons.Default.Add, "新建文件或者目录的按钮")
-//            }
-
             SpeedDial(
-                modifier = Modifier.navigationBarsPadding().padding(bottom = 20.dp, end = 30.dp).align(Alignment.BottomEnd),
+                modifier = Modifier.navigationBarsPadding().padding(bottom = 40.dp, end = 30.dp).align(Alignment.BottomEnd),
                 fabElevation = androidx.compose.material.FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp),
                 state = speedDialState,
-                onFabClick = { expanded ->
+                onFabClick = {
                     speedDialState = speedDialState.toggle()
                 },
                 fabOpenedBackgroundColor = Color.Black,
@@ -198,7 +182,7 @@ fun FolderMenuArea(
  *  顶部的选项栏
  */
 @Composable
-fun TopMenuBar(modifier: Modifier = Modifier) {
+fun TopMenuBar(modifier: Modifier = Modifier, centerContent: @Composable RowScope.() -> Unit) {
     val context = LocalContext.current
 
     TitleBar(
@@ -225,7 +209,8 @@ fun TopMenuBar(modifier: Modifier = Modifier) {
         }
     ) {
         // 标题
-        Text(text = "文档", color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+//        Text(text = "文档", color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        centerContent()
     }
 
 }
@@ -265,7 +250,10 @@ fun FileControllerBar(viewModel: MainViewModel) {
                     containerColor = Color.Transparent,
                     contentColor = Color.DarkGray
                 ),
-                onClick = { if (!isRootDir()) toParentDir() }
+                onClick = {
+                    if (!isRootDir()) toParentDir()
+                    else PopNotification.build(MIUIStyle()).setMessage("你现在已经在根目录了").show()
+                }
             ) {
                 BackIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
             }
@@ -295,7 +283,6 @@ fun FileControllerBar(viewModel: MainViewModel) {
                 ),
                 modifier = Modifier.wrapContentWidth(),
                 onClick = {
-//                    Toast.makeText(context, "搜索(还没做)", Toast.LENGTH_SHORT).show()
                     SearchBoxUtil.show()
                 }
             ) {
@@ -337,10 +324,6 @@ fun FileList(viewModel: MainViewModel = MainViewModel()) {
     // 当前的目录
     val currentFolder by viewModel.currentFolder.observeAsState(FileUtil.getCurrentDir())
 
-    /**
-     *  文件列表
-     *  TODO：现在只是做了个样子，编辑功能还没做
-     */
     Crossfade(
         targetState = currentFolder,
         modifier = Modifier.fillMaxSize().wrapContentWidth(Alignment.CenterHorizontally),
@@ -364,56 +347,13 @@ fun FileList(viewModel: MainViewModel = MainViewModel()) {
     ) {
 
         // 文件列表
-        LazyColumn() {
+        LazyColumn {
             items(it.getFileList()) {
                 item -> ListItem(item, context) { onAlterButtonClick(item, context) }
             }
         }
 
     }
-
-}
-
-/**
- *  点击目录界面添加按钮执行的事件
- */
-fun onAddFileFABClick (context: Context) {
-
-    BottomMenu.build(MIUIStyle())
-        .setTitle("新建文件")
-        .setMenuList(arrayOf("目录", "文章"))
-        .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false) {
-            override fun getIcon(dialog: BottomMenu?, index: Int, menuText: String?): Int {
-                when(menuText) {
-                    "目录" -> return R.drawable.folder_icon
-                    "文章" -> return R.drawable.note_icon
-                }
-                return 0
-            }
-        })
-        .setOnMenuItemClickListener(object : OnMenuItemClickListener<BottomMenu> {
-            override fun onClick(dialog: BottomMenu?, text: CharSequence?, index: Int): Boolean {
-                InputDialog.build(MIUIStyle())
-                    .setInputInfo(InputInfo().setCursorColor(SkyBlue.toArgb()).setMultipleLines(true))
-                    .setTitle(if (index == 0) "新建目录" else "新建文章")
-                    .setMessage("请输入名称")
-                    .setCancelButton("取消")
-                    .setOkButton("创建")
-                    .setOkButtonClickListener(OnInputDialogButtonClickListener {
-                            dialog, v, inputStr ->
-                        if (inputStr.isBlank() || inputStr.isEmpty()) {
-                            PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的文件名").show()
-                        } else {
-                            // 创建文章
-                            FileUtil.createFile(inputStr.trim(), index + 1, context)
-                        }
-                        return@OnInputDialogButtonClickListener false
-                    })
-                    .show()
-                return false
-            }
-        })
-        .show()
 
 }
 
@@ -449,7 +389,7 @@ fun onAddFileFABClick (fileType: Int, context: Context) {
 fun onAlterButtonClick (item: Dentry, context: Context) {
 
     BottomMenu.build(MIUIStyle())
-        .setMenuList(if(item is Dir) arrayOf("删除", "重命名") else arrayOf("删除", "重命名", "绑定事件", "解除绑定"))
+        .setMenuList(if(item is Dir) arrayOf("删除", "重命名") else arrayOf("删除", "重命名", "绑定事件", "解除事件绑定"))
         .setTitle(item.fileName)
         .setTitleTextInfo(TextInfo().setMaxLines(1).setShowEllipsis(true).setBold(true))
         .setOnMenuItemClickListener(object : OnMenuItemClickListener<BottomMenu> {
@@ -473,17 +413,25 @@ fun onAlterButtonClick (item: Dentry, context: Context) {
                                     OnDialogButtonClickListener {
                                         dialog, v ->
                                         EventUtil.unbindNote(item)
+                                        if (item.hasBindedKeywords()) {
+                                            KeywordUtil.unbindNoteFromKw(item.keywordList, item.fileId)
+                                        }
                                         FileUtil.deleteFileEntry(item.fileId, context)
                                         return@OnDialogButtonClickListener false
                                     }
                                 ).show()
                         } else {
+                            // 如果是文章，还要删除绑定的关键词
+                            if (item is NoteFile && item.hasBindedKeywords()) {
+                                KeywordUtil.unbindNoteFromKw(item.keywordList, item.fileId)
+                            }
                             FileUtil.deleteFileEntry(item.fileId, context)
                         }
                     "重命名" -> {
                         InputDialog.build(MIUIStyle())
                             .setTitle("重命名文件")
                             .setInputInfo(InputInfo().setCursorColor(SkyBlue.toArgb()))
+                            .setInputText(item.fileName)
                             .setCancelButton("取消")
                             .setOkButton("重命名")
                             .setOkButtonClickListener(OnInputDialogButtonClickListener {
@@ -501,7 +449,7 @@ fun onAlterButtonClick (item: Dentry, context: Context) {
                     "绑定事件" -> {
                         showEventBindingDialog(item as NoteFile)
                     }
-                    "解除绑定" -> {
+                    "解除事件绑定" -> {
                         if (EventUtil.unbindNote(item as NoteFile)) {
                             PopNotification.build(MIUIStyle()).setMessage("解除绑定成功").show()
                         } else {
@@ -515,135 +463,3 @@ fun onAlterButtonClick (item: Dentry, context: Context) {
 
 }
 
-/**
- * 主页右上角的更多选项菜单
- */
-@Composable
-fun MoreFeatureButton () {
-
-    var expanded by remember { mutableStateOf(false) }
-
-    Box{
-        Button(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = Color.DarkGray
-            ),
-            onClick = {expanded = true}
-        ) {
-            MoreIcon(Modifier.size(24.dp), Color.DarkGray)
-        }
-        CascadeDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            shape = RoundedCornerShape(12.dp),
-        ) {
-
-            // 关键词选项
-            DropdownMenuItem(
-                leadingIcon = { Image(painter = painterResource(R.mipmap.ic_keywords), contentDescription = "", modifier = Modifier.size(18.dp)) },
-                text = {
-                    Row (verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "关键词", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
-                    }
-                },
-                onClick = {
-                    expanded = false
-                    PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
-                },
-                contentPadding = PaddingValues(10.dp)
-            )
-
-            // 导出文件选项
-            DropdownMenuItem(
-                leadingIcon = { Image(painter = painterResource(R.mipmap.ic_export), contentDescription = "", modifier = Modifier.size(18.dp)) },
-                text = {
-                    Row (verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "导出为", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
-                    }
-                },
-                contentPadding = PaddingValues(10.dp),
-                children = {
-
-                    // 导出为 PDF
-                    DropdownMenuItem(
-                        leadingIcon = { Image(painter = painterResource(R.drawable.pdf_icon), contentDescription = "", modifier = Modifier.size(18.dp)) },
-                        text = {
-                            Row (verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "导出为 PDF", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
-                            }
-                        },
-                        onClick = {
-                            expanded = false
-                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
-                        },
-                        contentPadding = PaddingValues(10.dp)
-                    )
-
-                    // 导出为图片
-                    DropdownMenuItem(
-                        leadingIcon = { Image(painter = painterResource(R.drawable.image_icon), contentDescription = "", modifier = Modifier.size(18.dp)) },
-                        text = {
-                            Row (verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "导出为图片", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
-                            }
-                        },
-                        onClick = {
-                            expanded = false
-                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
-                        },
-                        contentPadding = PaddingValues(10.dp)
-                    )
-
-                    // 导出为纯文本
-                    DropdownMenuItem(
-                        leadingIcon = { Image(painter = painterResource(R.drawable.txt_icon), contentDescription = "", modifier = Modifier.size(18.dp)) },
-                        text = {
-                            Row (verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "导出为 txt", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
-                            }
-                        },
-                        onClick = {
-                            expanded = false
-                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
-                        },
-                        contentPadding = PaddingValues(10.dp)
-                    )
-
-                }
-            )
-
-            // 常见问题
-            DropdownMenuItem(
-                leadingIcon = { Image(painter = painterResource(R.mipmap.ic_qa), contentDescription = "", modifier = Modifier.size(18.dp)) },
-                text = {
-                    Row (verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Q&A", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
-                    }
-                },
-                onClick = {
-                    expanded = false
-                    PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
-                },
-                contentPadding = PaddingValues(10.dp)
-            )
-
-            // 权限检查
-            DropdownMenuItem(
-                leadingIcon = { Image(painter = painterResource(R.mipmap.ic_permission_check), contentDescription = "", modifier = Modifier.size(18.dp)) },
-                text = {
-                    Row (verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "应用权限检查", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)
-                    }
-                },
-                onClick = {
-                    expanded = false
-                    PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
-                },
-                contentPadding = PaddingValues(10.dp)
-            )
-        }
-
-    }
-
-}

@@ -1,5 +1,6 @@
 package com.oxyethylene.easynote.ui.settingactivity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -70,6 +71,7 @@ import com.oxyethylene.easynote.ui.theme.Tomato
  * @Description  :
  */
 
+@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 fun SettingPageArea () {
 

@@ -8,8 +8,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.oxyethylene.easynote.ui.commonactivity.BackupPageUI
 import com.oxyethylene.easynote.ui.commonactivity.EditorSettingPageUI
+import com.oxyethylene.easynote.ui.commonactivity.KeywordPageUI
 import com.oxyethylene.easynote.ui.commonactivity.LabSettingPageUI
 import com.oxyethylene.easynote.ui.commonactivity.LicenseInfoPageUI
+import com.oxyethylene.easynote.ui.commonactivity.QuestionPageUI
 import com.oxyethylene.easynote.ui.commonactivity.StatisticsPageUI
 import com.oxyethylene.easynote.ui.commonactivity.ThanksPageUI
 import com.oxyethylene.easynote.ui.theme.BackGround
@@ -45,6 +47,10 @@ class CommonActivity : ComponentActivity() {
                         "opensource" -> LicenseInfoPageUI()
                         // 内测鸣谢界面
                         "thanks" -> ThanksPageUI()
+                        // 常见问题界面
+                        "questions" -> QuestionPageUI()
+                        // 关键词界面
+                        "keywords" -> KeywordPageUI()
 
                         else -> {}
                     }

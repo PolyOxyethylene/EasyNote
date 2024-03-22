@@ -2,8 +2,6 @@ package com.oxyethylene.easynote.util
 
 import android.Manifest
 import android.os.Build
-import androidx.fragment.app.FragmentActivity
-import com.permissionx.guolindev.PermissionX
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,10 +35,10 @@ object PermissionUtil {
      * 如果权限请求未通过的话直接结束活动
      * @param activity 主活动
      */
-    fun init(activity: FragmentActivity) {
-        PermissionX.init(activity)
-            .permissions(requestList)
-            .request { allGranted, grantedList, deniedList ->
+//    fun init(activity: FragmentActivity) {
+//        PermissionX.init(activity)
+//            .permissions(requestList)
+//            .request { allGranted, grantedList, deniedList ->
 //                if (!allGranted) {
 //                    MessageDialog.build(MIUIStyle())
 //                        .setTitle("关于权限设置")
@@ -73,21 +71,21 @@ object PermissionUtil {
 //                        })
 //                        .show()
 //                }
-            }
-    }
+//            }
+//    }
 
     /**
      * 对应用所请求权限是否全部通过的再检查
      * @param activity 主活动
      */
-    fun checkAgain (activity: FragmentActivity) {
-        PermissionX.init(activity)
-            .permissions(requestList)
-            .request { allGranted, grantedList, deniedList ->
-                if (!allGranted) {
-                    activity.finish()
-                }
-            }
-    }
+//    fun checkAgain (activity: FragmentActivity) {
+//        PermissionX.init(activity)
+//            .permissions(requestList)
+//            .request { allGranted, grantedList, deniedList ->
+//                if (!allGranted) {
+//                    activity.finish()
+//                }
+//            }
+//    }
 
 }

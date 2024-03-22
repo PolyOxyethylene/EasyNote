@@ -10,8 +10,8 @@ package com.oxyethylene.easynote
  * @author       : Polyoxyethylene
  * @Description  :
  */
-class Test {
-}
+//class Test {
+//}
 
 fun main () {
 
@@ -22,6 +22,10 @@ fun main () {
         add(4)
     }
 
-//    println(list.subLi)
+    println(list)
+    println(list[0])
+    list.removeAt(0)
+    list.add(5)
+    println(list)
 
 }

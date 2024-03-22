@@ -1,14 +1,16 @@
 package com.oxyethylene.easynote.ui.eventactivity
 
 import android.content.Context
+import android.view.Gravity
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,28 +35,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.BottomMenu
 import com.kongzue.dialogx.dialogs.InputDialog
 import com.kongzue.dialogx.dialogs.PopNotification
+import com.kongzue.dialogx.interfaces.OnBottomMenuButtonClickListener
+import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
 import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
 import com.kongzue.dialogx.interfaces.OnMenuItemClickListener
+import com.kongzue.dialogx.interfaces.OnMenuItemSelectListener
 import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.dialogx.util.InputInfo
 import com.kongzue.dialogx.util.TextInfo
 import com.oxyethylene.easynote.R
-import com.oxyethylene.easynote.domain.entity.Event
 import com.oxyethylene.easynote.domain.NoteFile
+import com.oxyethylene.easynote.domain.entity.Event
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.mainactivity.ListItem
-import com.oxyethylene.easynote.ui.theme.GreyDarker
 import com.oxyethylene.easynote.ui.theme.GreyLighter
 import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.util.EventUtil
 import com.oxyethylene.easynote.util.FileUtil
+import me.saket.cascade.CascadeDropdownMenu
 
 /**
  * Created with IntelliJ IDEA.
@@ -69,7 +73,7 @@ import com.oxyethylene.easynote.util.FileUtil
 @Composable
 fun EventInfoPageArea (event: Event, modifier: Modifier = Modifier) {
 
-    var eventInfo by remember { mutableStateOf(event) }
+    var eventInfo by remember { mutableStateOf(event.clone()) }
 
     var noteList = remember { mutableStateListOf<NoteFile>() }
 
@@ -82,36 +86,44 @@ fun EventInfoPageArea (event: Event, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        SimpleTitleBar("事件详情", modifier) {
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.DarkGray
-                ),
-                onClick = {
-                    onAddNoteButtonClick(context, noteList, eventInfo.eventName)
-                }) {
-                Image(
-                    painter = painterResource(R.mipmap.ic_add_note),
-                    "",
-                    modifier = Modifier.size(20.dp).align(Alignment.CenterVertically)
-                )
-            }
+        SimpleTitleBar(if (eventInfo.eventName.length > 8) "${eventInfo.eventName.substring(0,8)}..." else eventInfo.eventName, modifier) {
+            EventUtilButton(event, noteList)
         }
 
-        Text(eventInfo.eventName, color = Color.DarkGray, fontWeight = FontWeight.Bold, fontSize = 22.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
-
-        Spacer(Modifier.size(10.dp))
-
         Row(
-            Modifier.padding(start = 20.dp, end = 20.dp)
+            Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)
                 .fillMaxWidth()
                 .wrapContentHeight(Alignment.CenterVertically)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(Color.Transparent)
-                .border(1.dp, GreyLighter, RoundedCornerShape(12.dp))
+                .border(1.dp, GreyLighter, RoundedCornerShape(8.dp))
+                .clickable {
+                    InputDialog.build(MIUIStyle())
+                        .setTitle("修改事件描述")
+                        .setInputText(event.description)
+                        .setInputInfo(InputInfo().setCursorColor(SkyBlue.toArgb()).setMultipleLines(true))
+                        .setCancelButton("取消")
+                        .setOkButton("修改")
+                        .setOkButtonClickListener(OnInputDialogButtonClickListener{
+                                dialog, v, inputStr ->
+                            EventUtil.updateEventDesc(event.eventId, inputStr)
+                            eventInfo = event.clone()
+                            return@OnInputDialogButtonClickListener false
+                        })
+                        .show()
+                }
         ) {
-            Text(eventInfo.description, color = GreyDarker, fontSize = 14.sp, lineHeight = 16.sp, maxLines = 5, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp))
+            val isDesEmpty = eventInfo.description.isEmpty()
+
+            Text(
+                text = if (isDesEmpty) "此事件还没有描述，点击可添加描述" else eventInfo.description,
+                color = if (isDesEmpty) Color.LightGray else Color.Gray,
+                fontSize = 14.sp,
+                lineHeight = 16.sp,
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(10.dp)
+            )
         }
 
         Crossfade(
@@ -126,6 +138,84 @@ fun EventInfoPageArea (event: Event, modifier: Modifier = Modifier) {
                 }
 
             }
+        }
+
+    }
+
+}
+
+@Composable
+fun EventUtilButton (event: Event, noteList: MutableList<NoteFile>, onEventUpdate: () -> Unit = {}) {
+
+    var expended by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    Box {
+
+        Button (
+            onClick = {expended = true},
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+        ) {
+            Image(painter = painterResource(R.mipmap.ic_add_note), contentDescription = "", modifier = Modifier.size(20.dp))
+        }
+
+        CascadeDropdownMenu(
+            expanded = expended,
+            onDismissRequest = {expended = false},
+            shape = RoundedCornerShape(12.dp)
+        ) {
+
+            // 绑定已有关键词
+            androidx.compose.material3.DropdownMenuItem(
+                text = {Text(text = "新建文章并绑定", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)},
+                onClick = {
+                    expended = false
+                    onAddNoteButtonClick(context, noteList, event.eventName)
+                }
+            )
+
+            // 新建一个关键词并绑定
+            androidx.compose.material3.DropdownMenuItem(
+                text = {Text(text = "绑定已有文章", fontSize = 14.sp, color = Color.DarkGray, maxLines = 1)},
+                onClick = {
+                    expended = false
+                    val noteMap = FileUtil.getEventUnbindedNotes(true)
+                    var selectedNotes: Array<out CharSequence>? = null
+                    BottomMenu.build(MIUIStyle())
+                        .setTitle("绑定已有文章")
+                        .setMenuList(noteMap.keys.toList())
+                        .setOnIconChangeCallBack(object : OnIconChangeCallBack<BottomMenu>(false){
+                            override fun getIcon(dialog: BottomMenu?, index: Int, menuText: String?): Int = R.drawable.note_icon
+                        })
+                        .setOnMenuItemClickListener(object : OnMenuItemSelectListener<BottomMenu>() {
+                            override fun onMultiItemSelect(
+                                dialog: BottomMenu?,
+                                text: Array<out CharSequence>?,
+                                indexArray: IntArray?
+                            ) {
+                                selectedNotes = text
+                            }
+                        })
+                        .setMultiSelection()
+                        .setOkButton("确认添加",
+                            OnBottomMenuButtonClickListener { _, _ ->
+                                selectedNotes?.apply {
+                                    if (isNotEmpty()) {
+                                        forEach {
+                                            val note = FileUtil.getNote(noteMap[it]!!)!!
+                                            EventUtil.bindNote2Event(event.eventName, note)
+                                            noteList.add(note)
+                                        }
+                                    }
+                                }
+                                return@OnBottomMenuButtonClickListener false
+                            })
+                        .setCancelButton("取消")
+                        .show()
+                }
+            )
+
         }
 
     }
@@ -194,8 +284,9 @@ fun onAddNoteButtonClick (context: Context, noteList: MutableList<NoteFile>, eve
 
     InputDialog.build(MIUIStyle())
         .setInputInfo(InputInfo().setCursorColor(SkyBlue.toArgb()))
+        .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
         .setTitle("新建文章")
-        .setMessage("在此新建的文章会添加到\n根目录, 并绑定当前事件")
+        .setMessage("在此新建的文章会添加到以下目录\n${FileUtil.getNoteFilePath(FileUtil.getCurrentDir().fileId)}\n并绑定当前事件")
         .setCancelButton("取消")
         .setOkButton("创建")
         .setOkButtonClickListener(OnInputDialogButtonClickListener {
@@ -204,8 +295,8 @@ fun onAddNoteButtonClick (context: Context, noteList: MutableList<NoteFile>, eve
                 PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的文件名").show()
             } else {
                 // 创建文章
-                val newFile = FileUtil.createFile(inputStr.trim(), 2, context)
-                newFile?.let {
+                val newFile = FileUtil.createFile(inputStr.trim(), 1, context)
+                newFile.let {
                     EventUtil.bindNote2Event(eventName, it as NoteFile)
                     noteList.add(it)
                 }

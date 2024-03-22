@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.4.3.0-beta"
+        versionName = "0.4.4.0-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -101,20 +101,20 @@ dependencies {
     implementation ("androidx.compose.runtime:runtime-livedata:1.5.1")
 
     // navigation
-    val nav_version = "2.5.3"
+//    val nav_version = "2.5.3"
 
     // Kotlin
-    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+//    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+//    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
     // Feature module Support
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
+//    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
 
     // Testing Navigation
-    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
+//    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
 
     // Jetpack Compose Integration
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+//    implementation("androidx.navigation:navigation-compose:$nav_version")
 
     // Jetpack Room
     val room_version = "2.3.0"
@@ -165,5 +165,15 @@ dependencies {
 
     // 支持子菜单的 FAB
     implementation("com.leinardi.android:speed-dial.compose:1.0.0-alpha04")
+
+    // 序列化工具 Serialize
+    implementation("com.github.liangjingkanji:Serialize:3.0.1")
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.10.1")
+    // Gson 解析容错：https://github.com/getActivity/GsonFactory
+    implementation("com.github.getActivity:GsonFactory:9.6")
+    // Kotlin 反射库：用于反射 Kotlin data class 类对象
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
 
 }

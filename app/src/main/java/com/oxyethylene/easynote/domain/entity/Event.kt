@@ -21,7 +21,21 @@ import androidx.room.PrimaryKey
  *  @param noteCount 事件绑定的文章数量
  */
 @Entity
-data class Event(@PrimaryKey val eventId: Int, var eventName: String, var description: String, var noteCount: Int = 0)
+class Event(
+    @PrimaryKey val eventId: Int,
+    var eventName: String,
+    var description: String,
+    var noteCount: Int = 0
+) {
+
+    /**
+     * 浅拷贝事件对象
+     */
+    fun clone(): Event {
+        return Event(eventId, eventName, description, noteCount)
+    }
+
+}
 
 
 /**

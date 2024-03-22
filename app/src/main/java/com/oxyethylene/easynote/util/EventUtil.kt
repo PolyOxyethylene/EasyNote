@@ -7,9 +7,9 @@ import com.oxyethylene.easynote.common.constant.EVENT_DELETE_SUCCESS
 import com.oxyethylene.easynote.common.constant.EVENT_UPDATE_SUCCESS
 import com.oxyethylene.easynote.dao.EventDao
 import com.oxyethylene.easynote.database.AppDatabase
+import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.domain.entity.Event
 import com.oxyethylene.easynote.domain.entity.EventList
-import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import java.util.TreeMap
 import kotlin.concurrent.thread
@@ -181,23 +181,19 @@ object EventUtil {
      */
     fun updateEventDesc (id: Int, description: String) {
 
-        thread {
+        val renameItem = eventMap.get(id)
 
-            val renameItem = eventMap.get(id)
-
-            renameItem?.let {
-                // 更新事件描述
+        renameItem?.let {
+            // 更新事件描述
+            it.description = description
+            thread {
                 eventDao?.updateEventDescription(id, description)
-                it.description = description
-
                 // 通知主线程更新 UI
                 val msg = Message()
                 msg.what = EVENT_UPDATE_SUCCESS
                 handler?.sendMessage(msg)
             }
-
         }
-
     }
 
     fun deleteEvent (id: Int) {

@@ -4,20 +4,21 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import com.kongzue.dialogx.DialogX
 import com.kongzue.dialogx.dialogs.PopNotification
@@ -29,9 +30,7 @@ import com.oxyethylene.easynote.common.constant.EVENT_UPDATE_SUCCESS
 import com.oxyethylene.easynote.common.constant.FILE_DELETE_SUCCESS
 import com.oxyethylene.easynote.common.constant.FILE_RENAME_SUCCESS
 import com.oxyethylene.easynote.common.constant.FILE_UPDATE_SUCCESS
-import com.oxyethylene.easynote.common.constant.MainPageRouteConstant
 import com.oxyethylene.easynote.database.AppDatabase
-import com.oxyethylene.easynote.ui.components.MainPageNavBar
 import com.oxyethylene.easynote.ui.mainactivity.EventPageArea
 import com.oxyethylene.easynote.ui.mainactivity.FolderMenuArea
 import com.oxyethylene.easynote.ui.mainactivity.TopMenuBar
@@ -44,14 +43,13 @@ import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.FileUtil.initDirectory
 import com.oxyethylene.easynote.util.FileUtil.initFileUtil
 import com.oxyethylene.easynote.util.FileUtil.updateDirectory
-import com.oxyethylene.easynote.util.PermissionUtil
 import com.oxyethylene.easynote.util.SearchBoxUtil
 import com.oxyethylene.easynote.util.SearchBoxUtil.initSearchBoxUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import com.oxyethylene.easynote.viewmodel.factory.MainViewModelFactory
 
 
-class MainActivity : FragmentActivity() {
+class MainActivity : ComponentActivity() {
 
     lateinit var viewModel: MainViewModel
 
@@ -78,6 +76,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -99,7 +98,7 @@ class MainActivity : FragmentActivity() {
         DialogX.autoShowInputKeyboard = false
 
         // 进行权限检查/请求
-        PermissionUtil.init(this)
+//        PermissionUtil.init(this)
 
         // 底部搜索框初始化
         handler.postDelayed({ SearchBoxUtil.init() }, 100)
@@ -110,26 +109,36 @@ class MainActivity : FragmentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = BackGround
                 ) {
-                    val currentPage = rememberSaveable { mutableStateOf(MainPageRouteConstant.FOLDER) }
+                    val pageState = rememberPagerState(initialPage = 0, pageCount = { 2 })
 
-                    Box {
-                        Column(
-                            Modifier.align(Alignment.TopCenter).padding(bottom = 60.dp)
+                    Column {
+                        // 标题栏
+                        TopMenuBar {
+                            Text(
+                                text = "文档",
+                                color = Color.DarkGray,
+                                fontSize = 16.sp,
+                                fontWeight = if (pageState.currentPage == 0) FontWeight.Bold else FontWeight.Normal
+                            )
+                            Text(
+                                text = "事件",
+                                color = Color.DarkGray,
+                                fontSize = 16.sp,
+                                fontWeight = if (pageState.currentPage == 1) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.padding(start = 20.dp)
+                            )
+                        }
+
+                        HorizontalPager(
+                            state = pageState
                         ) {
-                            TopMenuBar()
-                            Crossfade(
-                                targetState = currentPage.value,
-                                animationSpec = tween(durationMillis = 250), label = ""
-                            ) {
-                                page ->
-                                when (page) {
-                                    MainPageRouteConstant.FOLDER -> FolderMenuArea(Modifier, viewModel)
-                                    MainPageRouteConstant.EVENT -> EventPageArea(Modifier, viewModel)
-                                }
+                            page ->
+                            when (page) {
+                                0 -> FolderMenuArea(Modifier, viewModel)
+                                1 -> EventPageArea(Modifier, viewModel)
                             }
                         }
 
-                        MainPageNavBar(currentPage, Modifier.align(Alignment.BottomCenter))
                     }
 
                 }
@@ -137,11 +146,6 @@ class MainActivity : FragmentActivity() {
 
         }
 
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-//        PermissionUtil.checkAgain(this)
     }
 
 }

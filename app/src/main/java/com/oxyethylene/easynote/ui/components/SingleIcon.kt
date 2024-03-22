@@ -65,18 +65,6 @@ fun SearchIcon(_modifer: Modifier) = Icon(painterResource(R.mipmap.ic_search), "
 fun MoreIcon(_modifer: Modifier, _color: Color) = Icon(imageVector = Icons.Default.MoreVert, contentDescription = "这是一个打开更多选项的按钮", modifier = _modifer, tint = _color)
 
 /**
- *  删除按钮图标
- */
-@Composable
-fun RecycleIcon(_modifer: Modifier) = Image(painterResource(R.drawable.recycle_icon),"这是一个删除按钮", modifier = _modifer)
-
-/**
- *  修改按钮图标
- */
-@Composable
-fun AlterIcon(_modifer: Modifier) = Image(painterResource(R.drawable.rename_icon),"这是一个修改(重命名)按钮", modifier = _modifer)
-
-/**
  *  右向箭头图标
  */
 @Composable

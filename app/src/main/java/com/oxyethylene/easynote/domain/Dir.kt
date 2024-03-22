@@ -1,6 +1,7 @@
 package com.oxyethylene.easynote.domain
 
 import com.oxyethylene.easynote.common.enumeration.FileType
+import com.oxyethylene.easynote.domain.entity.FileEntity
 import com.oxyethylene.easynote.util.DateUtil
 
 /**
@@ -13,16 +14,28 @@ import com.oxyethylene.easynote.util.DateUtil
  * @author       : Polyoxyethylene
  * @Description  :
  */
-class Dir(_id: Int, _fileName: String, _parent: Dentry?, date: String) :
-    Dentry(_id, _fileName, _parent, FileType.DIRECTORY, date) {
+class Dir(
+    override val fileId: Int,
+    override var fileName: String,
+    override val parent: Dentry?,
+    override var createTime: String
+) : Dentry {
+
+    override val type: FileType = FileType.DIRECTORY    // 文件类型固定为 目录
 
     private var files = ArrayList<Dentry> ()   // 该目录下的文件集合
 
     companion object {
 
-        // 创建目录文件的工厂方法
-        fun createDirectory (fileId : Int, dirName : String, parent : Dentry, date: String = "创建于 ${DateUtil.getCurrentDateTime()}") : Dir {
-            val newDir = Dir(fileId, dirName, parent, date)
+        /**
+         * 创建目录文件的工厂方法
+         * @param fileId 文件 id
+         * @param dirName 目录的名称
+         * @param parent 父目录
+         * @param createTime 创建时间，如果是第一次创建无需传参，如果是数据库恢复数据则传入
+         */
+        fun createDirectory (fileId : Int, dirName : String, parent : Dentry, createTime: String = DateUtil.getCurrentDateTime()) : Dir {
+            val newDir = Dir(fileId, dirName, parent, createTime)
             (newDir.parent as Dir).addFile(newDir)
             return newDir
         }
@@ -40,9 +53,22 @@ class Dir(_id: Int, _fileName: String, _parent: Dentry?, date: String) :
     // 目录是否为空
     fun isEmpty() = files.isEmpty()
 
+    override fun toFileEntity(): FileEntity {
+        return FileEntity(
+            fileId,
+            0,
+            fileName,
+            createTime,
+            createTime,
+            parent?.fileId?:0,
+            type.ordinal,
+            null
+        )
+    }
+
     // 软拷贝
     override fun clone() : Dir{
-        val newDir = Dir(this.fileId, this.fileName, this.parent, this.lastModifiedTime)
+        val newDir = Dir(this.fileId, this.fileName, this.parent, this.createTime)
         newDir.files = this.files
         return newDir
     }

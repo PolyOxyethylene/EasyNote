@@ -72,6 +72,8 @@ fun KeywordPageUI () {
                 .verticalScroll(rememberScrollState())
         ) {
 
+            Text(text = "关键词用于描述文章的属性，\n你可以根据文章拥有的关键词将其绑定到不同事件中", fontSize = 10.sp, color = Color.Gray, lineHeight = 12.sp, letterSpacing = 0.sp, modifier = Modifier.padding(start = 30.dp, end = 30.dp, bottom = 6.dp))
+
             keywordMap.map.forEach {
 
                 (key, keyword) -> KeywordCapsule(key, keyword, Modifier.padding(top = 10.dp, start = 30.dp, end = 30.dp)) {keywordMap = KeywordUtil.getMap()}
@@ -163,7 +165,8 @@ fun onKeywordCapClick (keywordId: Int, keyword: String, onClick: () -> Unit) {
                     InputDialog.build(MIUIStyle())
                         .setTitle("修改关键词")
                         .setMessage("请输入关键词(不超过 10 个字)")
-                        .setOkButton("添加")
+                        .setInputText(keyword)
+                        .setOkButton("确认修改")
                         .setOkButtonClickListener {
                                 _, _, inputStr ->
                             val word = inputStr.trim()

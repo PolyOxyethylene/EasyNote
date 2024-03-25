@@ -202,7 +202,8 @@ fun ShowBindedNotesDialog (keywordId: Int) {
     val context = LocalContext.current
 
     LazyColumn (
-        modifier = Modifier.fillMaxWidth().height(260.dp).padding(20.dp)
+        modifier = Modifier.fillMaxWidth().height(260.dp).padding(20.dp),
+        verticalArrangement = if (noteList.isEmpty()) Arrangement.Center else Arrangement.Top
     ) {
 
         itemsIndexed(noteList) {
@@ -227,7 +228,7 @@ fun ShowBindedNotesDialog (keywordId: Int) {
 
         }
 
-        if (noteList.isNullOrEmpty()) {
+        if (noteList.isEmpty()) {
             item {
                 Box (Modifier.fillMaxSize()) {
                     Text(text = "暂无关联的文章", fontSize = 14.sp, color = Color.LightGray, modifier = Modifier.align(Alignment.Center))

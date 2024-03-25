@@ -139,10 +139,12 @@ object KeywordUtil {
                 res = if (!contains(noteId)) {
                     false
                 } else {
-                    remove(noteId).apply { update() }
+                    remove(noteId)
                 }
             }
         }
+
+        if (res) update()
 
         return res
     }

@@ -74,7 +74,7 @@ class NoteFile(
     /**
      * 判断文章有无关联任何关键词
      */
-    fun hasBindedKeywords () = keywordList.isEmpty()
+    fun hasBindedKeywords () = !keywordList.isEmpty()
 
     override fun toFileEntity(): FileEntity {
         return FileEntity(

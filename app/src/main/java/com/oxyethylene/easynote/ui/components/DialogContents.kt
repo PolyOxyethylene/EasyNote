@@ -46,7 +46,6 @@ import com.oxyethylene.easynote.ui.theme.GreyLighter
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NoteUtil
-import com.oxyethylene.easynote.util.SearchBoxUtil
 
 /**
  * Created with IntelliJ IDEA.
@@ -153,7 +152,7 @@ fun SearchBox () {
                     input.value = ""
                     resultList = ArrayList()
                     manager.clearFocus()
-                    SearchBoxUtil.show()
+//                    SearchBoxUtil.show()
                 }
                 if (index < resultList.size - 1) {
                     Row(Modifier.fillMaxWidth().height(0.5.dp).background(GreyLighter)) {}

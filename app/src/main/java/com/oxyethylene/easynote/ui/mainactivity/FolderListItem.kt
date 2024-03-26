@@ -94,7 +94,7 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
                     Modifier.padding(top = 12.dp).size(18.dp)
                 )
                 Text(
-                    text = item.fileName,
+                    text = "${item.fileName} ${if (item is NoteFile) item.eventId else -114514}",
                     color = Color.DarkGray,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,

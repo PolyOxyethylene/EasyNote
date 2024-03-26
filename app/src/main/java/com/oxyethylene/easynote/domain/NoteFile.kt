@@ -79,7 +79,7 @@ class NoteFile(
     override fun toFileEntity(): FileEntity {
         return FileEntity(
             fileId,
-            0,
+            eventId,
             fileName,
             createTime,
             updateTime?: createTime,

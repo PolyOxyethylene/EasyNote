@@ -68,6 +68,7 @@ fun EventListItem (item: Event, context: Context) {
             .background(Color.White)
             .clickable {
                 val intent = Intent("com.oxyethylene.EVENT")
+                intent.`package` = context.packageName
                 intent.putExtra("event_id", item.eventId)
                 context.startActivity(intent)
             }

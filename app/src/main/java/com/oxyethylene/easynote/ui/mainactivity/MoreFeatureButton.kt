@@ -84,6 +84,7 @@ fun MoreFeatureButton () {
                 onClick = {
                     expanded = false
                     val intent = Intent("com.oxyethylene.COMMON")
+                    intent.`package` = context.packageName
                     intent.putExtra("title", "keywords")
                     context.startActivity(intent)
                 },
@@ -160,6 +161,7 @@ fun MoreFeatureButton () {
                 onClick = {
                     expanded = false
                     val intent = Intent("com.oxyethylene.COMMON")
+                    intent.`package` = context.packageName
                     intent.putExtra("title", "questions")
                     context.startActivity(intent)
                 },

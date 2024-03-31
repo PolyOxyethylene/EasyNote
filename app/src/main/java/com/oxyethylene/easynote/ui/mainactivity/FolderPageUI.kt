@@ -195,6 +195,7 @@ fun TopMenuBar(modifier: Modifier = Modifier, centerContent: @Composable RowScop
                 ),
                 onClick = {
                     val intent = Intent("com.oxyethylene.SETTING")
+                    intent.`package` = context.packageName
                     context.startActivity(intent)
                 }) {
                 SettingIcon(Modifier.size(18.dp).align(Alignment.CenterVertically))

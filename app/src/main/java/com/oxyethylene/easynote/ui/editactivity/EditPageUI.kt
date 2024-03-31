@@ -41,12 +41,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.BottomMenu
 import com.kongzue.dialogx.dialogs.InputDialog
 import com.kongzue.dialogx.dialogs.MessageDialog
 import com.kongzue.dialogx.dialogs.PopNotification
+import com.kongzue.dialogx.dialogs.WaitDialog
 import com.kongzue.dialogx.interfaces.OnBindView
 import com.kongzue.dialogx.interfaces.OnBottomMenuButtonClickListener
 import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
@@ -58,6 +60,7 @@ import com.oxyethylene.easynote.ui.components.ShowKeywordsDialog
 import com.oxyethylene.easynote.ui.theme.GreyDarker
 import com.oxyethylene.easynote.ui.theme.GreyLighter
 import com.oxyethylene.easynote.ui.theme.LightBlue
+import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NoteUtil
@@ -322,6 +325,40 @@ fun KeywordUtilButton (noteId: Int, onKeywordUpdate: () -> Unit = {}) {
 
         }
 
+    }
+
+}
+
+/**
+ * 打开分析文章的窗口
+ * @param noteId 文章 id
+ */
+@SuppressLint("UnrememberedMutableInteractionSource")
+@Composable
+fun AutoExtractionButton (noteId: Int) {
+
+    Button (
+        onClick = {
+
+        },
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+    ) {
+        Text(
+            text = "分析文章",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            color = SkyBlue,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .clickable (
+                onClick = {
+                    WaitDialog.show("上传服务器分析中，请稍等")
+                    WaitDialog.dismiss(6000)
+                },
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            )
+        )
     }
 
 }

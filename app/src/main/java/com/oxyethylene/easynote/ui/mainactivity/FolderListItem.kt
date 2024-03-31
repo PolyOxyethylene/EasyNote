@@ -77,6 +77,7 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
                 // 如果是文件，就打开编辑界面
                 else {
                     val intent = Intent("com.oxyethylene.EDIT")
+                    intent.`package` = context.packageName
                     NoteUtil.beforeEdit(item.fileName, item.fileId)
                     context.startActivity(intent)
                 }
@@ -94,7 +95,7 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
                     Modifier.padding(top = 12.dp).size(18.dp)
                 )
                 Text(
-                    text = "${item.fileName} ${if (item is NoteFile) item.eventId else -114514}",
+                    text = item.fileName,
                     color = Color.DarkGray,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -195,6 +196,7 @@ fun SearchListItem (item: Dentry, context: Context, onItemClick: () -> Unit = {}
                 // 如果是文件，就打开编辑界面
                 else {
 //                    val intent = Intent("com.oxyethylene.EDIT")
+//                    intent.`package` = context.packageName
 //                    NoteUtil.beforeEdit(item.fileName, item.fileId)
 //                    context.startActivity(intent)
                     FileUtil.updateDirectory(item.parent?.fileId?: FileUtil.root.fileId)

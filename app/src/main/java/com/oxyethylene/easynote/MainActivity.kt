@@ -96,6 +96,7 @@ class MainActivity : ComponentActivity() {
         // 初始化 DialogX
         DialogX.init(this)
         DialogX.autoShowInputKeyboard = false
+        DialogX.cancelableTipDialog = false
 
         // 进行权限检查/请求
 //        PermissionUtil.init(this)

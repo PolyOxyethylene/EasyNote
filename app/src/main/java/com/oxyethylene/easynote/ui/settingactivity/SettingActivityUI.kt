@@ -2,6 +2,7 @@ package com.oxyethylene.easynote.ui.settingactivity
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,9 +39,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.MessageDialog
@@ -51,13 +56,13 @@ import com.oxyethylene.easynote.domain.PlainSetting
 import com.oxyethylene.easynote.domain.SettingEntry
 import com.oxyethylene.easynote.domain.SwitchSetting
 import com.oxyethylene.easynote.ui.components.ArrowRightIcon
-import com.oxyethylene.easynote.ui.components.MoreIcon
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.theme.GreyDarker
 import com.oxyethylene.easynote.ui.theme.GreyLighter
 import com.oxyethylene.easynote.ui.theme.Pale
 import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.ui.theme.Tomato
+import me.saket.cascade.CascadeDropdownMenu
 
 
 /**
@@ -187,7 +192,7 @@ fun SettingListItem (entry: SettingEntry) {
 @Composable
 fun SwitchSettingItem (entry: SwitchSetting) {
 
-    var _checked by rememberSaveable { mutableStateOf(entry.state) }
+    var checked by rememberSaveable { mutableStateOf(entry.state) }
 
     Box (
         modifier = Modifier.fillMaxWidth().wrapContentHeight()
@@ -212,10 +217,12 @@ fun SwitchSettingItem (entry: SwitchSetting) {
         }
 
         Switch(
-            checked = _checked,
+            checked = checked,
             onCheckedChange = {
                 entry.state = it
-                _checked = it },
+                entry.onValueChanged(it)
+                checked = it
+            },
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 10.dp).scale(0.7f),
             colors = SwitchDefaults.colors(
                 checkedBorderColor = Color.Transparent,
@@ -242,6 +249,7 @@ fun PlainSettingItem (entry: PlainSetting) {
         modifier = Modifier.fillMaxWidth().wrapContentHeight()
             .clickable {
                 val intent = Intent(entry.actionName)
+                intent.`package` = context.packageName
                 entry.commonActivityTitle?.let { intent.putExtra("title", it) }
                 context.startActivity(intent)
             }
@@ -313,6 +321,10 @@ fun DialogSettingItem (entry: DialogSetting) {
 @Composable
 fun DropDownMenuSettingItem (entry: DropDownMenuSetting) {
 
+    var settingValue by rememberSaveable { mutableStateOf(entry.value) }
+
+    var expanded by remember { mutableStateOf(false) }
+
     Box (
         modifier = Modifier.fillMaxWidth().wrapContentHeight()
     ) {
@@ -335,20 +347,44 @@ fun DropDownMenuSettingItem (entry: DropDownMenuSetting) {
             }
         }
 
-        Button(
-            modifier = Modifier.align(Alignment.CenterEnd),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.DarkGray),
-            onClick = {
-                // TODO 还没实现具体内容
-                MessageDialog.build(MIUIStyle())
-                    .setTitle(entry.settingName)
-                    .setMessage("该功能开发中，敬请期待")
-                    .setOkButton("确认")
-                    .show()
+        Box(Modifier.align(Alignment.CenterEnd)) {
+            Button(
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.DarkGray),
+                onClick = {
+                    expanded = true
+                }
+            ) {
+                Text(
+                    text = settingValue,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
             }
-        ) {
-            MoreIcon(Modifier.size(24.dp), Color.DarkGray)
+
+            CascadeDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                shape = RoundedCornerShape(12.dp),
+            ) {
+
+                entry.menuList.forEach {
+
+                    androidx.compose.material3.DropdownMenuItem(
+                        leadingIcon = { if (it.first != -1) Image(painter = painterResource(it.first), contentDescription = "", modifier = Modifier.size(18.dp)) },
+                        text = {Text(text = it.second, fontSize = 14.sp, color = Color.DarkGray, maxLines = 1, overflow = TextOverflow.Ellipsis)},
+                        onClick = {
+                            expanded = false
+                            entry.onValueChanged(it.second)
+                            settingValue = it.second
+                        }
+                    )
+
+                }
+
+            }
         }
+
+
     }
 
 }

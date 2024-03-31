@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">EasyNote</string>
-    <string name="app_version_code">0.4.4.3-beta</string>
+    <string name="app_version_code">0.4.4.5-beta</string>
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
@@ -27,6 +27,7 @@
         <item>FloatingActionButtonSpeedDial^https://github.com/leinardi/FloatingActionButtonSpeedDial</item>
         <item>Gson^https://github.com/google/gson</item>
         <item>GsonFactory^https://github.com/getActivity/GsonFactory</item>
+        <item>HanLP^https://github.com/hankcs/HanLP</item>
     </string-array>
     <string name="app_design_info">
         CopyRight © 2023 PolyOxyethylene. All Rights Reserved.\n\n本应用所使用图标部分来自 iconfont 图标库\n\n本应用使用的第三方字体 得意黑 来自 https://atelier-anchor.com/\n\n软件界面风格基于 纯纯写作 以及 椒盐笔记 二次创作\n\n软件部分对话框界面设计风格参照 MIUI (来自开源库 DialogX-MIUIStyle)
@@ -55,7 +56,7 @@
         以下是在本应用开发过程中\n参与了测试工作或提出宝贵建议的朋友\n感谢你们的帮助\n(名字无先后顺序)
     </string>
     <string name="version_sketch">
-        关键词可以绑定文章了
+        部分设置项可以生效了
     </string>
     <!--    <string-array name="very_thanks_list">-->
     <!--        <item>🍸</item>-->

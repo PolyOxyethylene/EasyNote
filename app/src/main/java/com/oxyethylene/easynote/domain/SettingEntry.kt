@@ -22,10 +22,17 @@ sealed class SettingEntry (val settingName : String, var description: String? = 
  * 有一个开关的设置项
  * @param settingName 设置项的名称
  * @param state 开关的状态，默认为关闭
+ * @param onValueChanged 当开关切换状态时，将执行的动作
  * @param description 设置项的描述
  * @param warning 设置项的警示信息
  */
-class SwitchSetting (settingName : String, var state : Boolean = false, description: String? = null, warning: String? = null) : SettingEntry(settingName, description, warning)
+class SwitchSetting (
+    settingName : String,
+    var state : Boolean = false,
+    val onValueChanged: (Boolean) -> Unit,
+    description: String? = null,
+    warning: String? = null
+) : SettingEntry(settingName, description, warning)
 
 /**
  * 打开一个新的页面的设置项
@@ -49,9 +56,18 @@ class DialogSetting (SettingName : String, description: String? = null, warning:
 /**
  * 打开一个下拉菜单的设置项
  * @param settingName 设置项的名称
- * @param menuList 下拉菜单的选项列表
+ * @param menuList 下拉菜单的选项列表，每个选项需要提供一个图标的资源id和选项的名字，id为-1时表示不需要图标
+ * @param value 设置项右侧显示的值，初始化时的值为设置项显示的默认值
+ * @param onValueChanged 当通过下拉菜单改变了设置项的值时，需要执行的动作，String 类型参数即修改后的值
  * @param description 设置项的描述
  * @param warning 设置项的警示信息
  */
-class DropDownMenuSetting (settingName: String, val menuList: List<Pair<Int, String>>, description: String? = null, warning: String? = null) : SettingEntry(settingName, description, warning)
+class DropDownMenuSetting (
+    settingName: String,
+    val menuList: List<Pair<Int, String>>,
+    var value: String,
+    val onValueChanged: (String) -> Unit,
+    description: String? = null,
+    warning: String? = null
+) : SettingEntry(settingName, description, warning)
 

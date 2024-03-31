@@ -35,6 +35,7 @@ import com.kongzue.filedialog.FileDialog
 import com.kongzue.filedialog.interfaces.FileSelectCallBack
 import com.oxyethylene.easynote.common.arrays.headerSizeList
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
+import com.oxyethylene.easynote.ui.editactivity.AutoExtractionButton
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarButton
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarHelper
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarMenu
@@ -45,6 +46,7 @@ import com.oxyethylene.easynote.ui.theme.EasyNoteTheme
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NoteUtil
+import com.oxyethylene.easynote.util.SettingUtil
 import com.oxyethylene.easynote.util.dpToPx
 import jp.wasabeef.richeditor.RichEditor
 import java.io.File
@@ -78,6 +80,9 @@ class EditActivity : ComponentActivity() {
                     ) {
                         Column{
                             SimpleTitleBar("") {
+                                if (SettingUtil.autoExtraction) {
+                                    AutoExtractionButton(NoteUtil.getNoteId())
+                                }
                                 KeywordUtilButton(NoteUtil.getNoteId()) {
                                     keywordMap = KeywordUtil.getBindedKeywords(note!!.keywordList)
                                 }
@@ -190,6 +195,7 @@ class EditActivity : ComponentActivity() {
                                 factory = { context ->
                                         LayoutInflater.from(context).inflate(R.layout.richtext_editor_layout, null).apply {
                                             richEditor = findViewById(R.id.editor)
+                                            richEditor.setFontSize(SettingUtil.fontSize())
                                             richEditor.setBackgroundColor(Color.Transparent.toArgb())
                                             richEditor.getSettings().setAllowFileAccess(true);
                                             // 加载已有内容

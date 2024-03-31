@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.4.4.3-beta"
+        versionName = "0.4.4.5-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -156,9 +156,6 @@ dependencies {
     // PermissionX
     implementation ("com.guolindev.permissionx:permissionx:1.7.1")
 
-    // 关键词提取，暂时不可用
-//    implementation (files("libs/jar/ahanlp-1.3.jar"))
-
     // Cascade 下拉菜单
     val cascade_version = "2.3.0"
     implementation ("me.saket.cascade:cascade-compose:$cascade_version")
@@ -175,5 +172,8 @@ dependencies {
     implementation("com.github.getActivity:GsonFactory:9.6")
     // Kotlin 反射库：用于反射 Kotlin data class 类对象
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
+
+    // HANLP 文本处理模型，用于分析文章提取关键词和文章摘要
+    implementation("com.hankcs.hanlp.restful:hanlp-restful:0.0.15")
 
 }

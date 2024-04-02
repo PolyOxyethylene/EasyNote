@@ -48,7 +48,6 @@ import com.kongzue.dialogx.dialogs.BottomMenu
 import com.kongzue.dialogx.dialogs.InputDialog
 import com.kongzue.dialogx.dialogs.MessageDialog
 import com.kongzue.dialogx.dialogs.PopNotification
-import com.kongzue.dialogx.dialogs.WaitDialog
 import com.kongzue.dialogx.interfaces.OnBindView
 import com.kongzue.dialogx.interfaces.OnBottomMenuButtonClickListener
 import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
@@ -63,6 +62,7 @@ import com.oxyethylene.easynote.ui.theme.LightBlue
 import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.KeywordUtil
+import com.oxyethylene.easynote.util.NlpUtil
 import com.oxyethylene.easynote.util.NoteUtil
 import me.saket.cascade.CascadeDropdownMenu
 
@@ -293,7 +293,7 @@ fun KeywordUtilButton (noteId: Int, onKeywordUpdate: () -> Unit = {}) {
                     expended = false
                     InputDialog.build(MIUIStyle())
                             .setTitle("创建关键词")
-                            .setMessage("请输入关键词(不超过 10 个字)")
+                            .setMessage("请输入关键词(不超过 12 个字)")
                             .setOkButton("添加")
                             .setOkButtonClickListener {
                                     _, _, inputStr ->
@@ -331,36 +331,29 @@ fun KeywordUtilButton (noteId: Int, onKeywordUpdate: () -> Unit = {}) {
 
 /**
  * 打开分析文章的窗口
- * @param noteId 文章 id
+ * @param modifier 设置按钮位置
+ * @param onKeywordUpdate 当执行关键词相关的更新操作时，执行的额外操作
+ * @param getContent 获取文章内容 (纯文本)
  */
 @SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
-fun AutoExtractionButton (noteId: Int) {
+fun AutoExtractionButton (modifier: Modifier = Modifier, onKeywordUpdate: () -> Unit = {}, getContent: () -> String) {
 
-    Button (
-        onClick = {
-
-        },
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-    ) {
-        Text(
-            text = "分析文章",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = SkyBlue,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .clickable (
-                onClick = {
-                    WaitDialog.show("上传服务器分析中，请稍等")
-                    WaitDialog.dismiss(6000)
-                },
-                indication = null,
-                interactionSource = MutableInteractionSource()
-            )
-        )
-    }
-
+   Text(
+       text = "分析文章",
+       fontSize = 14.sp,
+       fontWeight = FontWeight.Bold,
+       color = SkyBlue,
+       textDecoration = TextDecoration.Underline,
+       modifier = modifier
+           .clickable (
+           onClick = {
+               NlpUtil.getExtractionAndKeywords(getContent(), onKeywordUpdate)
+           },
+           indication = null,
+           interactionSource = MutableInteractionSource()
+       )
+   )
 }
 
 /**

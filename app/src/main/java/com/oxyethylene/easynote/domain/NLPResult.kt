@@ -1,5 +1,7 @@
 package com.oxyethylene.easynote.domain
 
+import java.util.TreeSet
+
 /**
  * Created with IntelliJ IDEA.
  * @Project      : EasyNote
@@ -15,4 +17,4 @@ package com.oxyethylene.easynote.domain
  * @param summarization 文章的摘要
  * @param keywords 文章的关键词
  */
-class NLPResult (val summarization: String, val keywords: Set<String>)
+class NLPResult (val summarization: String = "", val keywords: Set<String> = TreeSet())

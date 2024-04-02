@@ -82,7 +82,7 @@ fun KeywordPageUI () {
 
             if (keywordMap.map.isNotEmpty()) Row (Modifier.padding(top = 10.dp, start = 30.dp, end = 30.dp, bottom = 10.dp).fillMaxWidth().height(0.6.dp).background(Color.LightGray)) {  }
 
-            Text(text = "Tips: emoji 表情字节数是普通文字的两倍，所以最多只能输入 5 个 emoji", fontSize = 10.sp, color = Color.Gray, lineHeight = 12.sp, letterSpacing = 0.sp, modifier = Modifier.padding(start = 30.dp, end = 30.dp, bottom = 6.dp))
+            Text(text = "Tips: emoji 表情字节数是普通文字的两倍，所以最多只能输入 6 个 emoji", fontSize = 10.sp, color = Color.Gray, lineHeight = 12.sp, letterSpacing = 0.sp, modifier = Modifier.padding(start = 30.dp, end = 30.dp, bottom = 6.dp))
 
             OutlinedButton(
                 modifier = Modifier.padding(start = 30.dp, bottom = 20.dp),
@@ -92,7 +92,7 @@ fun KeywordPageUI () {
                     if (enable) {
                         InputDialog.build(MIUIStyle())
                             .setTitle("创建关键词")
-                            .setMessage("请输入关键词(不超过 10 个字)")
+                            .setMessage("请输入关键词(不超过 12 个字)")
                             .setOkButton("添加")
                             .setOkButtonClickListener {
                                     _, _, inputStr ->

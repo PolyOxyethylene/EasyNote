@@ -70,7 +70,7 @@ fun TitleBar(
 fun SimpleTitleBar (
     title: String,
     modifier: Modifier = Modifier,
-    rightContent: @Composable () -> Unit = {}
+    rightContent: @Composable RowScope.() -> Unit = {}
 ) {
 
     val context = LocalContext.current

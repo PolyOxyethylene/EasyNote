@@ -108,11 +108,10 @@ fun onAddEventFABClick () {
             dialog, v, inputStr ->
             if (inputStr.isBlank() || inputStr.isEmpty()) {
                 PopNotification.build(MIUIStyle()).setMessage("请输入包含非空字符的事件名").show()
-            } else if (EventUtil.getEventNames().contains(inputStr)) {
-                PopNotification.build(MIUIStyle()).setMessage("不允许创建同名事件").show()
             } else {
                 // 创建文章
-                EventUtil.createEvent(inputStr)
+                val res = EventUtil.createEvent(inputStr)
+                if (!res) PopNotification.build(MIUIStyle()).setMessage("不允许创建同名事件").show()
             }
             return@OnInputDialogButtonClickListener false
         })

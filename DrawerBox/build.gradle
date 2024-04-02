@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    namespace 'com.oxyethylene'
+    namespace 'com.kongzue.drawerbox'
 
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode SAMPLE_VERSION_INT as int
         versionName SAMPLE_VERSION
 

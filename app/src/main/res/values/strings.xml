@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">EasyNote</string>
-    <string name="app_version_code">0.4.4.5-beta</string>
+    <string name="app_version_code">0.4.5.0-beta</string>
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
@@ -33,11 +33,14 @@
         CopyRight © 2023 PolyOxyethylene. All Rights Reserved.\n\n本应用所使用图标部分来自 iconfont 图标库\n\n本应用使用的第三方字体 得意黑 来自 https://atelier-anchor.com/\n\n软件界面风格基于 纯纯写作 以及 椒盐笔记 二次创作\n\n软件部分对话框界面设计风格参照 MIUI (来自开源库 DialogX-MIUIStyle)
     </string>
     <string name="permission_request_info">
-        本应用需要您授予如下权限才能正常运行, \n请前往应用权限设置，检查以下所有权限是否已同意\n本应用完全在本地运行，\n不会收集您的个人信息和本地内容
+        本应用需要您授予如下权限才能正常运行, \n请前往应用权限设置，检查以下所有权限是否已同意
     </string>
     <string-array name="permission_request_list">
         <item>
             Android™ 存储访问框架-用于文章的备份、保存、导出以及多媒体文件的读取
+        </item>
+        <item>
+            访问网络-如果您使用了关键词提取功能，该权限是默认授予的，本应用将上传您的文章到远端服务器，数据不会被用于除了返回文章分析结果之外的其他用途，但是请您不要在文章中写一些不太合适的东西
         </item>
         <item>
             访问设备上的照片-Android 13 及以上版本需要授予，以保证本应用可以读取设备中的图片、视频
@@ -49,14 +52,12 @@
             管理所有文件的权限-Android 11 及以上版本需要授予，以保证本应用正常的存储访问
         </item>
     </string-array>
-    <string name="app_update_info">
-        毕设需求是写不出来的，更新是不会有的\n请联系开发者获取最新版本软件
-    </string>
+    <string name="app_update_info">访问 Github 获取最新版本\n请确保当前网络可以访问 Github\n点击\"确定\"前往</string>
     <string name="thanks_page_info">
         以下是在本应用开发过程中\n参与了测试工作或提出宝贵建议的朋友\n感谢你们的帮助\n(名字无先后顺序)
     </string>
     <string name="version_sketch">
-        部分设置项可以生效了
+        支持文章自动提取关键词和摘要(文章限长1000字)\n修复了文章插入图片模糊问题\n插入图片支持裁切/原始比例两种模式
     </string>
     <!--    <string-array name="very_thanks_list">-->
     <!--        <item>🍸</item>-->
@@ -72,5 +73,12 @@
         <item>国宝</item>
     </string-array>
     <string name="title_activity_common">CommonActivity</string>
+    
+    <string-array name="question_list">
+        <item>分析文章内容只支持最多 1000 个文字?服务器限制一次请求只能 1000 字，后续想办法解决</item>
+        <item>为什么不能创建同名的事件?你可以创建同名的文章，同名文章可以通过创建时间和关键词进行区分，你可以用许多同名的文章来代替多个同名事件，比如将多篇跟\"吃饭\"有关的文章放进事件\"吃饭\"里</item>
+        <item>为什么我运行这个 App 的时候感觉手机卡卡的?代码水平有限，运行卡很正常。\n建议使用骁龙™865/天玑8000系列/天玑9000系列及以上处理器的手机来使用本款应用</item>
+        <item>为什么这个 App 的实际大小这么大，缓存哪来的?本应用产生的缓存主要来自您文章中插入的图片。\n为了让您放心删除设备上的原图片，文章中的图片都是保存在缓存中的副本。\n所以请您注意，如果您选择清除应用缓存(或者使用系统的垃圾清理功能)，您文章中的图片将会丢失。\n后续更新将会提供应用内清除图片的功能，并将图片副本移至应用存储中(即无需担心因为清除应用缓存而删除图片)</item>
+    </string-array>
 
 </resources>

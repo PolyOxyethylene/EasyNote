@@ -48,7 +48,6 @@ import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NoteUtil
 import com.oxyethylene.easynote.util.SettingUtil
 import com.oxyethylene.easynote.util.dpToPx
-import jp.wasabeef.richeditor.RichEditor
 import java.io.File
 
 class EditActivity : ComponentActivity() {
@@ -56,8 +55,11 @@ class EditActivity : ComponentActivity() {
     // 富文本编辑器
     private lateinit var richEditor: RichEditor
 
+    // 编辑器纯文本内容
+    private var plainText = ""
+
     // 获取当前编辑的文章
-    val note = FileUtil.getNote(NoteUtil.getNoteId())
+    private val note = FileUtil.getNote(NoteUtil.getNoteId())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +83,10 @@ class EditActivity : ComponentActivity() {
                         Column{
                             SimpleTitleBar("") {
                                 if (SettingUtil.autoExtraction) {
-                                    AutoExtractionButton(NoteUtil.getNoteId())
+                                    AutoExtractionButton(
+                                        modifier = Modifier.align(Alignment.CenterVertically),
+                                        onKeywordUpdate = { keywordMap = KeywordUtil.getBindedKeywords(note!!.keywordList) }
+                                    ) { plainText }
                                 }
                                 KeywordUtilButton(NoteUtil.getNoteId()) {
                                     keywordMap = KeywordUtil.getBindedKeywords(note!!.keywordList)
@@ -89,7 +94,7 @@ class EditActivity : ComponentActivity() {
                             }
                             Box {
                                 TitleLine(note!!, keywordMap, Modifier.align(Alignment.TopStart).padding(top = 10.dp, end = 100.dp))
-                                EditActionBarHelper(Modifier.align(Alignment.BottomEnd).padding(end = 14.dp), scrollState)
+                                if (SettingUtil.showEditBarTip) EditActionBarHelper(Modifier.align(Alignment.BottomEnd).padding(end = 14.dp), scrollState)
                             }
                             Row (
                                 modifier = Modifier.padding(top = 10.dp)
@@ -100,7 +105,7 @@ class EditActivity : ComponentActivity() {
                             ) {
                                 // 标题文字
                                 EditActionBarMenu(headerSizeList, false) {
-                                    resId, optionName ->
+                                        _, optionName ->
                                         when (optionName) {
                                             "一号标题" -> richEditor.setHeading(1)
                                             "二号标题" -> richEditor.setHeading(2)
@@ -143,12 +148,12 @@ class EditActivity : ComponentActivity() {
                                 EditActionBarButton(R.mipmap.ic_insert_photo) {
                                     PhotoAlbumDialog.build()
                                         .setMaxSelectPhotoCount(1)
-                                        .setCompressQuality(100)
+                                        .setCompressQuality(80)
                                         .setCompressPhoto(true)
-                                        .setClip(true)
-                                        .setMaxSize(300)
-                                        .setMaxWidth(300)
-                                        .setMaxHeight(300)
+                                        .setClip(SettingUtil.clipMode)  // 在设置中选择是否开启裁切
+                                        .setMaxSize(4000)
+                                        .setMaxWidth(4000)
+                                        .setMaxHeight(4000)
                                         .setCallback(
                                             object : SelectPhotoCallback() {
                                                 override fun selectedPhoto(selectedPhotos: String?) {
@@ -156,7 +161,7 @@ class EditActivity : ComponentActivity() {
                                                 }
                                             }
                                         )
-                                        .setDialogDialogImplCallback { dialog -> dialog.setRadius(dpToPx(this@EditActivity, 16)) }
+                                        .setDialogDialogImplCallback { dialog -> dialog.radius = dpToPx(this@EditActivity, 16) }
                                         .show(this@EditActivity)
                                 }
                                 // 插入视频
@@ -189,24 +194,25 @@ class EditActivity : ComponentActivity() {
                                 }
                             }
                         }
-//                        Box(Modifier) {
-                            AndroidView(
-                                modifier = Modifier.navigationBarsPadding().imePadding().padding(start = 30.dp, end = 30.dp, top = 10.dp).fillMaxSize(),
-                                factory = { context ->
-                                        LayoutInflater.from(context).inflate(R.layout.richtext_editor_layout, null).apply {
-                                            richEditor = findViewById(R.id.editor)
-                                            richEditor.setFontSize(SettingUtil.fontSize())
-                                            richEditor.setBackgroundColor(Color.Transparent.toArgb())
-                                            richEditor.getSettings().setAllowFileAccess(true);
-                                            // 加载已有内容
-                                            richEditor.html = NoteUtil.loadFile(this@EditActivity)
-                                            // 修改富文本编辑器的界面布局
-                                            richEditor.loadCSS("editor.css")
-                                        }
-                                    }
-                            )
 
-//                        }
+                        AndroidView(
+                            modifier = Modifier.navigationBarsPadding().imePadding().padding(start = 30.dp, end = 30.dp, top = 10.dp).fillMaxSize(),
+                            factory = { context ->
+                                    LayoutInflater.from(context).inflate(R.layout.richtext_editor_layout, null).apply {
+                                        richEditor = findViewById(R.id.editor)
+                                        richEditor.setBackgroundColor(Color.Transparent.toArgb())
+                                        richEditor.settings.allowFileAccess = true
+                                        richEditor.setOnTextChangeListener { plainText = richEditor.plainText }
+                                        // 加载已有内容
+                                        richEditor.html = NoteUtil.loadFile(this@EditActivity)
+                                        // 初始化纯文本内容
+                                        plainText = richEditor.plainText
+                                        // 修改富文本编辑器的界面布局
+                                        richEditor.loadCSS("editor.css")
+                                    }
+                                }
+                        )
+
                     }
                 }
             }

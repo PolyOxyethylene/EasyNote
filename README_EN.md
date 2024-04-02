@@ -31,13 +31,13 @@ This application is a simple local rich text editing software.
 
 - [ ] Local backup/file export
 
-- [x] Partial customization of editor appearance
+- [ ] Partial customization of editor appearance
 
 - [x] Simple archiving
 
-- [ ] Manual editing of keywords
+- [x] Manual editing of keywords
 
-- [ ] Article keyword extraction (experimental feature)
+- [x] Article keyword extraction (experimental feature，By [HanLP](https://github.com/hankcs/HanLP))
 
 ## Snapshot
 

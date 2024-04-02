@@ -21,7 +21,7 @@ val mainSettingList =
     listOf<SettingEntry>(
         PlainSetting("编辑器设置", "com.oxyethylene.COMMON", "editor-setting"),
         PlainSetting("统计", "com.oxyethylene.COMMON", "statistics"),
-        PlainSetting("备份与恢复", "com.oxyethylene.COMMON", "backup", warning = "还没做, 点进去纯看样子"),
+        PlainSetting("备份与导出", "com.oxyethylene.COMMON", "backup"),
         PlainSetting("实验性功能", "com.oxyethylene.COMMON", "lab"),
         PlainSetting("关于应用", "com.oxyethylene.INFO")
     )
@@ -42,12 +42,24 @@ val editorSettingList =
             value = SettingUtil.fontSize().toString(),
             onValueChanged = { SettingUtil.setFontSize(it.toInt()) },
             warning = "有 Bug，暂时不可用"),
-//        SwitchSetting("段首行缩进")
+
+        SwitchSetting(
+            settingName = "图片进行 1:1 裁切",
+            state = SettingUtil.clipMode,
+            onValueChanged = { SettingUtil.clipMode = it },
+            description = "向文章插入图片时将图片裁切成正方形"
+        ),
+
+        SwitchSetting(
+            settingName = "编辑工具栏显示提示信息",
+            state = SettingUtil.showEditBarTip,
+            onValueChanged = { SettingUtil.showEditBarTip = it },
+            description = "提醒你工具栏可滑动，觉得碍眼就关闭"
+        )
     )
 
 val labSettingList =
     listOf<SettingEntry>(
-//        SwitchSetting("使用定位信息"),
         SwitchSetting(
             settingName = "开启关键词提取",
             state = SettingUtil.autoExtraction,
@@ -61,7 +73,8 @@ val backupSettingList =
     listOf<SettingEntry>(
         SwitchSetting(
             settingName = "开启备份",
-            onValueChanged = {},
+            state = SettingUtil.backupMode,
+            onValueChanged = { SettingUtil.backupMode = it },
             description = "开了也没用，我还没做呢"
         )
     )

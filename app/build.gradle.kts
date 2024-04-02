@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.4.4.5-beta"
+        versionName = "0.4.5.0-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -76,6 +76,7 @@ dependencies {
     implementation(project(mapOf("path" to ":DrawerBox")))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(project(mapOf("path" to ":AlbumDialog")))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -131,7 +132,7 @@ dependencies {
 
     // 更强大的对话框 DialogX
     val dialogx_version_release = "0.0.49"
-    val dialogx_version_beta = "0.0.50.beta10"
+    val dialogx_version_beta = "0.0.50.beta11"
     // 正式版
 //    implementation ("com.kongzue.dialogx:DialogX:$dialogx_version_release")
     // 测试版
@@ -147,11 +148,6 @@ dependencies {
     val dialogx_sample_version = "0.0.12"
     //文件选择对话框
     implementation ("com.github.kongzue.DialogXSample:FileDialog:$dialogx_sample_version")
-    //照片选择器
-    implementation ("com.github.kongzue.DialogXSample:AlbumDialog:$dialogx_sample_version")
-
-    // 富文本编辑器
-    implementation ("jp.wasabeef:richeditor-android:2.0.0")
 
     // PermissionX
     implementation ("com.guolindev.permissionx:permissionx:1.7.1")

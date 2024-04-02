@@ -73,8 +73,14 @@ object EventUtil {
      *  创建新的事件
      *  @param eventName 事件名称
      *  @param eventDescription 事件的描述，默认为空字符串，后续可以修改
+     *  @return 创建失败时返回 false，当前版本只会在存在同名事件时创建失败（正常情况下）
      */
-    fun createEvent (eventName: String, eventDescription: String = "") {
+    fun createEvent (eventName: String, eventDescription: String = ""): Boolean {
+        // 检查是否存在同名事件
+        if (contains(eventName)) {
+            return false
+        }
+
         eventId++
 
         // 创建新的事件
@@ -87,6 +93,8 @@ object EventUtil {
         saveEvent(newEvent)
 
         mainViewModel?.updateEventEntryList(EventList(eventMap.values.toList()))
+
+        return true
     }
 
     /**
@@ -103,6 +111,21 @@ object EventUtil {
      *  @param eventId 事件的 id
      */
     fun getEvent (eventId: Int) = eventMap.get(eventId)
+
+    /**
+     *  根据事件名称获取对应事件 id
+     *  @param eventName 事件名称
+     *  @return 事件的 id，没有找到事件则返回 null
+     */
+    fun getEventId (eventName: String) = eventName2IdMap[eventName]
+
+    /**
+     * 是否存在指定名字的事件
+     * @param eventName 要查询是否存在的事件名称
+     * @return 存在该事件时返回 true，否则返回 false
+     */
+    fun contains (eventName: String) = eventName2IdMap[eventName] != null
+
 
     /**
      *  初始化事件列表

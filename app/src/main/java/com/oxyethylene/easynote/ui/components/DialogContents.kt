@@ -1,10 +1,13 @@
 package com.oxyethylene.easynote.ui.components
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.view.Gravity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -25,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,10 +44,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kongzue.dialogx.dialogs.MessageDialog
+import com.kongzue.dialogx.dialogs.PopNotification
+import com.kongzue.dialogx.style.MIUIStyle
+import com.kongzue.dialogx.util.TextInfo
 import com.oxyethylene.easynote.R
 import com.oxyethylene.easynote.domain.Dentry
+import com.oxyethylene.easynote.domain.NLPResult
 import com.oxyethylene.easynote.ui.mainactivity.SearchListItem
 import com.oxyethylene.easynote.ui.theme.GreyLighter
+import com.oxyethylene.easynote.ui.theme.SkyBlue
+import com.oxyethylene.easynote.util.EventUtil
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NoteUtil
@@ -235,6 +247,165 @@ fun ShowBindedNotesDialog (keywordId: Int) {
             }
         }
 
+    }
+
+}
+
+/**
+ * 展示文章摘要及关键词的对话框
+ * @param extraction 文章的摘要结果
+ * @param onKeywordUpdate 当执行关键词相关的更新操作时，执行的额外操作
+ * @param onDialogDismiss 对话框关闭时执行的动作
+ */
+@SuppressLint("UnrememberedMutableInteractionSource")
+@Composable
+fun ShowExtractionDialog (extraction: NLPResult, onKeywordUpdate: () -> Unit = {}, onDialogDismiss: () -> Unit) {
+
+    val keywords = remember { mutableStateListOf<String>() }
+
+    keywords.addAll(extraction.keywords)
+
+    KeywordUtil.getBindedKeywords(FileUtil.getNote(NoteUtil.getNoteId())!!.keywordList).keys.forEach {
+        keywords.remove(it)
+    }
+
+    Column (
+        Modifier.fillMaxSize()
+            .padding(start = 30.dp, end = 30.dp, bottom = 20.dp, top = 20.dp)
+    ) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "分析结果",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray
+            )
+            Text(
+                text = "关闭",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = SkyBlue,
+                modifier = Modifier.clickable (
+                        onClick = onDialogDismiss,
+                        indication = null,
+                        interactionSource = MutableInteractionSource()
+                    )
+            )
+        }
+
+        Row (Modifier.fillMaxWidth().padding(top = 6.dp).height(0.6.dp).background(GreyLighter)) {  }
+
+        Row (Modifier.padding(top = 20.dp)) {
+            Text(
+                text = "文章摘要",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray
+            )
+        }
+
+        Row (
+            Modifier.fillMaxWidth()
+                .wrapContentHeight(Alignment.CenterVertically)
+                .padding(top = 10.dp, start = 6.dp, end = 6.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(GreyLighter.copy(alpha = 0.6f))
+                .clickable {
+                    MessageDialog.build(MIUIStyle())
+                        .setTitle("创建事件")
+                        .setMessage("将要创建以下事件\n\"${extraction.summarization}\"\n同时将当前文章绑定到新建事件")
+                        .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
+                        .setCancelButton("取消")
+                        .setOkButton("确认")
+                        .setOkButtonClickListener {
+                                dialog, v ->
+                            if (FileUtil.isBinded(NoteUtil.getNoteId())) {
+                                // 如果文章已经绑定事件，不允许新的绑定
+                                PopNotification.build(MIUIStyle()).setMessage("当前文章已绑定过事件，请解绑后再执行此操作").show()
+                            } else {
+                                val res = EventUtil.createEvent(extraction.summarization)
+                                if (!res) {
+                                    // 事件创建失败
+                                    PopNotification.build(MIUIStyle()).setMessage("已有同名事件，不能重复创建").show()
+                                } else if (EventUtil.bindNote2Event(extraction.summarization, FileUtil.getNote(NoteUtil.getNoteId())!!)) {
+                                    // 事件创建成功，文章也绑定成功
+                                    PopNotification.build(MIUIStyle()).setMessage("绑定事件成功").show()
+                                } else {
+                                    // 未知异常
+                                    PopNotification.build(MIUIStyle()).setMessage("未知异常，请联系开发者").show()
+                                }
+                            }
+                            return@setOkButtonClickListener false
+                        }
+                        .show()
+                }
+        ) {
+            Text(
+                text = extraction.summarization,
+                fontSize = 14.sp,
+                color = Color.DarkGray,
+                lineHeight = 16.sp,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
+        Row (Modifier.padding(top = 20.dp)) {
+            Text(
+                text = "关键词",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray
+            )
+        }
+
+        LazyVerticalGrid (
+            modifier = Modifier.fillMaxWidth().height(400.dp).padding(top = 4.dp),
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.Start
+        ) {
+
+            items(keywords) {
+
+                Row (
+                    Modifier.wrapContentSize(Alignment.CenterStart)
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(GreyLighter)
+                        .clickable {
+                            MessageDialog.build(MIUIStyle())
+                                .setTitle("添加关键词")
+                                .setMessage("要将 \"$it\" 添加为关键词吗?\n同时将关键词绑定到当前文章")
+                                .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
+                                .setCancelButton("取消")
+                                .setOkButton("确认")
+                                .setOkButtonClickListener {
+                                        dialog, v ->
+                                    val keywordId = KeywordUtil.addKeyword(it)
+                                    // 关键词和文章的绑定
+                                    KeywordUtil.bindNote2Keyword(keywordId, NoteUtil.getNoteId())
+                                    FileUtil.bindKeyword2Note(keywordId, NoteUtil.getNoteId())
+                                    keywords.remove(it)
+                                    onKeywordUpdate()
+                                    return@setOkButtonClickListener false
+                                }
+                                .show()
+                        }
+                ) {
+                    Text(
+                        text = it,
+                        color = Color.DarkGray,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
+                    )
+                }
+
+            }
+
+        }
     }
 
 }

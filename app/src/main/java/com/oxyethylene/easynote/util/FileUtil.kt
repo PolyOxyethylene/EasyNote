@@ -490,6 +490,20 @@ object FileUtil {
     }
 
     /**
+     * 查询文章是否已有绑定事件
+     * @param noteId 文章 id
+     * @return 如果文章没绑定或者查询的 id 不是文章类型，返回 false
+     */
+    fun isBinded (noteId: Int): Boolean {
+        fileMap[noteId]?.let {
+            if (it is NoteFile) {
+                return it.eventId != 0
+            }
+        }
+        return false
+    }
+
+    /**
      * 获取文章
      * @param noteIdList 包含文章 id 的集合
      */

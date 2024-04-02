@@ -27,7 +27,7 @@
 - [ ] 编辑器外观部分定制
 - [x] 简易归档
 - [x] 手动编辑关键词
-- [ ] 文章关键词提取（实验性功能）
+- [x] 文章关键词提取（实验性功能，By [HanLP](https://github.com/hankcs/HanLP)）
 
 ## 快照 Snapshot
 

@@ -1,5 +1,8 @@
 package com.oxyethylene.easynote.ui.appinfoactivity
 
+import android.content.Intent
+import android.net.Uri
+import android.view.Gravity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.MessageDialog
 import com.kongzue.dialogx.style.MIUIStyle
+import com.kongzue.dialogx.util.TextInfo
 import com.oxyethylene.easynote.R
 import com.oxyethylene.easynote.domain.DialogSetting
 import com.oxyethylene.easynote.domain.PlainSetting
@@ -105,8 +109,17 @@ fun InfoPageArea () {
                     DialogSetting("更新软件") {
                         MessageDialog.build(MIUIStyle())
                             .setTitle("获取更新")
+                            .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
                             .setMessage(R.string.app_update_info)
                             .setOkButton("确认")
+                            .setOkButtonClickListener { dialog, v ->
+                                val intent = Intent()
+                                intent.action = "android.intent.action.VIEW"
+                                intent.data = Uri.parse("https://github.com/PolyOxyethylene/EasyNote/releases/latest")
+                                context.startActivity(intent)
+                                return@setOkButtonClickListener false
+                            }
+                            .setCancelButton("取消")
                             .show()
                     }
                 )

@@ -201,9 +201,8 @@ fun SwitchSettingItem (entry: SwitchSetting) {
         Column(
             modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
                 .wrapContentHeight()
-                .width(180.dp)
                 .align(Alignment.CenterStart)
-                .padding(start = 28.dp),
+                .padding(start = 28.dp, end = 60.dp),
         ) {
             Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             entry.description?.let {

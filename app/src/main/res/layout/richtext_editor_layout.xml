@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <jp.wasabeef.richeditor.RichEditor
+    <com.oxyethylene.easynote.RichEditor
         android:id="@+id/editor"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

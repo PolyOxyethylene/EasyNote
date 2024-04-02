@@ -44,5 +44,20 @@ object SettingUtil {
      */
     var autoExtraction by serialLazy(false)
 
+    /**
+     * 是否开启裁切模式
+     */
+    var clipMode by serialLazy(false)
+
+    /**
+     * 是否在编辑工具栏上方显示提示信息，默认开启
+     */
+    var showEditBarTip by serialLazy(true)
+
+    /**
+     * 是否开启备份和导出功能
+     */
+    var backupMode by serialLazy(false)
+
 
 }

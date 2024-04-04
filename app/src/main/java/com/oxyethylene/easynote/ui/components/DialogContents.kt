@@ -184,21 +184,29 @@ fun SearchBox () {
 @Composable
 fun ShowKeywordsDialog (keywordMap: HashMap<String, Int>) {
 
-    LazyVerticalGrid (
-        modifier = Modifier.fillMaxWidth().height(200.dp).padding(20.dp),
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.Start
-    ) {
+    if (keywordMap.isEmpty()) {
+        Box(Modifier.fillMaxWidth().height(200.dp).padding(20.dp)) {
+            Text(text = "暂无关联的关键词", fontSize = 14.sp, color = Color.LightGray, modifier = Modifier.align(Alignment.Center))
+        }
+    } else {
+        LazyVerticalGrid (
+            modifier = Modifier.fillMaxWidth().height(200.dp).padding(20.dp),
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.Start
+        ) {
 
-        items(keywordMap.keys.toList()) {
+            items(keywordMap.keys.toList()) {
 
-            Row (Modifier.wrapContentSize(Alignment.CenterStart).padding(6.dp).clip(RoundedCornerShape(4.dp)).background(GreyLighter)) {
-                Text(text = it, color = Color.DarkGray, fontSize = 12.sp, modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp))
+                Row (Modifier.wrapContentSize(Alignment.CenterStart).padding(6.dp).clip(RoundedCornerShape(4.dp)).background(GreyLighter)) {
+                    Text(text = it, color = Color.DarkGray, fontSize = 12.sp, modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp))
+                }
+
             }
 
         }
-
     }
+
+
 }
 
 /**
@@ -301,6 +309,15 @@ fun ShowExtractionDialog (extraction: NLPResult, onKeywordUpdate: () -> Unit = {
 
         Row (Modifier.padding(top = 20.dp)) {
             Text(
+                text = "点击文章摘要可以创建以其为名的事件\n点击下方关键词可以快捷创建并添加到当前文章",
+                fontSize = 10.sp,
+                color = Color.Gray,
+                lineHeight = 11.sp
+            )
+        }
+
+        Row (Modifier.padding(top = 10.dp)) {
+            Text(
                 text = "文章摘要",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
@@ -313,7 +330,7 @@ fun ShowExtractionDialog (extraction: NLPResult, onKeywordUpdate: () -> Unit = {
                 .wrapContentHeight(Alignment.CenterVertically)
                 .padding(top = 10.dp, start = 6.dp, end = 6.dp)
                 .clip(RoundedCornerShape(6.dp))
-                .background(GreyLighter.copy(alpha = 0.6f))
+                .background(GreyLighter.copy(alpha = 0.5f))
                 .clickable {
                     MessageDialog.build(MIUIStyle())
                         .setTitle("创建事件")
@@ -363,7 +380,7 @@ fun ShowExtractionDialog (extraction: NLPResult, onKeywordUpdate: () -> Unit = {
         }
 
         LazyVerticalGrid (
-            modifier = Modifier.fillMaxWidth().height(400.dp).padding(top = 4.dp),
+            modifier = Modifier.fillMaxWidth().height(300.dp).padding(top = 4.dp),
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.Start
         ) {

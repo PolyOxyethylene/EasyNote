@@ -195,7 +195,13 @@ fun SwitchSettingItem (entry: SwitchSetting) {
     var checked by rememberSaveable { mutableStateOf(entry.state) }
 
     Box (
-        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentHeight()
+            .clickable {
+                checked = !checked
+                entry.state = checked
+                entry.onValueChanged(checked)
+            }
     ) {
 
         Column(
@@ -325,7 +331,11 @@ fun DropDownMenuSettingItem (entry: DropDownMenuSetting) {
     var expanded by remember { mutableStateOf(false) }
 
     Box (
-        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentHeight()
+            .clickable {
+                expanded = !expanded
+            }
     ) {
 
         Column(
@@ -374,6 +384,7 @@ fun DropDownMenuSettingItem (entry: DropDownMenuSetting) {
                         onClick = {
                             expanded = false
                             entry.onValueChanged(it.second)
+                            entry.value = it.second
                             settingValue = it.second
                         }
                     )

@@ -306,4 +306,9 @@ object EventUtil {
         return false
     }
 
+    /**
+     * 获取事件的总数
+     */
+    fun getEventCount () = eventMap.size
+
 }

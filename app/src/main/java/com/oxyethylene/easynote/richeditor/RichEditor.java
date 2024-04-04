@@ -1,5 +1,6 @@
-package com.oxyethylene.easynote;
+package com.oxyethylene.easynote.richeditor;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -7,15 +8,20 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.animation.LinearInterpolator;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.oxyethylene.easynote.Utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -474,6 +480,13 @@ public class RichEditor extends WebView {
     exec("javascript:RE.blurFocus();");
   }
 
+  /**
+   * 暂停页面所有多媒体资源的播放
+   */
+  public void pauseMediaPlayers () {
+    exec("javascript:RE.pause();");
+  }
+
   private String convertHexColorString(int color) {
     return String.format("#%06X", (0xFFFFFF & color));
   }
@@ -523,6 +536,11 @@ public class RichEditor extends WebView {
       return super.shouldOverrideUrlLoading(view, url);
     }
 
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+      handler.proceed();
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -538,5 +556,25 @@ public class RichEditor extends WebView {
       }
       return super.shouldOverrideUrlLoading(view, request);
     }
+  }
+
+  private int height;
+
+  //实例化WebView后，调用此方法可滚动到底部
+  public void scrollToBottom() {
+    int temp = computeVerticalScrollRange();
+    ValueAnimator valueAnimator = ValueAnimator.ofInt(height, temp);
+    valueAnimator.setInterpolator(new LinearInterpolator());
+    valueAnimator.setDuration(200);
+    valueAnimator.addUpdateListener(animation -> {
+      int nowHeight = (int) animation.getAnimatedValue();
+      height = nowHeight;
+      scrollTo(0, height);
+      if (height == temp) {
+        //再调用一次，解决不能滑倒底部
+        scrollTo(0, computeVerticalScrollRange());
+      }
+    });
+    valueAnimator.start();
   }
 }

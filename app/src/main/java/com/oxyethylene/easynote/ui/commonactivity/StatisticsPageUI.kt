@@ -19,7 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.theme.GreyDarker
+import com.oxyethylene.easynote.util.EventUtil
 import com.oxyethylene.easynote.util.FileUtil
+import com.oxyethylene.easynote.util.KeywordUtil
 
 /**
  * Created with IntelliJ IDEA.
@@ -53,13 +55,20 @@ fun StatisticsPageUI () {
                     .background(Color.White),
             ) {
 
-                HeadingWithTail("总数","${FileUtil.getDirCount() + FileUtil.getNoteCount()}", Modifier.padding(start = 20.dp, top = 20.dp))
+                HeadingWithTail("总数","${FileUtil.getDirCount() + FileUtil.getNoteCount() + EventUtil.getEventCount() + KeywordUtil.getKeywordCount()}", Modifier.padding(start = 20.dp, top = 20.dp))
+
+                Row (
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp).fillMaxWidth()
+                ) {
+                    HeadingWithTail("目录", "${FileUtil.getDirCount()}")
+                    HeadingWithTail("文章", "${FileUtil.getNoteCount()}", Modifier.padding(start = 100.dp))
+                }
 
                 Row (
                     modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp).fillMaxWidth()
                 ) {
-                    HeadingWithTail("目录", "${FileUtil.getDirCount()}")
-                    HeadingWithTail("文章", "${FileUtil.getNoteCount()}", Modifier.padding(start = 100.dp))
+                    HeadingWithTail("事件", "${EventUtil.getEventCount()}")
+                    HeadingWithTail("关键词", "${KeywordUtil.getKeywordCount()}", Modifier.padding(start = 100.dp))
                 }
 
             }

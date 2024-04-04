@@ -40,6 +40,11 @@ object SettingUtil {
     }
 
     /**
+     * 行高，默认为 1 倍，可选 1.5 倍
+     */
+    var lineHeight by serialLazy(1.0f)
+
+    /**
      * 是否开启关键词自动提取功能
      */
     var autoExtraction by serialLazy(false)
@@ -58,6 +63,11 @@ object SettingUtil {
      * 是否开启备份和导出功能
      */
     var backupMode by serialLazy(false)
+
+    /**
+     * 编辑器字体，默认值是系统默认字体
+     */
+    var fontFamily by serialLazy("default")
 
 
 }

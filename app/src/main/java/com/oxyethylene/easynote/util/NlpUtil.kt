@@ -41,10 +41,20 @@ object NlpUtil {
     fun getExtractionAndKeywords (content: String, onKeywordUpdate: () -> Unit = {}) {
 
         if (nlpClient == null) {
-            nlpClient = HanLPClient("https://www.hanlp.com/api", "NDczMEBiYnMuaGFubHAuY29tOklwZmFkNFRFMDNQbFQ5S1A=", "zh", 10)
+            nlpClient = HanLPClient("https://www.hanlp.com/api", "NDczMEBiYnMuaGFubHAuY29tOklwZmFkNFRFMDNQbFQ5S1A=", "zh", 1000)
         }
 
         var result: NLPResult?
+
+        if (content.isBlank() || content.isEmpty()) {
+            MessageDialog.build(MIUIStyle())
+                .setTitle("请求限制")
+                .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
+                .setMessage("无法解析空文章")
+                .setOkButton("确认")
+                .show()
+            return
+        }
 
         if (content.length > 1000) {
             MessageDialog.build(MIUIStyle())

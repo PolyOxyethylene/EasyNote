@@ -43,6 +43,16 @@ val editorSettingList =
             onValueChanged = { SettingUtil.setFontSize(it.toInt()) },
             warning = "有 Bug，暂时不可用"),
 
+        DropDownMenuSetting(
+            settingName = "行高",
+            menuList = listOf(
+                Pair(-1, "1"),
+                Pair(-1, "1.5")
+            ),
+            value = SettingUtil.fontSize().toString(),
+            onValueChanged = { SettingUtil.lineHeight = it.toFloat() },
+        ),
+
         SwitchSetting(
             settingName = "图片进行 1:1 裁切",
             state = SettingUtil.clipMode,
@@ -55,6 +65,16 @@ val editorSettingList =
             state = SettingUtil.showEditBarTip,
             onValueChanged = { SettingUtil.showEditBarTip = it },
             description = "提醒你工具栏可滑动，觉得碍眼就关闭"
+        ),
+
+        DropDownMenuSetting(
+            settingName = "字体选择",
+            menuList = listOf(
+                Pair(-1, "default"),
+                Pair(-1, "SmileySans"),
+            ),
+            value = SettingUtil.fontFamily,
+            onValueChanged = { SettingUtil.fontFamily = it }
         )
     )
 

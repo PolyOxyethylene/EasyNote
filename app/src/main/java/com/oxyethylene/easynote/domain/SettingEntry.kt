@@ -71,3 +71,13 @@ class DropDownMenuSetting (
     warning: String? = null
 ) : SettingEntry(settingName, description, warning)
 
+/**
+ * 必要时用于表示一个设置项的别名和值
+ * @param alias 设置项的值的别名，当此项不为 null 时，UI 中设置项显示的内容是该别名，实际设置的是 value 成员
+ * @param value 设置项右侧显示的值，初始化时的值为设置项显示的默认值
+ */
+//data class SettingValues (
+//    val alias: String? = null,
+//    val value: String
+//)
+

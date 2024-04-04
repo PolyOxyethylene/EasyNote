@@ -196,22 +196,22 @@ RE.insertImageWH = function(url, alt, width, height) {
 }
 
 RE.insertVideo = function(url, alt) {
-    var html = '<video src="' + url + '" controls></video><br>';
+    var html = '<p><video src="' + url + '" controls></video></p><br>';
     RE.insertHTML(html);
 }
 
 RE.insertVideoW = function(url, width) {
-    var html = '<video src="' + url + '" width="' + width + '" controls></video><br>';
+    var html = '<p><video src="' + url + '" width="' + width + '" controls></video></p><br>';
     RE.insertHTML(html);
 }
 
 RE.insertVideoWH = function(url, width, height) {
-    var html = '<video src="' + url + '" width="' + width + '" height="' + height + '" controls></video><br>';
+    var html = '<p><video src="' + url + '" width="' + width + '" height="' + height + '" controls></video></p><br>';
     RE.insertHTML(html);
 }
 
 RE.insertAudio = function(url, alt) {
-    var html = '<audio src="' + url + '" controls></audio><br>';
+    var html = '<p><audio src="' + url + '" controls></audio></p><br>';
     RE.insertHTML(html);
 }
 
@@ -359,3 +359,16 @@ RE.editor.addEventListener("keyup", function(e) {
     }
 });
 RE.editor.addEventListener("click", RE.enabledEditingItems);
+
+
+// 暂停所有音频和视频的播放
+RE.pause = function () {
+    var audios = document.getElementsByTagName ("audio")
+    var videos = document.getElementsByTagName ("video")
+    for (let i = 0; i < audios.length; i++) {
+        audios[i].pause()
+    }
+    for (let i = 0; i < videos.length; i++) {
+        videos[i].pause()
+    }
+}

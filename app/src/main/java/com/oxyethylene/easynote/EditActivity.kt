@@ -34,6 +34,7 @@ import com.kongzue.albumdialog.util.SelectPhotoCallback
 import com.kongzue.filedialog.FileDialog
 import com.kongzue.filedialog.interfaces.FileSelectCallBack
 import com.oxyethylene.easynote.common.arrays.headerSizeList
+import com.oxyethylene.easynote.richeditor.RichEditor
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.editactivity.AutoExtractionButton
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarButton
@@ -93,7 +94,7 @@ class EditActivity : ComponentActivity() {
                                 }
                             }
                             Box {
-                                TitleLine(note!!, keywordMap, Modifier.align(Alignment.TopStart).padding(top = 10.dp, end = 100.dp))
+                                TitleLine(note!!, keywordMap, Modifier.align(Alignment.TopStart).padding(top = 10.dp))
                                 if (SettingUtil.showEditBarTip) EditActionBarHelper(Modifier.align(Alignment.BottomEnd).padding(end = 14.dp), scrollState)
                             }
                             Row (
@@ -118,18 +119,22 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 字体加粗
                                 EditActionBarButton(R.mipmap.ic_set_bold) {
+                                    richEditor.focusEditor()
                                     richEditor.setBold()
                                 }
                                 // 字体倾斜
                                 EditActionBarButton(R.mipmap.ic_set_italic) {
+                                    richEditor.focusEditor()
                                     richEditor.setItalic()
                                 }
                                 // 添加下划线
                                 EditActionBarButton(R.mipmap.ic_set_underline) {
+                                    richEditor.focusEditor()
                                     richEditor.setUnderline()
                                 }
                                 // 添加删除线
                                 EditActionBarButton(R.mipmap.ic_set_strike_through) {
+                                    richEditor.focusEditor()
                                     richEditor.setStrikeThrough()
                                 }
                                 // 左对齐
@@ -158,6 +163,7 @@ class EditActivity : ComponentActivity() {
                                             object : SelectPhotoCallback() {
                                                 override fun selectedPhoto(selectedPhotos: String?) {
                                                     richEditor.insertImage(selectedPhotos, "啊哈哈这个照片出错了")
+                                                    richEditor.scrollToBottom()
                                                 }
                                             }
                                         )
@@ -166,20 +172,28 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 插入视频
                                 EditActionBarButton(R.mipmap.ic_insert_video) {
-                                    FileDialog.build().setSuffixArray(arrayOf(".mp4")).selectFile(
+                                    FileDialog.build()
+                                        .setShowFileDate(true)
+                                        .setSuffixArray(arrayOf(".mp4"))
+                                        .selectFile(
                                         object : FileSelectCallBack(){
                                             override fun onSelect(file: File?, filePath: String?) {
                                                 richEditor.insertVideo(filePath, 200)
+                                                richEditor.scrollToBottom()
                                             }
                                         }
                                     )
                                 }
                                 // 插入音频
                                 EditActionBarButton(R.mipmap.ic_insert_audio) {
-                                    FileDialog.build().setSuffixArray(arrayOf(".ogg", ".mp3", ".flac")).selectFile(
+                                    FileDialog.build()
+                                        .setShowFileDate(true)
+                                        .setSuffixArray(arrayOf(".ogg", ".mp3", ".flac"))
+                                        .selectFile(
                                         object : FileSelectCallBack(){
                                             override fun onSelect(file: File?, filePath: String?) {
                                                 richEditor.insertAudio(filePath)
+                                                richEditor.scrollToBottom()
                                             }
                                         }
                                     )
@@ -208,7 +222,11 @@ class EditActivity : ComponentActivity() {
                                         // 初始化纯文本内容
                                         plainText = richEditor.plainText
                                         // 修改富文本编辑器的界面布局
-                                        richEditor.loadCSS("editor.css")
+                                        // 加载字体配置
+                                        richEditor.loadCSS("fontfamily_${SettingUtil.fontFamily}.css")
+                                        // 加载行高配置
+                                        richEditor.loadCSS("line_h_${SettingUtil.lineHeight}.css")
+                                        richEditor.scrollToBottom()
                                     }
                                 }
                         )
@@ -227,11 +245,13 @@ class EditActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         richEditor.html?.let { NoteUtil.saveFile(this, it) }
+        richEditor.pauseMediaPlayers()
         FileUtil.setNoteUpdateTime(NoteUtil.getNoteId())
     }
 
     override fun onStop() {
         super.onStop()
+        richEditor.pauseMediaPlayers()
         richEditor.html?.let { NoteUtil.saveFile(this, it) }
     }
 

@@ -33,7 +33,9 @@ fun EditorSettingPageUI () {
 
         Column(Modifier.verticalScroll(rememberScrollState())) {
 
-            SettingSubList(editorSettingList)
+            SettingSubList(editorSettingList.subList(0,4))
+
+            SettingSubList(editorSettingList.subList(4,5))
 
         }
 

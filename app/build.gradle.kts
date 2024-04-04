@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.4.5.0-beta"
+        versionName = "0.4.5.1-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -145,7 +145,7 @@ dependencies {
     implementation ("com.github.kongzue.DialogX:DialogXMIUIStyle:$dialogx_version_beta")
 
     // DialogX 扩展组件
-    val dialogx_sample_version = "0.0.12"
+    val dialogx_sample_version = "0.0.13"
     //文件选择对话框
     implementation ("com.github.kongzue.DialogXSample:FileDialog:$dialogx_sample_version")
 

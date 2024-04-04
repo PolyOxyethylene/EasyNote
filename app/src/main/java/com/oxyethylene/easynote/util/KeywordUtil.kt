@@ -209,6 +209,9 @@ object KeywordUtil {
         return kw2NoteMap[keywordId]?: HashSet()
     }
 
-
+    /**
+     * 获取关键词数量
+     */
+    fun getKeywordCount () = keywordMap.size
 
 }

@@ -262,6 +262,8 @@ fun KeywordUtilButton (noteId: Int, onKeywordUpdate: () -> Unit = {}) {
 
     var expended by remember { mutableStateOf(false) }
 
+    val note = FileUtil.getNote(noteId)
+
     Box {
 
         Button (
@@ -299,10 +301,25 @@ fun KeywordUtilButton (noteId: Int, onKeywordUpdate: () -> Unit = {}) {
                                     _, _, inputStr ->
                                 val keyword = inputStr.trim()
                                 if (keyword.length <= 10) {
-                                    val keywordId = KeywordUtil.addKeyword(keyword)
-                                    // 关键词和文章的绑定
-                                    KeywordUtil.bindNote2Keyword(keywordId, noteId)
-                                    FileUtil.bindKeyword2Note(keywordId, noteId)
+                                    var keywordId = KeywordUtil.addKeyword(keyword)
+                                    if (keywordId == -1) {
+                                        // 如果关键词已经存在，需要判断该关键词有没有与文章存在绑定关系
+                                        keywordId = KeywordUtil.getKeywordIdByName(keyword)
+                                        if (note!!.keywordList.contains(keywordId)) {
+                                            // 如果存在绑定关系，则不允许重复绑定
+                                            PopNotification.build(MIUIStyle()).setMessage("关键词已存在且与当前文章已绑定").show()
+                                        } else {
+                                            // 不存在绑定关系，直接绑定已有关键词
+                                            // 关键词和文章的绑定
+                                            KeywordUtil.bindNote2Keyword(keywordId, noteId)
+                                            FileUtil.bindKeyword2Note(keywordId, noteId)
+                                        }
+                                    } else {
+                                        // 关键词和文章的绑定
+                                        KeywordUtil.bindNote2Keyword(keywordId, noteId)
+                                        FileUtil.bindKeyword2Note(keywordId, noteId)
+                                    }
+
                                 } else {
                                     PopNotification.build(MIUIStyle()).setMessage("关键词过长").show()
                                 }

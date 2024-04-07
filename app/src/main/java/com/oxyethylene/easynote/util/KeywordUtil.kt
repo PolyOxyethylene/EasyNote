@@ -32,6 +32,7 @@ object KeywordUtil {
      * @return 当创建成功时返回关键词的 id，当新建一个已有的关键词时会创建失败，返回 -1
      */
     fun addKeyword (keyword: String): Int {
+        // 先检查有没有已创建的同名关键词，有则返回 -1
         if (keywordMap.values.contains(keyword)) {
             return -1
         }
@@ -207,6 +208,19 @@ object KeywordUtil {
      */
     fun getBindedNotes (keywordId: Int): HashSet<Int> {
         return kw2NoteMap[keywordId]?: HashSet()
+    }
+
+    /**
+     * 根据关键词的名字获取关键词的 id，如果找不到就返回 -1
+     * @param keyword 关键词的名字
+     */
+    fun getKeywordIdByName (keyword: String): Int {
+        keywordMap.forEach {
+            if (it.value.equals(keyword)) {
+                return it.key
+            }
+        }
+        return -1
     }
 
     /**

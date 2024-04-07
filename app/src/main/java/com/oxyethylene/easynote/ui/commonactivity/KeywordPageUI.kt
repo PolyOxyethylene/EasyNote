@@ -98,8 +98,13 @@ fun KeywordPageUI () {
                                     _, _, inputStr ->
                                 val keyword = inputStr.trim()
                                 if (keyword.length <= 10) {
-                                    KeywordUtil.addKeyword(keyword)
-                                    keywordMap = KeywordUtil.getMap()
+                                    val newId = KeywordUtil.addKeyword(keyword)
+                                    if (newId == -1) {
+                                        // 已有同名的关键词
+                                        PopNotification.build(MIUIStyle()).setMessage("已有同名关键词").show()
+                                    } else {
+                                        keywordMap = KeywordUtil.getMap()
+                                    }
                                 } else {
                                     PopNotification.build(MIUIStyle()).setMessage("关键词过长").show()
                                 }

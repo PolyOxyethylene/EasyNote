@@ -401,7 +401,11 @@ fun ShowExtractionDialog (extraction: NLPResult, onKeywordUpdate: () -> Unit = {
                                 .setOkButton("确认")
                                 .setOkButtonClickListener {
                                         dialog, v ->
-                                    val keywordId = KeywordUtil.addKeyword(it)
+                                    var keywordId = KeywordUtil.addKeyword(it)
+                                    // 如果这个关键词被创建过，在当前情况下可以直接与文章绑定
+                                    if (keywordId == -1) {
+                                        keywordId = KeywordUtil.getKeywordIdByName(it)
+                                    }
                                     // 关键词和文章的绑定
                                     KeywordUtil.bindNote2Keyword(keywordId, NoteUtil.getNoteId())
                                     FileUtil.bindKeyword2Note(keywordId, NoteUtil.getNoteId())

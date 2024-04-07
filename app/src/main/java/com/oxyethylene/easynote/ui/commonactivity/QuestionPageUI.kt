@@ -64,7 +64,7 @@ fun QuestionCard (QAndAContent: String) {
     Column (
         modifier = Modifier.fillMaxWidth()
             .wrapContentHeight()
-            .padding(top = 20.dp, start = 30.dp, end = 30.dp)
+            .padding(top = 20.dp, start = 20.dp, end = 20.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
     ) {

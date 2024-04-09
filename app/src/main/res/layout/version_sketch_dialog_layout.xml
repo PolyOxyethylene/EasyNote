@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/search_box_compose_view"
+        android:id="@+id/version_sketch_compose_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

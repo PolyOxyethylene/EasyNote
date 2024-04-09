@@ -6,12 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.oxyethylene.easynote.ui.commonactivity.BackupPageUI
 import com.oxyethylene.easynote.ui.commonactivity.EditorSettingPageUI
 import com.oxyethylene.easynote.ui.commonactivity.KeywordPageUI
 import com.oxyethylene.easynote.ui.commonactivity.LabSettingPageUI
 import com.oxyethylene.easynote.ui.commonactivity.LicenseInfoPageUI
 import com.oxyethylene.easynote.ui.commonactivity.QuestionPageUI
+import com.oxyethylene.easynote.ui.commonactivity.RecyclePageUI
+import com.oxyethylene.easynote.ui.commonactivity.SearchPageUI
 import com.oxyethylene.easynote.ui.commonactivity.StatisticsPageUI
 import com.oxyethylene.easynote.ui.commonactivity.ThanksPageUI
 import com.oxyethylene.easynote.ui.theme.BackGround
@@ -41,8 +42,8 @@ class CommonActivity : ComponentActivity() {
                         "lab" -> LabSettingPageUI()
                         // 编辑器设置界面
                         "editor-setting" -> EditorSettingPageUI()
-                        // 备份界面
-                        "backup" -> BackupPageUI()
+                        // 回收站界面
+                        "recycle-bin" -> RecyclePageUI()
                         // 开放源代码许可界面
                         "opensource" -> LicenseInfoPageUI()
                         // 内测鸣谢界面
@@ -51,6 +52,8 @@ class CommonActivity : ComponentActivity() {
                         "questions" -> QuestionPageUI()
                         // 关键词界面
                         "keywords" -> KeywordPageUI()
+                        // 搜索界面
+                        "search" -> SearchPageUI()
 
                         else -> {}
                     }
@@ -59,4 +62,5 @@ class CommonActivity : ComponentActivity() {
             }
         }
     }
+
 }

@@ -5,12 +5,10 @@ import android.net.Uri
 import android.view.Gravity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -71,28 +69,23 @@ fun InfoPageArea () {
 
             Text("作者", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))
 
-            Row (
+            Column (
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                    .fillMaxWidth().height(60.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Image(painter = painterResource(R.drawable.developer_avatar), "this is developer's GitHub account avatar.", modifier = Modifier.padding(start = 16.dp).size(40.dp).clip(CircleShape))
-                Text("PolyOxyethylene", fontSize = 16.sp, modifier = Modifier.padding(start = 12.dp))
-            }
-
-            Row (
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.White)
-                ,
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Text(aboutApp, fontSize = 16.sp, color = Color.DarkGray, modifier = Modifier.padding(20.dp))
+
+                Row (
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Image(painter = painterResource(R.drawable.developer_avatar), "this is developer's GitHub account avatar.", modifier = Modifier.size(40.dp).clip(CircleShape))
+                    Text("PolyOxyethylene", fontSize = 16.sp, modifier = Modifier.padding(start = 12.dp))
+                }
+
+                Text(aboutApp, fontSize = 12.sp, color = Color.Gray, lineHeight = 14.sp, modifier = Modifier.padding(20.dp))
             }
 
             Text("更新软件", fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 20.dp, start = 26.dp))

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" /> <!-- Android 13 及以上的新权限 -->
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO " />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" /> <!-- 读写外部存储 -->
     <uses-permission
@@ -22,19 +22,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyNoteDemo"
         tools:targetApi="31">
-        <!--通用界面-->
+        <!-- 备份设置界面 -->
+        <activity
+            android:name=".BackupSettingActivity"
+            android:exported="false"
+            android:label="@string/title_activity_backup_setting"
+            android:theme="@style/Theme.EasyNoteDemo" >
+            <intent-filter>
+                <action android:name="com.oxyethylene.BACKUP" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!-- 通用界面 -->
         <activity
             android:name=".CommonActivity"
             android:exported="false"
             android:label="@string/title_activity_common"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.EasyNoteDemo">
+            android:theme="@style/Theme.EasyNoteDemo"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="com.oxyethylene.COMMON" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity><!-- 事件详情页面 -->
+        </activity> <!-- 事件详情页面 -->
         <activity
             android:name=".EventActivity"
             android:exported="false"

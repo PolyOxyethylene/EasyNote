@@ -2,6 +2,7 @@ package com.oxyethylene.easynote.ui.settingactivity
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -38,15 +39,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.MessageDialog
+import com.kongzue.dialogx.interfaces.OnBindView
 import com.kongzue.dialogx.style.MIUIStyle
 import com.oxyethylene.easynote.R
 import com.oxyethylene.easynote.common.arrays.mainSettingList
@@ -57,6 +61,7 @@ import com.oxyethylene.easynote.domain.SettingEntry
 import com.oxyethylene.easynote.domain.SwitchSetting
 import com.oxyethylene.easynote.ui.components.ArrowRightIcon
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
+import com.oxyethylene.easynote.ui.components.VersionSketchDialog
 import com.oxyethylene.easynote.ui.theme.GreyDarker
 import com.oxyethylene.easynote.ui.theme.GreyLighter
 import com.oxyethylene.easynote.ui.theme.Pale
@@ -91,12 +96,12 @@ fun SettingPageArea () {
         Column(Modifier.verticalScroll(rememberScrollState())) {
             // 中间的 logo
             Column (
-                modifier = Modifier.height(300.dp).fillMaxWidth(),
+                modifier = Modifier.height(260.dp).fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
                 // app logo
-                Row () {
+                Row {
                     Text("Easy No", fontSize = 34.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily(Font(R.font.smileysans_oblique)))
                     Text("te", fontSize = 34.sp, fontWeight = FontWeight.Bold , color = Color(0xFF2654FF), fontFamily = FontFamily(Font(R.font.smileysans_oblique)))
                 }
@@ -107,25 +112,47 @@ fun SettingPageArea () {
                     fontSize = 16.sp,
                     color = GreyDarker,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 10.dp)
-                        .clickable (
+                    fontFamily = FontFamily(Font(R.font.smileysans_oblique))
+                )
+
+                Text(
+                    text = "版本更新日志",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    textDecoration = TextDecoration.Underline,
+                    letterSpacing = 0.sp,
+                    modifier = Modifier.clickable (
                             onClick = {
-                            MessageDialog.build(MIUIStyle())
-                                .setTitle("版本更新内容")
-                                .setMessage(R.string.version_sketch)
-                                .setOkButton("确认")
-                                .show()
-                                      },
+                                MessageDialog.build(MIUIStyle())
+                                    .setTitle("版本更新内容")
+                                    .setCustomView(object : OnBindView<MessageDialog>(R.layout.version_sketch_dialog_layout){
+                                        override fun onBind(dialog: MessageDialog?, v: View?) {
+                                            val composeView = v?.findViewById<ComposeView>(R.id.version_sketch_compose_view)
+                                            composeView?.setContent { VersionSketchDialog() }
+                                        }
+                                    })
+                                    .setOkButton("确认")
+                                    .show()
+                            },
                             indication = null,
                             interactionSource = MutableInteractionSource()
-                        ),
-                    fontFamily = FontFamily(Font(R.font.smileysans_oblique))
+                        )
                 )
 
             }
 
-            // 设置列表
-            SettingList(mainSettingList)
+            // 主设置列表
+            Column (
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                SettingSubList(mainSettingList.subList(0, 3))
+
+                SettingSubList(mainSettingList.subList(3, 5))
+
+                SettingSubList(mainSettingList.subList(5, 6), Modifier.padding(bottom = 20.dp))
+            }
         }
 
     }
@@ -140,22 +167,6 @@ fun SettingPageArea () {
 @Composable
 fun SettingPageTopBar (title : String, modifier: Modifier = Modifier) = SimpleTitleBar(title, modifier)
 
-/**
- *  设置列表
- */
-@Composable
-fun SettingList (settingList: List<SettingEntry>, modifier: Modifier = Modifier) {
-
-    Column (
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SettingSubList(settingList.subList(0, 4))
-
-        SettingSubList(settingList.subList(4, 5), Modifier.padding(bottom = 20.dp))
-    }
-
-}
 
 @Composable
 fun SettingSubList (settingList: List<SettingEntry>, modifier: Modifier = Modifier) {
@@ -298,9 +309,9 @@ fun DialogSettingItem (entry: DialogSetting) {
     ) {
 
         Column(
-            modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
+            modifier = Modifier.padding(top = 20.dp, bottom = 20.dp, end = 50.dp)
                 .wrapContentHeight()
-                .width(180.dp)
+                .fillMaxWidth()
                 .align(Alignment.CenterStart)
                 .padding(start = 28.dp),
         ) {
@@ -324,7 +335,7 @@ fun DialogSettingItem (entry: DialogSetting) {
  *  @param entry 设置项
  */
 @Composable
-fun DropDownMenuSettingItem (entry: DropDownMenuSetting) {
+fun DropDownMenuSettingItem (entry: DropDownMenuSetting, moreAction: (String) -> Unit = {}) {
 
     var settingValue by rememberSaveable { mutableStateOf(entry.value) }
 
@@ -386,6 +397,7 @@ fun DropDownMenuSettingItem (entry: DropDownMenuSetting) {
                             entry.onValueChanged(it.second)
                             entry.value = it.second
                             settingValue = it.second
+                            moreAction(it.second)
                         }
                     )
 

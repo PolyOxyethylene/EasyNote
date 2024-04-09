@@ -8,6 +8,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,7 +77,6 @@ import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.FileUtil.isRootDir
 import com.oxyethylene.easynote.util.FileUtil.toParentDir
 import com.oxyethylene.easynote.util.KeywordUtil
-import com.oxyethylene.easynote.util.SearchBoxUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 
 /**
@@ -122,7 +123,7 @@ fun FolderMenuArea(
              *  悬浮按钮，功能是新建 文件 或者 目录
              */
             SpeedDial(
-                modifier = Modifier.navigationBarsPadding().padding(bottom = 40.dp, end = 30.dp).align(Alignment.BottomEnd),
+                modifier = Modifier.navigationBarsPadding().padding(bottom = 70.dp, end = 40.dp).align(Alignment.BottomEnd),
                 fabElevation = androidx.compose.material.FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp),
                 state = speedDialState,
                 onFabClick = {
@@ -202,15 +203,9 @@ fun TopMenuBar(modifier: Modifier = Modifier, centerContent: @Composable RowScop
             }
         },
         rightContent = {
-            /**
-             *  顶部右侧的更多选项按钮，暂时没想到做什么功能
-             *  TODO：后续不用的话可能删除
-             */
             MoreFeatureButton()
         }
     ) {
-        // 标题
-//        Text(text = "文档", color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         centerContent()
     }
 
@@ -284,7 +279,10 @@ fun FileControllerBar(viewModel: MainViewModel) {
                 ),
                 modifier = Modifier.wrapContentWidth(),
                 onClick = {
-                    SearchBoxUtil.show()
+                    val intent = Intent("com.oxyethylene.COMMON")
+                    intent.`package` = context.packageName
+                    intent.putExtra("title", "search")
+                    context.startActivity(intent)
                 }
             ) {
                 SearchIcon(Modifier.size(18.dp).align(Alignment.CenterVertically))
@@ -327,17 +325,32 @@ fun FileList(viewModel: MainViewModel = MainViewModel()) {
 
     Crossfade(
         targetState = currentFolder,
-        modifier = Modifier.fillMaxSize().wrapContentWidth(Alignment.CenterHorizontally),
-        animationSpec = tween(durationMillis = 250), label = ""
+        animationSpec = tween(durationMillis = 250),
+        label = ""
     ) {
 
         if (it.getFileList().size == 0) {
-            Text(
-                text = "当前目录没有文件",
-                fontSize = 16.sp,
-                color = Color.LightGray,
-                modifier = Modifier.padding(top = 30.dp)
-            )
+
+            Column (
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.empty_dir_image),
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp)
+                )
+
+                Text(
+                    text = "当前目录没有文件\n点击右下角按钮创建新文件",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    lineHeight = 16.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+            }
         }
     }
 
@@ -463,4 +476,5 @@ fun onAlterButtonClick (item: Dentry, context: Context) {
         }).show()
 
 }
+
 

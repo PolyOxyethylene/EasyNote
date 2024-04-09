@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.4.5.2-beta"
+        versionName = "0.4.5.3-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -73,15 +73,16 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation(project(mapOf("path" to ":DrawerBox")))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(project(mapOf("path" to ":AlbumDialog")))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
@@ -131,7 +132,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.6.3")
 
     // 更强大的对话框 DialogX
-    val dialogx_version_release = "0.0.49"
+//    val dialogx_version_release = "0.0.49"
     val dialogx_version_beta = "0.0.50.beta11"
     // 正式版
 //    implementation ("com.kongzue.dialogx:DialogX:$dialogx_version_release")
@@ -171,5 +172,9 @@ dependencies {
 
     // HANLP 文本处理模型，用于分析文章提取关键词和文章摘要
     implementation("com.hankcs.hanlp.restful:hanlp-restful:0.0.15")
+
+    // 简化 Android 开发的 Kotlin 工具类集合
+    val androidKTX_version = "1.1.0"
+    implementation ("io.github.androidktx:android-ktx:$androidKTX_version")
 
 }

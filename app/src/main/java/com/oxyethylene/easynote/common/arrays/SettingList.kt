@@ -1,5 +1,7 @@
 package com.oxyethylene.easynote.common.arrays
 
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_DEFAULT
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_SMILEYSANS
 import com.oxyethylene.easynote.domain.DropDownMenuSetting
 import com.oxyethylene.easynote.domain.PlainSetting
 import com.oxyethylene.easynote.domain.SettingEntry
@@ -20,8 +22,9 @@ import com.oxyethylene.easynote.util.SettingUtil
 val mainSettingList =
     listOf<SettingEntry>(
         PlainSetting("编辑器设置", "com.oxyethylene.COMMON", "editor-setting"),
+        PlainSetting("回收站", "com.oxyethylene.COMMON", "recycle-bin"),
         PlainSetting("统计", "com.oxyethylene.COMMON", "statistics"),
-        PlainSetting("备份与导出", "com.oxyethylene.COMMON", "backup"),
+        PlainSetting("备份与导出", "com.oxyethylene.BACKUP"),
         PlainSetting("实验性功能", "com.oxyethylene.COMMON", "lab"),
         PlainSetting("关于应用", "com.oxyethylene.INFO")
     )
@@ -49,7 +52,7 @@ val editorSettingList =
                 Pair(-1, "1"),
                 Pair(-1, "1.5")
             ),
-            value = SettingUtil.fontSize().toString(),
+            value = SettingUtil.lineHeight.toString(),
             onValueChanged = { SettingUtil.lineHeight = it.toFloat() },
         ),
 
@@ -70,8 +73,8 @@ val editorSettingList =
         DropDownMenuSetting(
             settingName = "字体选择",
             menuList = listOf(
-                Pair(-1, "default"),
-                Pair(-1, "SmileySans"),
+                Pair(-1, FONT_FAMILY_DEFAULT),
+                Pair(-1, FONT_FAMILY_SMILEYSANS),
             ),
             value = SettingUtil.fontFamily,
             onValueChanged = { SettingUtil.fontFamily = it }
@@ -89,13 +92,4 @@ val labSettingList =
         )
     )
 
-val backupSettingList =
-    listOf<SettingEntry>(
-        SwitchSetting(
-            settingName = "开启备份",
-            state = SettingUtil.backupMode,
-            onValueChanged = { SettingUtil.backupMode = it },
-            description = "开了也没用，我还没做呢"
-        )
-    )
 

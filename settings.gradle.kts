@@ -20,6 +20,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "EasyNote"
 include(":app")
-include(":DrawerBox")
 include(":AlbumDialog")
  

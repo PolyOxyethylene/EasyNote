@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oxyethylene.easynote.R
@@ -48,12 +49,22 @@ import com.oxyethylene.easynote.ui.theme.SkyBlue
  *  @param shape 输入框的形状
  *  @param containerColor 输入框的颜色，默认为白色
  *  @param inputText 输入框的文本
+ *  @param fontSize 搜索框文本的字体大小，默认 16.sp
  *  @param hint 提示性信息，默认为空
  *  @param singleLine 是否为单行，默认为 true
  *  @param onTextChange 当输入文本发生改变时执行的额外操作，默认什么都不做
  */
 @Composable
-fun InputText (modifier: Modifier, shape: Shape, containerColor: Color = Color.White, inputText : MutableState<String>, hint : String = "", singleLine: Boolean = true, onTextChange: () -> Unit = {}) {
+fun InputText (
+    modifier: Modifier,
+    shape: Shape,
+    containerColor: Color = Color.White,
+    inputText: MutableState<String>,
+    hint : String = "",
+    fontSize: TextUnit = 14.sp,
+    singleLine: Boolean = true,
+    onTextChange: () -> Unit = {})
+{
 
     BasicTextField(
         value = inputText.value,
@@ -63,7 +74,7 @@ fun InputText (modifier: Modifier, shape: Shape, containerColor: Color = Color.W
             onTextChange()
         },
         singleLine = singleLine,
-        textStyle = TextStyle(fontSize = 16.sp),
+        textStyle = TextStyle(fontSize = fontSize),
         decorationBox = { innerTextField ->
             Box {
                 Surface(
@@ -75,7 +86,7 @@ fun InputText (modifier: Modifier, shape: Shape, containerColor: Color = Color.W
                     ) {
 
                         Box(modifier = Modifier.padding(start = 16.dp, end = 40.dp).align(Alignment.CenterStart)) {
-                            if (inputText.value.isEmpty()) Text(text = hint, color = Color(0x88000000), fontSize = 16.sp)
+                            if (inputText.value.isEmpty()) Text(text = hint, color = Color(0x88000000), fontSize = fontSize)
                             innerTextField()
                         }
 
@@ -84,7 +95,7 @@ fun InputText (modifier: Modifier, shape: Shape, containerColor: Color = Color.W
                                 painter = painterResource(R.mipmap.ic_clean_all),
                                 contentDescription = "清空输入框",
                                 modifier = Modifier.padding(end = 10.dp)
-                                    .size(24.dp)
+                                    .size(20.dp)
                                     .align(Alignment.CenterEnd)
                                     .clickable {
                                         inputText.value = ""

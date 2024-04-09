@@ -1,5 +1,6 @@
 package com.oxyethylene.easynote
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +8,8 @@ import android.os.Message
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +17,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -43,10 +47,9 @@ import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.FileUtil.initDirectory
 import com.oxyethylene.easynote.util.FileUtil.initFileUtil
 import com.oxyethylene.easynote.util.FileUtil.updateDirectory
-import com.oxyethylene.easynote.util.SearchBoxUtil
-import com.oxyethylene.easynote.util.SearchBoxUtil.initSearchBoxUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import com.oxyethylene.easynote.viewmodel.factory.MainViewModelFactory
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -76,6 +79,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("UnrememberedMutableInteractionSource")
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +91,9 @@ class MainActivity : ComponentActivity() {
         // 初始化工具类
         initFileUtil(viewModel, database, handler)
         initEventUtil(viewModel, database, handler)
-        initSearchBoxUtil(handler)
+//        initSearchBoxUtil(handler)
+
+        FileUtil.initDefaultBackupDir()
 
         // 初始化目录结构
         initDirectory()
@@ -102,7 +108,7 @@ class MainActivity : ComponentActivity() {
 //        PermissionUtil.init(this)
 
         // 底部搜索框初始化
-        handler.postDelayed({ SearchBoxUtil.init() }, 100)
+//        handler.postDelayed({ SearchBoxUtil.init() }, 100)
 
         setContent {
             EasyNoteTheme {
@@ -112,6 +118,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val pageState = rememberPagerState(initialPage = 0, pageCount = { 2 })
 
+                    val coroutineScope = rememberCoroutineScope()
+
                     Column {
                         // 标题栏
                         TopMenuBar {
@@ -119,7 +127,18 @@ class MainActivity : ComponentActivity() {
                                 text = "文档",
                                 color = Color.DarkGray,
                                 fontSize = 16.sp,
-                                fontWeight = if (pageState.currentPage == 0) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (pageState.currentPage == 0) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.clickable (
+                                    onClick = {
+                                        if (pageState.currentPage == 1) {
+                                            coroutineScope.launch {
+                                                pageState.animateScrollToPage(0)
+                                            }
+                                        }
+                                    },
+                                    indication = null,
+                                    interactionSource = MutableInteractionSource()
+                                )
                             )
                             Text(
                                 text = "事件",
@@ -127,6 +146,17 @@ class MainActivity : ComponentActivity() {
                                 fontSize = 16.sp,
                                 fontWeight = if (pageState.currentPage == 1) FontWeight.Bold else FontWeight.Normal,
                                 modifier = Modifier.padding(start = 20.dp)
+                                    .clickable (
+                                        onClick = {
+                                            if (pageState.currentPage == 0) {
+                                                coroutineScope.launch {
+                                                    pageState.animateScrollToPage(1)
+                                                }
+                                            }
+                                        },
+                                        indication = null,
+                                        interactionSource = MutableInteractionSource()
+                                    )
                             )
                         }
 

@@ -1,6 +1,7 @@
 package com.oxyethylene.easynote.util
 
 import com.drake.serialize.serialize.serialLazy
+import com.oxyethylene.easynote.common.constant.EASYNOTE_BACKUP_FOLDER
 
 /**
  * Created with IntelliJ IDEA.
@@ -69,5 +70,9 @@ object SettingUtil {
      */
     var fontFamily by serialLazy("default")
 
+    /**
+     * 文件导出的文件夹，默认为 Documents/EasyNote
+     */
+    var backupPath by serialLazy(EASYNOTE_BACKUP_FOLDER)
 
 }

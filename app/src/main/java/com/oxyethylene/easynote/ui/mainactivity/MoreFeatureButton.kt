@@ -35,6 +35,7 @@ import com.kongzue.dialogx.style.MIUIStyle
 import com.oxyethylene.easynote.R
 import com.oxyethylene.easynote.ui.components.MoreIcon
 import com.oxyethylene.easynote.ui.components.PermissionDialog
+import com.oxyethylene.easynote.util.SettingUtil
 import me.saket.cascade.CascadeDropdownMenu
 
 /**
@@ -112,7 +113,8 @@ fun MoreFeatureButton () {
                         },
                         onClick = {
                             expanded = false
-                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                            if (SettingUtil.backupMode) PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                            else PopNotification.build(MIUIStyle()).setMessage("未开启备份功能").show()
                         },
                         contentPadding = PaddingValues(10.dp)
                     )
@@ -127,7 +129,8 @@ fun MoreFeatureButton () {
                         },
                         onClick = {
                             expanded = false
-                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                            if (SettingUtil.backupMode) PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                            else PopNotification.build(MIUIStyle()).setMessage("未开启备份功能").show()
                         },
                         contentPadding = PaddingValues(10.dp)
                     )
@@ -142,7 +145,8 @@ fun MoreFeatureButton () {
                         },
                         onClick = {
                             expanded = false
-                            PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                            if (SettingUtil.backupMode) PopNotification.build(MIUIStyle()).setMessage("该功能正在开发中，敬请期待!").show()
+                            else PopNotification.build(MIUIStyle()).setMessage("未开启备份功能").show()
                         },
                         contentPadding = PaddingValues(10.dp)
                     )

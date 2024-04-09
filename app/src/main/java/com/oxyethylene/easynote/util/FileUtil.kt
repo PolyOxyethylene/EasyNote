@@ -1,9 +1,11 @@
 package com.oxyethylene.easynote.util
 
 import android.content.Context
+import android.os.Environment
 import android.os.Handler
 import android.os.Message
 import com.oxyethylene.easynote.common.constant.DIRECTORY_INIT_SUCCESS
+import com.oxyethylene.easynote.common.constant.EASYNOTE_BACKUP_FOLDER
 import com.oxyethylene.easynote.common.constant.FILE_DELETE_SUCCESS
 import com.oxyethylene.easynote.common.constant.FILE_RENAME_SUCCESS
 import com.oxyethylene.easynote.common.constant.FILE_UPDATE_SUCCESS
@@ -14,9 +16,11 @@ import com.oxyethylene.easynote.domain.Dentry
 import com.oxyethylene.easynote.domain.Dir
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.viewmodel.MainViewModel
+import java.io.File
 import java.util.Stack
 import java.util.TreeMap
 import kotlin.concurrent.thread
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -139,6 +143,17 @@ object FileUtil {
      *  判断当前是否在根目录
      */
     fun isRootDir() : Boolean = currentDirectory.fileId == 0
+
+    /**
+     * 初始化备份文件夹
+     */
+    fun initDefaultBackupDir () {
+        val path = Environment.getExternalStorageDirectory().absolutePath + "/" + EASYNOTE_BACKUP_FOLDER
+        val folder = File(path)
+        if (!folder.exists()) {
+            folder.mkdirs()
+        }
+    }
 
     /**
      *  获取当前目录
@@ -400,16 +415,16 @@ object FileUtil {
     }
 
     /**
-     * 根据文件名搜索对应文件
+     * 根据文件名搜索对应文章
      * @param fileName 文件名
-     * @return 查询到的文件列表
+     * @return 查询到的文章列表
      */
-    fun searchFileByName (fileName: String): List<Dentry> {
-        val resultList = ArrayList<Dentry>()
+    fun searchNoteByName (fileName: String): List<NoteFile> {
+        val resultList = ArrayList<NoteFile>()
         val searchName = fileName.trim()
         if (fileName.isNotEmpty() && fileName.isNotBlank()) {
             fileMap.values.forEach {
-                if (it.fileName.contains(searchName)) {
+                if (it.fileName.contains(searchName) && it is NoteFile) {
                     resultList.add(it)
                 }
             }

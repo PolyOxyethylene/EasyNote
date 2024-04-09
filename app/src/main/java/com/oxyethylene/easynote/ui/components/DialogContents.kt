@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -28,17 +27,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,9 +44,7 @@ import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.dialogx.util.TextInfo
 import com.oxyethylene.easynote.R
-import com.oxyethylene.easynote.domain.Dentry
 import com.oxyethylene.easynote.domain.NLPResult
-import com.oxyethylene.easynote.ui.mainactivity.SearchListItem
 import com.oxyethylene.easynote.ui.theme.GreyLighter
 import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.util.EventUtil
@@ -113,69 +106,6 @@ fun PermissionDialog() {
 
 }
 
-/**
- * 主页搜索框
- */
-@Composable
-fun SearchBox () {
-
-    val input = remember { mutableStateOf("") }
-
-    var resultList by remember { mutableStateOf(ArrayList<Dentry>()) }
-
-    val manager = LocalFocusManager.current
-
-    val context = LocalContext.current
-
-    Column (
-        modifier = Modifier.navigationBarsPadding().fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        InputText(
-            modifier = Modifier.padding(top = 10.dp, start = 20.dp, end = 20.dp).fillMaxWidth().height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            inputText = input,
-            singleLine = false,
-            hint = "搜索文件/事件..."
-        ) {
-            resultList = FileUtil.searchFileByName(input.value) as ArrayList<Dentry>
-        }
-
-
-        if (resultList.isEmpty()) {
-            Text(
-                text = "暂无搜索结果",
-                fontSize = 14.sp,
-                color = Color.LightGray,
-                modifier = Modifier.padding(top = 60.dp, bottom = 80.dp)
-            )
-        }
-
-        Column (
-            modifier = Modifier.padding(top = 20.dp, bottom = 10.dp)
-                .navigationBarsPadding()
-                .fillMaxSize()
-        ) {
-
-            resultList.forEachIndexed {
-                index, dentry ->
-                SearchListItem(dentry, context) {
-                    input.value = ""
-                    resultList = ArrayList()
-                    manager.clearFocus()
-//                    SearchBoxUtil.show()
-                }
-                if (index < resultList.size - 1) {
-                    Row(Modifier.fillMaxWidth().height(0.5.dp).background(GreyLighter)) {}
-                }
-            }
-
-        }
-
-    }
-
-}
 
 /**
  * 展示文章关联的关键词的对话框
@@ -427,6 +357,53 @@ fun ShowExtractionDialog (extraction: NLPResult, onKeywordUpdate: () -> Unit = {
             }
 
         }
+    }
+
+}
+
+
+@Composable
+fun VersionSketchDialog () {
+
+    val context = LocalContext.current
+
+    val list = context.resources.getStringArray(R.array.version_sketch_list)
+
+    Column (
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentHeight()
+            .padding(start = 30.dp, end = 30.dp, bottom = 10.dp)
+    ) {
+
+        list.forEach {
+
+            val versionCode = it.substring(0, it.indexOf('^'))
+
+            val infoList = it.substring(it.indexOf('^') + 1).split('-')
+
+            Text(
+                text = versionCode,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray,
+                modifier = Modifier.padding(top = 20.dp)
+            )
+
+            infoList.forEach {
+                versionInfo ->
+                Text(
+                    text = versionInfo,
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    lineHeight = 14.sp,
+                    modifier = Modifier.padding(top = 6.dp, start = 6.dp)
+                )
+            }
+
+        }
+
+        Text(text = "")
+
     }
 
 }

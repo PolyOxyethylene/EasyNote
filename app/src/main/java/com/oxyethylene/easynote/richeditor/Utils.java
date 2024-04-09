@@ -1,4 +1,4 @@
-package com.oxyethylene.easynote;
+package com.oxyethylene.easynote.richeditor;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -30,13 +30,10 @@ This application is a simple local rich text editing software.
 **Other features to be added or improved in the future**:
 
 - [ ] Local backup/file export
-
 - [ ] Partial customization of editor appearance
-
+- [x] recycle bin
 - [x] Simple archiving
-
 - [x] Manual editing of keywords
-
 - [x] Article keyword extraction (experimental feature，By [HanLP](https://github.com/hankcs/HanLP))
 
 ## Snapshot

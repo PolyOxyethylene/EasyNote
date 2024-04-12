@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">EasyNote</string>
-    <string name="app_version_code">0.4.5.3-beta</string>
+    <string name="app_version_code">0.4.5.4-beta</string>
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
@@ -61,11 +61,11 @@
     <!--        修复了关键词相关的 Bug-->
     <!--    </string>-->
     <string-array name="version_sketch_list">
+        <item>v0.4.5.4-beta^新增回收站功能</item>
         <item>v0.4.5.3-beta^修复了设置项“行高”的显示错误问题-重构了文章搜索功能的 UI</item>
         <item>v0.4.5.2-beta^修复了关键词相关的一些 bug</item>
         <item>v0.4.5.1-beta^新增修改编辑器内容行高和内容字体的设置选项-首次进入编辑页时自动滚动到内容最底部；编辑器未获取焦点时，点击部分功能按钮优先获取焦点-修复了退出编辑页，原编辑页内文章中正在播放的视频或音频仍会继续播放的问题-修复了分析文章时可能会出现的若干 Bug</item>
         <item>v0.4.5.0-beta^新增文章关键词提取与摘要功能-新增了一些编辑器的功能开关-修复了 Android 14 闪退的 Bug-修复了文章插入图片时出现的图片模糊问题</item>
-        <item>v0.4.4.1-beta^完善关键词功能，当前可以为文章绑定关键词，也可以查看关键词所绑定的文章-完善事件功能，目前可以为事件添加文章，做到简单的归档-精简应用体积</item>
     </string-array>
     <!--    <string-array name="very_thanks_list">-->
     <!--        <item>🍸</item>-->

@@ -104,12 +104,6 @@ class MainActivity : ComponentActivity() {
         DialogX.autoShowInputKeyboard = false
         DialogX.cancelableTipDialog = false
 
-        // 进行权限检查/请求
-//        PermissionUtil.init(this)
-
-        // 底部搜索框初始化
-//        handler.postDelayed({ SearchBoxUtil.init() }, 100)
-
         setContent {
             EasyNoteTheme {
                 Surface(

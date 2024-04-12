@@ -17,7 +17,7 @@ import java.util.TreeSet
  */
 /**
  *  文章类型文件
- *  @param fileId 文章的文件 id
+ *  @param fileId 文章的文件 id，文章的 id 可修改
  *  @param fileName 文章的文件名
  *  @param parent 文章的父目录
  *  @param createTime 文章的创建日期
@@ -26,7 +26,7 @@ import java.util.TreeSet
  *  @param keywordList 文章关联的关键词集合
  */
 class NoteFile(
-    override val fileId: Int,
+    override var fileId: Int,
     override var fileName: String,
     override val parent: Dentry?,
     override var createTime: String,
@@ -65,7 +65,13 @@ class NoteFile(
          * */
         fun createFileFromDB (fileId : Int, fileName : String, parent : Dentry, createTime: String, updateTime: String, eventId: Int, keywordList: TreeSet<Int>) : NoteFile {
             val newFile = NoteFile(fileId, fileName, parent, createTime, updateTime, eventId, keywordList)
-            (newFile.parent as Dir).addFile(newFile)
+            // 如果文件 id 为正数，加入父目录文件列表
+            if (newFile.fileId > 0) {
+                (newFile.parent as Dir).addFile(newFile)
+            } else {
+                // 否则文件为回收状态，使父目录回收计数器 +1
+                (newFile.parent as Dir).recycleCount++
+            }
             return newFile
         }
 
@@ -75,6 +81,12 @@ class NoteFile(
      * 判断文章有无关联任何关键词
      */
     fun hasBindedKeywords () = !keywordList.isEmpty()
+
+    /**
+     * 判断文件是否处于回收状态
+     * @return 处于则返回 true
+     */
+    fun isRecycled () = fileId < 0
 
     override fun toFileEntity(): FileEntity {
         return FileEntity(

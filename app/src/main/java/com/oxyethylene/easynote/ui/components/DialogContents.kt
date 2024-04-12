@@ -157,20 +157,55 @@ fun ShowBindedNotesDialog (keywordId: Int) {
 
         itemsIndexed(noteList) {
             index, note->
+
+            // 文章是否处于回收状态
+            val isNotRecycled = note.fileId > 0
+
             Row (
                 modifier = Modifier.fillMaxWidth()
                     .height(50.dp)
                     .clickable {
-                        val intent = Intent("com.oxyethylene.EDIT")
-                        NoteUtil.beforeEdit(note.fileName, note.fileId)
-                        context.startActivity(intent)
+                        if (isNotRecycled) {
+                            val intent = Intent("com.oxyethylene.EDIT")
+                            NoteUtil.beforeEdit(note.fileName, note.fileId)
+                            context.startActivity(intent)
+                        } else {
+                            MessageDialog.build(MIUIStyle())
+                                .setTitle("无法访问该文章")
+                                .setMessage("当前文章在回收站，请前往回收站恢复该文章再访问")
+                                .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
+                                .setOkButton("确定")
+                                .show()
+                        }
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                FileIcon(Modifier.padding(start = 10.dp).size(18.dp))
+                // 标识文章是否处于回收状态
+                if (isNotRecycled) FileIcon(Modifier.padding(start = 10.dp).size(18.dp))
+                else Row (
+                    Modifier.wrapContentSize(Alignment.CenterStart)
+                        .padding(start = 4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(GreyLighter)
+                ) {
+                    Text(
+                        text = "回收站",
+                        color = Color.DarkGray,
+                        fontSize = 8.sp,
+                        modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 2.dp, bottom = 2.dp)
+                    )
+                }
 
-                Text(text = FileUtil.getNoteFilePath(note.fileId), maxLines = 1, fontSize = 16.sp, color = Color.DarkGray, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp, end = 20.dp))
+                // 文章的到根目录的绝对路径
+                Text(
+                    text = FileUtil.getNoteFilePath(note.fileId),
+                    maxLines = 1,
+                    fontSize = 16.sp,
+                    color = if (isNotRecycled) Color.DarkGray else Color.LightGray,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(start = 6.dp, end = 20.dp)
+                )
 
             }
             if (index < noteList.size - 1) Row(Modifier.fillMaxWidth().height(0.6.dp).background(GreyLighter)) {}

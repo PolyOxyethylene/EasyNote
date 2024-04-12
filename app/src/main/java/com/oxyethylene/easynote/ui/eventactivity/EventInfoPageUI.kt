@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -77,7 +79,9 @@ fun EventInfoPageArea (event: Event, modifier: Modifier = Modifier) {
 
     var noteList = remember { mutableStateListOf<NoteFile>() }
 
-    noteList.addAll(FileUtil.getNotesByEventId(eventInfo.eventId))
+    val recycledCount = remember { mutableStateOf(0) }
+
+    noteList.addAll(FileUtil.getNotesByEventId(eventInfo.eventId, recycledCount))
 
     val context = LocalContext.current
 
@@ -131,10 +135,41 @@ fun EventInfoPageArea (event: Event, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxSize(),
             animationSpec = tween(durationMillis = 250), label = ""
         ) {
-            LazyColumn (Modifier.padding(top = 10.dp).fillMaxSize()) {
+            LazyColumn (
+                modifier = Modifier.padding(top = 10.dp)
+                    .fillMaxSize(),
+                verticalArrangement = if (it.isNotEmpty()) Arrangement.Top else Arrangement.Center
+            ) {
 
-                itemsIndexed(it) {
-                        index, item -> ListItem(item, context) { onAlterButtonClick(index, item, it) }
+                if (it.isNotEmpty()) {
+                    itemsIndexed(it) {
+                            index, item ->
+                        if (item.fileId > 0)
+                            ListItem(item, context) { onAlterButtonClick(index, item, it) }
+                    }
+                } else {
+
+                    item {
+                        Column (
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.empty_archive_image),
+                                contentDescription = null,
+                                modifier = Modifier.size(80.dp)
+                            )
+                            Text(
+                                text = "当前事件没有可编辑的文章\n右上角\"绑定文章\"添加新的文章\n\n当前事件有 ${recycledCount.value} 篇文章在回收站",
+                                fontSize = 14.sp,
+                                color = Color.Gray,
+                                lineHeight = 16.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                        }
+                    }
+
                 }
 
             }
@@ -157,7 +192,11 @@ fun EventUtilButton (event: Event, noteList: MutableList<NoteFile>, onEventUpdat
             onClick = {expended = true},
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
         ) {
-            Image(painter = painterResource(R.mipmap.ic_add_note), contentDescription = "", modifier = Modifier.size(20.dp))
+            Text(
+                text = "绑定事件",
+                fontSize = 14.sp,
+                color = SkyBlue
+            )
         }
 
         CascadeDropdownMenu(

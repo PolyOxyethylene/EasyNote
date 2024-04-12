@@ -283,10 +283,27 @@ object EventUtil {
     }
 
     /**
+     *  通过事件的 id 查询对应事件并将其与指定的文章绑定
+     *  用于恢复回收状态的文章与事件的重新绑定
+     *  @param eventId 事件 id
+     */
+    fun bindNote2Event (eventId: Int): Boolean {
+        val event = eventMap[eventId]
+        event?.also {
+            it.noteCount++
+            // 更新数据库中的记录
+            updateEvent(it)
+        }
+        updateEventList()
+        return true
+    }
+
+    /**
      *  解除文章和事件的绑定关系
      *  @param note 需要解绑的文章
+     *  @param recycle 区分文章是被回收（暂时解绑）还是永久解绑，默认 false 即默认是永久解绑
      */
-    fun unbindNote (note: NoteFile): Boolean {
+    fun unbindNote (note: NoteFile, recycle: Boolean = false): Boolean {
 
         if (note.eventId == 0) return false
 
@@ -294,10 +311,13 @@ object EventUtil {
 
             it.noteCount--
 
-            note.eventId = 0
+            // 如果是永久解绑，需要从此侧更新文章状态
+            if (!recycle) {
+                note.eventId = 0
+                FileUtil.updateFile(note)
+            }
 
             // 更新数据库
-            FileUtil.updateFile(note)
             updateEvent(it)
 
             return true

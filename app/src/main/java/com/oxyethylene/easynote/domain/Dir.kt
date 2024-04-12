@@ -21,9 +21,20 @@ class Dir(
     override var createTime: String
 ) : Dentry {
 
-    override val type: FileType = FileType.DIRECTORY    // 文件类型固定为 目录
+    /**
+     * 文件类型固定为 目录
+     */
+    override val type: FileType = FileType.DIRECTORY
 
-    private var files = ArrayList<Dentry> ()   // 该目录下的文件集合
+    /**
+     * 该目录下的文件集合
+     */
+    private var files = ArrayList<Dentry> ()
+
+    /**
+     * 该目录下已回收的文件数
+     */
+    var recycleCount = 0
 
     companion object {
 
@@ -42,16 +53,32 @@ class Dir(
 
     }
 
-    // 往文件集合中添加新文件，可以是目录也可以是笔记文件
-    fun addFile (file : Dentry) {
-        files.add(file)
+    /**
+     * 往文件集合中添加新文件，可以是目录也可以是笔记文件
+     * @param file 要添加的文件
+    */
+    fun addFile (file : Dentry): Boolean {
+        return files.add(file)
     }
 
-    // 获取文件列表
+    /**
+     * 从文件集合中移除文件，可以是目录也可以是笔记文件
+     * @param file 要移除的文件
+     */
+    fun removeFile (file : Dentry): Boolean {
+        return files.remove(file)
+    }
+
+    /**
+     * 获取文件列表
+     */
     fun getFileList () = files
 
-    // 目录是否为空
-    fun isEmpty() = files.isEmpty()
+    /**
+     * 目录是否为空
+     * @return 当且仅当文件列表为空且没有回收状态文件时返回 true
+     */
+    fun isEmpty() = files.isEmpty() && recycleCount == 0
 
     override fun toFileEntity(): FileEntity {
         return FileEntity(

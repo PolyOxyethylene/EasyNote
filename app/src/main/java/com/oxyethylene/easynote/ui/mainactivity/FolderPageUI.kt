@@ -3,6 +3,8 @@ package com.oxyethylene.easynote.ui.mainactivity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.view.Gravity
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
@@ -329,7 +331,7 @@ fun FileList(viewModel: MainViewModel = MainViewModel()) {
         label = ""
     ) {
 
-        if (it.getFileList().size == 0) {
+        if (it.isEmpty()) {
 
             Column (
                 modifier = Modifier.fillMaxSize(),
@@ -414,33 +416,76 @@ fun onAlterButtonClick (item: Dentry, context: Context) {
             ): Boolean {
                 when (text) {
                     "删除" ->
-                        if (item is Dir && !item.isEmpty()) {
-                            PopNotification.build(MIUIStyle()).setMessage("目录 \"${item.fileName}\" 内部有其他文件，不能删除").show()
-                        }
-                        else if (item is NoteFile && item.eventId != 0) {
+                        if (item is Dir) {
+                            // 如果目录不为空，无法删除
+                            if (!item.isEmpty()) {
+                                PopNotification.build(MIUIStyle()).setMessage("目录 \"${item.fileName}\" 内部有其他文件，不能删除").show()
+                            } else {
+                                FileUtil.deleteFileEntry(item.fileId, context)
+                            }
+                        } else {
                             MessageDialog.build(MIUIStyle())
                                 .setTitle("删除文章")
-                                .setMessage("当前文章已绑定事件，是否删除?")
-                                .setCancelButton("取消")
-                                .setOkButton("确定")
-                                .setOkButtonClickListener(
-                                    OnDialogButtonClickListener {
-                                        dialog, v ->
-                                        EventUtil.unbindNote(item)
-                                        if (item.hasBindedKeywords()) {
-                                            KeywordUtil.unbindNoteFromKw(item.keywordList, item.fileId)
-                                        }
-                                        FileUtil.deleteFileEntry(item.fileId, context)
-                                        return@OnDialogButtonClickListener false
+                                .setMessage("将当前文章放到回收站")
+                                .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
+                                .setButtonOrientation(LinearLayout.VERTICAL)
+                                .setOkButton("删除")
+                                .setOkButtonClickListener {
+                                    _, _ ->
+                                    val res = FileUtil.recycleNote(item.fileId)
+                                    if (res) {
+                                        PopNotification.build(MIUIStyle()).setMessage("删除成功，可在回收站找到该文章").show()
+                                    } else {
+                                        PopNotification.build(MIUIStyle()).setMessage("未知异常，请联系开发者").show()
                                     }
-                                ).show()
-                        } else {
-                            // 如果是文章，还要删除绑定的关键词
-                            if (item is NoteFile && item.hasBindedKeywords()) {
-                                KeywordUtil.unbindNoteFromKw(item.keywordList, item.fileId)
-                            }
-                            FileUtil.deleteFileEntry(item.fileId, context)
+                                    return@setOkButtonClickListener false
+                                }
+                                .setOtherButton("彻底删除")
+                                .setOtherButtonClickListener {
+                                        _, _ ->
+                                    MessageDialog.build(MIUIStyle())
+                                        .setTitle("彻底删除")
+                                        .setMessage("此操作将会把文章彻底删除，是否继续?")
+                                        .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
+                                        .setOkButton("确定")
+                                        .setOkButtonClickListener {
+                                            _, _ ->
+                                            if (item is NoteFile && item.eventId != 0) {
+                                                MessageDialog.build(MIUIStyle())
+                                                    .setTitle("删除文章")
+                                                    .setMessage("当前文章已绑定事件，是否删除?")
+                                                    .setCancelButton("取消")
+                                                    .setOkButton("确定")
+                                                    .setOkButtonClickListener(
+                                                        OnDialogButtonClickListener {
+                                                                dialog, v ->
+                                                            EventUtil.unbindNote(item)
+                                                            if (item.hasBindedKeywords()) {
+                                                                KeywordUtil.unbindNoteFromKw(item.keywordList, item.fileId)
+                                                            }
+                                                            FileUtil.deleteFileEntry(item.fileId, context)
+                                                            PopNotification.build(MIUIStyle()).setMessage("文件已彻底删除").show()
+                                                            return@OnDialogButtonClickListener false
+                                                        }
+                                                    ).show()
+                                            } else {
+                                                // 如果是文章，还要删除绑定的关键词
+                                                if (item is NoteFile && item.hasBindedKeywords()) {
+                                                    KeywordUtil.unbindNoteFromKw(item.keywordList, item.fileId)
+                                                }
+                                                FileUtil.deleteFileEntry(item.fileId, context)
+                                                PopNotification.build(MIUIStyle()).setMessage("文件已彻底删除").show()
+                                            }
+                                            return@setOkButtonClickListener false
+                                        }
+                                        .setCancelButton("取消")
+                                        .show()
+                                    return@setOtherButtonClickListener false
+                                }
+                                .setCancelButton("取消")
+                                .show()
                         }
+
                     "重命名" -> {
                         InputDialog.build(MIUIStyle())
                             .setTitle("重命名文件")

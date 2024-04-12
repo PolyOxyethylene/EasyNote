@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.os.Handler
 import android.os.Message
+import androidx.compose.runtime.MutableState
 import com.oxyethylene.easynote.common.constant.DIRECTORY_INIT_SUCCESS
 import com.oxyethylene.easynote.common.constant.EASYNOTE_BACKUP_FOLDER
 import com.oxyethylene.easynote.common.constant.FILE_DELETE_SUCCESS
@@ -16,10 +17,14 @@ import com.oxyethylene.easynote.domain.Dentry
 import com.oxyethylene.easynote.domain.Dir
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.viewmodel.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Stack
 import java.util.TreeMap
 import kotlin.concurrent.thread
+import kotlin.math.abs
 
 
 /**
@@ -38,38 +43,65 @@ import kotlin.concurrent.thread
  */
 object FileUtil {
 
-    // 统一管理文件的 id
+    /**
+     * 统一管理文件的 id
+     */
     private var fileId = 0
 
-    // 目录文件的计数器
+    /**
+     * 目录文件的计数器
+     */
     private var countOfDir = 0
 
-    // 文章的计数器
+    /**
+     * 文章的计数器
+     */
     private var countOfNote = 0;
 
-    // 根目录
+    /**
+     * 根目录
+     */
     val root = Dir(0, "根目录", null, "")
 
-    // 当前目录，初始化时为根目录
+    /**
+     * 当前目录，初始化时为根目录
+     */
     private var currentDirectory : Dir
 
-    // 管理文件和 id 的映射关系
+    /**
+     * 管理文件和 id 的映射关系
+     */
     private val fileMap = HashMap<Int, Dentry>()
 
-    // 绑定主页面的 viewModel
+    /**
+     * 绑定主页面的 viewModel
+     */
     private var mainViewModel: MainViewModel? = null
 
-    // 数据库
+    /**
+     * 数据库
+     */
     private var database: AppDatabase? = null
 
-    // 主页面的 handler
+    /**
+     * 主页面的 handler
+     */
     private var handler: Handler? = null
 
-    // 数据库 文件类的 dao
+    /**
+     * 数据库 文件类的 dao
+     */
     private var fileDao: FileDao? = null
 
-    // 是否已经初始化，用于保证初始化目录操作只发生一次
+    /**
+     * 是否已经初始化，用于保证初始化目录操作只发生一次
+     */
     private var inited = false
+
+    /**
+     * 回收站的文章数
+     */
+    private var recycleNoteCount = 0
 
     // 必要的初始化
     init {
@@ -127,7 +159,7 @@ object FileUtil {
      *  @param dirId 目录的文件 id
      */
     fun updateDirectory (dirId : Int = currentDirectory.fileId) {
-        currentDirectory = fileMap.get(dirId) as Dir
+        currentDirectory = fileMap[dirId] as Dir
         // 只给 viewModel 提供目录的拷贝
         mainViewModel?.updateCurrentFolder(currentDirectory.clone())
     }
@@ -166,6 +198,9 @@ object FileUtil {
     fun initDirectory () {
         if (!inited) {
             thread {
+                /**
+                 * 初始化目录树
+                 */
                 _initDirectory(root)
 
                 handler?.let {
@@ -192,7 +227,11 @@ object FileUtil {
             // 将所有子文件挂载到当前目录中
             fileList.forEach {
                 file ->
-                if (file.fileId > fileId) fileId = file.fileId
+                // 统计 fileId，取绝对值是因为回收状态的文章 id 是负数
+                if (abs(file.fileId) > fileId) fileId = abs(file.fileId)
+                // 统计回收站文章个数
+                if (file.fileId < 0) recycleNoteCount++
+
                 when(file.fileType) {
                     // 如果子文件是一个目录，那么还需要递归调用该方法初始化子目录
                     FileType.DIRECTORY.ordinal -> {
@@ -240,19 +279,36 @@ object FileUtil {
 
                 deleteFileName = it.fileName
 
-                val path = it.fileId.toString()
+                // 因为可能是回收站文件所以取绝对值
+                val path = abs(it.fileId).toString()
 
                 if (it is Dir || (it is NoteFile && NoteUtil.deleteFile(path, context))) {
                     when(it) {
-                        is Dir -> countOfDir--
-                        is NoteFile -> countOfNote--
+                        is Dir -> {
+                            countOfDir--
+                            //从父目录的文件列表中删除，回收状态的文章不需要这个步骤
+                            deleteItem.parent?.let {
+                                (it as Dir).removeFile(deleteItem)
+                            }
+                        }
+                        is NoteFile -> {
+                            countOfNote--
+                            // 如果文章处于回收状态，需要使回收状态计数器 -1
+                            if (it.fileId < 0) {
+                                recycleNoteCount--
+                                (it.parent as Dir).recycleCount--
+                            } else {
+                                //从父目录的文件列表中删除，回收状态的文章不需要这个步骤
+                                deleteItem.parent?.let {
+                                    (it as Dir).removeFile(deleteItem)
+                                }
+                            }
+                        }
                     }
                     // 如果删除成功，则从数据库中删除该文章的记录
                     fileDao?.deleteFile(it.toFileEntity())
-                    //从父目录的文件列表以及映射 fileMap 中将其删除
-                    deleteItem.parent?.let {
-                        (it as Dir).getFileList().remove(deleteItem)
-                    }
+
+                    // 映射 fileMap 中将其删除
                     fileMap.remove(fileId)
                 }
 
@@ -300,6 +356,112 @@ object FileUtil {
     }
 
     /**
+     * 将指定 id 的文章置为回收状态，放入回收站
+     * 此操作执行的子操作包括：
+     * 1. 从父目录移除当前文件
+     * 2. 与绑定事件暂时解绑（如果有的话）
+     * 3. 与绑定关键词暂时解绑（如果有的话）
+     * @param noteId 文章 id
+     * @return 回收失败会返回 false，
+     * 但是暂时没想到什么情况会失败，可能对已回收的文章再执行此操作会失败吧
+     */
+    fun recycleNote (noteId: Int): Boolean {
+        // 如果是目录，不能回收
+        if (fileMap[noteId] is Dir) {
+            return false
+        }
+        val note = fileMap[noteId] as NoteFile
+        // 如果文章已被回收，不能再次执行此操作
+        if (note.fileId < 0) {
+            return false
+        }
+        // 将自己的状态更新持久化，因为 fileId 是主键，所以需要把原数据（原来为正数的 id）删除再重新插入
+        CoroutineScope(Dispatchers.IO).launch {
+            fileDao?.deleteFile(note.toFileEntity())
+            CoroutineScope(Dispatchers.Main).launch {
+                // 更新 fileMap
+                fileMap.remove(note.fileId)
+                // 从父目录中删除
+                (note.parent as Dir).removeFile(note)
+                // 父目录回收计数器 +1
+                note.parent.recycleCount++
+                // 翻转关键词-文章映射中的 noteId
+                KeywordUtil.revertFileId(note.fileId, note.keywordList)
+                // 取负代表回收状态
+                note.fileId *= -1
+                recycleNoteCount++
+                updateDirectory()
+                fileMap[note.fileId] = note
+                CoroutineScope(Dispatchers.IO).launch {
+                    // 重新保存
+                    fileDao?.insertFile(note.toFileEntity())
+                }
+            }
+        }
+        return true
+    }
+
+    /**
+     * 将指定 id 的文章从回收状态恢复，移出回收站，是 recycleNote 的逆操作
+     * 此操作执行的子操作包括：
+     * 1. 往父目录加入当前文件
+     * 2. 与绑定事件重新绑定（如果有的话）
+     * 3. 与绑定关键词重新绑定（如果有的话）
+     * @param noteId 文章 id
+     * @return 恢复失败会返回 false，
+     * 但是暂时没想到什么情况会失败，可能对已恢复的文章再执行此操作会失败吧
+     */
+    fun recoverNote (noteId: Int): Boolean {
+        // 如果是目录，不能恢复
+        if (fileMap[noteId] is Dir) {
+            return false
+        }
+        val note = fileMap[noteId] as NoteFile
+        // 如果文章已被恢复，不能再次执行此操作
+        if (note.fileId > 0) {
+            return false
+        }
+        // 将自己的状态更新持久化，因为 fileId 是主键，所以需要把原数据（原来为负数的 id）删除再重新插入
+        CoroutineScope(Dispatchers.IO).launch {
+            fileDao?.deleteFile(note.toFileEntity())
+            CoroutineScope(Dispatchers.Main).launch {
+                // 更新 fileMap
+                fileMap.remove(note.fileId)
+                // 加入父目录
+                (note.parent as Dir).addFile(note)
+                // 父目录回收计数器 -1
+                note.parent.recycleCount--
+                // 翻转关键词-文章映射中的 noteId
+                KeywordUtil.revertFileId(note.fileId, note.keywordList)
+                // 取负代表从回收站取出
+                note.fileId *= -1
+                recycleNoteCount--
+                updateDirectory()
+                fileMap[note.fileId] = note
+                CoroutineScope(Dispatchers.IO).launch {
+                    // 重新保存
+                    fileDao?.insertFile(note.toFileEntity())
+                }
+            }
+        }
+        return true
+    }
+
+    /**
+     * 获取回收状态的文章
+     */
+    fun getRecycledNotes (): List<NoteFile> {
+        val list = ArrayList<NoteFile>()
+        fileMap.forEach {fileEntry ->
+            if (fileEntry.key < 0) {
+                // 强转，因为目录文件 id 不会为复数
+                list.add(fileEntry.value as NoteFile)
+            }
+        }
+        return list
+    }
+
+    /**
      *  通过文件的 id 查找文件的保存路径
      *  @param fileId 文件的id
      *  @param separator 路径分隔符
@@ -338,7 +500,7 @@ object FileUtil {
     }
 
     /**
-     *  根据绑定的事件 id 来获取对应的文章
+     *  根据绑定的事件 id 来获取对应的文章，返回的列表中包括回收状态的文章
      *  @param eventId 事件的 id
      */
     fun getNotesByEventId (eventId: Int): MutableList<NoteFile> {
@@ -348,12 +510,37 @@ object FileUtil {
         fileMap.values.forEach {
 
             if (it is NoteFile && it.eventId == eventId) {
-
                 noteList.add(it)
+            }
+        }
+        return noteList
+    }
 
+    /**
+     *  根据绑定的事件 id 来获取对应的文章，并通过参数 recycledCount 返回其中回收状态的文章数量，返回的列表中 不 包括回收状态的文章
+     *  @param eventId 事件的 id
+     *  @param recycledCount 回收状态的文章数量
+     */
+    fun getNotesByEventId (eventId: Int, recycledCount: MutableState<Int>): MutableList<NoteFile> {
+
+        val noteList = ArrayList<NoteFile>()
+
+        var count = 0
+
+        fileMap.values.forEach {
+
+            if (it is NoteFile && it.eventId == eventId) {
+                if (it.fileId > 0) {
+                    noteList.add(it)
+                } else {
+                    // 统计回收状态的文章数量
+                    count++
+                }
             }
 
         }
+        recycledCount.value = count
+
         return noteList
     }
 
@@ -483,6 +670,12 @@ object FileUtil {
      *  @return 文章数量
      */
     fun getNoteCount () = countOfNote
+
+    /**
+     *  获取回收站的文章数量
+     *  @return 文章数量
+     */
+    fun getRecycleNoteCount () = recycleNoteCount
 
     /**
      *  获取目录数量

@@ -158,6 +158,7 @@ object KeywordUtil {
     fun initKw2NoteMap (noteId: Int, keywordList: TreeSet<Int>) {
 
         keywordList.forEach { id ->
+            // 如果还没有该关键词 id 的条目，就新创建一个 HashSet
             if (!kw2NoteMap.keys.contains(id)) {
                 kw2NoteMap[id] = HashSet()
             }
@@ -166,6 +167,32 @@ object KeywordUtil {
 
         update()
 
+    }
+
+    /**
+     * 在文章被回收或恢复的时候调用，翻转 kw2NoteMap 里原本的 fileId
+     * @param noteId 文章 id（翻转前的）
+     * @param keywordList 文章关联的关键词集合
+     */
+    fun revertFileId (noteId: Int, keywordList: TreeSet<Int>) {
+
+        keywordList.forEach { id ->
+            // 如果还没有该关键词 id 的条目，就新创建一个 HashSet
+            if (!kw2NoteMap.keys.contains(id)) {
+                kw2NoteMap[id] = HashSet()
+            } else {
+                // 如果包含这个 noteId，进行翻转
+                if (kw2NoteMap[id]!!.contains(noteId)) {
+                    kw2NoteMap[id]!!.remove(noteId)
+                    kw2NoteMap[id]!!.add(-noteId)
+                }
+                // 否则直接添加翻转后的 noteId（一般不会有这一步，不过以防万一）
+                else {
+                    kw2NoteMap[id]!!.add(-noteId)
+                }
+            }
+        }
+        update()
     }
 
     /**

@@ -47,7 +47,7 @@ fun StatisticsPageUI () {
 
         Column(Modifier.verticalScroll(rememberScrollState())) {
 
-            Column (
+            Row (
                 modifier = Modifier.wrapContentHeight()
                     .padding(start = 20.dp, end = 20.dp, top = 25.dp)
                     .fillMaxWidth()
@@ -55,20 +55,16 @@ fun StatisticsPageUI () {
                     .background(Color.White),
             ) {
 
-                HeadingWithTail("总数","${FileUtil.getDirCount() + FileUtil.getNoteCount() + EventUtil.getEventCount() + KeywordUtil.getKeywordCount()}", Modifier.padding(start = 20.dp, top = 20.dp))
-
-                Row (
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp).fillMaxWidth()
-                ) {
-                    HeadingWithTail("目录", "${FileUtil.getDirCount()}")
-                    HeadingWithTail("文章", "${FileUtil.getNoteCount()}", Modifier.padding(start = 100.dp))
+                Column (Modifier.fillMaxWidth(0.5f).padding(bottom = 20.dp)) {
+                    HeadingWithTail("总数","${FileUtil.getDirCount() + FileUtil.getNoteCount() + EventUtil.getEventCount() + KeywordUtil.getKeywordCount()}", Modifier.padding(start = 20.dp, top = 20.dp))
+                    HeadingWithTail("文章(总数)", "${FileUtil.getNoteCount()}", Modifier.padding(start = 20.dp, top = 10.dp))
+                    HeadingWithTail("事件", "${EventUtil.getEventCount()}", Modifier.padding(start = 20.dp, top = 10.dp))
                 }
 
-                Row (
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp).fillMaxWidth()
-                ) {
-                    HeadingWithTail("事件", "${EventUtil.getEventCount()}")
-                    HeadingWithTail("关键词", "${KeywordUtil.getKeywordCount()}", Modifier.padding(start = 100.dp))
+                Column (Modifier.fillMaxWidth().padding(bottom = 20.dp)) {
+                    HeadingWithTail("目录", "${FileUtil.getDirCount()}", Modifier.padding(top = 20.dp))
+                    HeadingWithTail("文章(回收站)", "${FileUtil.getRecycleNoteCount()}", Modifier.padding(top = 10.dp))
+                    HeadingWithTail("关键词", "${KeywordUtil.getKeywordCount()}", Modifier.padding(top = 10.dp))
                 }
 
             }
@@ -85,19 +81,20 @@ fun StatisticsPageUI () {
  * @param tail 尾部描述文本
  */
 @Composable
-fun HeadingWithTail (heading: String, tail: String, modifier: Modifier = Modifier) {
+fun HeadingWithTail (heading: String = " ", tail: String = " ", modifier: Modifier = Modifier) {
 
-    Row (modifier) {
+    Column (modifier) {
         Text(heading,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.DarkGray
+            fontSize = 14.sp,
+//            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            color = GreyDarker
         )
         Text(tail,
-            fontSize = 16.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = GreyDarker,
-            modifier = Modifier.padding(start = 10.dp, top = 6.dp)
+            color = Color.DarkGray,
+            modifier = Modifier.padding(top = 2.dp)
         )
     }
 

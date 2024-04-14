@@ -49,7 +49,7 @@ val editorSettingList =
         DropDownMenuSetting(
             settingName = "行高",
             menuList = listOf(
-                Pair(-1, "1"),
+                Pair(-1, "1.0"),
                 Pair(-1, "1.5")
             ),
             value = SettingUtil.lineHeight.toString(),
@@ -81,15 +81,6 @@ val editorSettingList =
         )
     )
 
-val labSettingList =
-    listOf<SettingEntry>(
-        SwitchSetting(
-            settingName = "开启关键词提取",
-            state = SettingUtil.autoExtraction,
-            onValueChanged = { SettingUtil.autoExtraction = it },
-            description = "通过向服务器上传您的文章内容自动提取关键词和摘要",
-            warning = "此功能需要连接互联网并发送您的文章内容"
-        )
-    )
+
 
 

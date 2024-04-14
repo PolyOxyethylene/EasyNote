@@ -1,5 +1,6 @@
 package com.oxyethylene.easynote.util
 
+import android.content.Context
 import android.view.Gravity
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
@@ -16,6 +17,7 @@ import com.oxyethylene.easynote.ui.components.ShowExtractionDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Properties
 import java.util.TreeSet
 
 /**
@@ -30,8 +32,31 @@ import java.util.TreeSet
  */
 object NlpUtil {
 
-    // 客户端对象
+    /**
+     * 客户端对象
+     */
     private var nlpClient: HanLPClient? = null
+
+    /**
+     * Hanlp 用户密钥
+     */
+    private var hanlpAuthKey = ""
+
+    /**
+     * 初始化，从配置文件中读取密钥信息
+     * @param 应用上下文
+     */
+    fun init (context: Context) {
+
+        val prop = Properties();
+
+        prop.load(context.assets.open("auth.properties"))
+
+        hanlpAuthKey = prop.getProperty("HANLP_AUTH")
+
+    }
+
+
 
     /**
      * 获取文本的摘要和关键词
@@ -41,7 +66,7 @@ object NlpUtil {
     fun getExtractionAndKeywords (content: String, onKeywordUpdate: () -> Unit = {}) {
 
         if (nlpClient == null) {
-            nlpClient = HanLPClient("https://www.hanlp.com/api", "NDczMEBiYnMuaGFubHAuY29tOklwZmFkNFRFMDNQbFQ5S1A=", "zh", 1000)
+            nlpClient = HanLPClient("https://www.hanlp.com/api", hanlpAuthKey, "zh", 1000)
         }
 
         var result: NLPResult?

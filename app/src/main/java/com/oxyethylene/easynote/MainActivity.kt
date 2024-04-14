@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
+import com.drake.net.NetConfig
+import com.drake.net.okhttp.setErrorHandler
 import com.kongzue.dialogx.DialogX
 import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.style.MIUIStyle
@@ -35,6 +37,7 @@ import com.oxyethylene.easynote.common.constant.FILE_DELETE_SUCCESS
 import com.oxyethylene.easynote.common.constant.FILE_RENAME_SUCCESS
 import com.oxyethylene.easynote.common.constant.FILE_UPDATE_SUCCESS
 import com.oxyethylene.easynote.database.AppDatabase
+import com.oxyethylene.easynote.errorhandler.GPTErrorHandler
 import com.oxyethylene.easynote.ui.mainactivity.EventPageArea
 import com.oxyethylene.easynote.ui.mainactivity.FolderMenuArea
 import com.oxyethylene.easynote.ui.mainactivity.TopMenuBar
@@ -47,6 +50,8 @@ import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.FileUtil.initDirectory
 import com.oxyethylene.easynote.util.FileUtil.initFileUtil
 import com.oxyethylene.easynote.util.FileUtil.updateDirectory
+import com.oxyethylene.easynote.util.GPTUtil
+import com.oxyethylene.easynote.util.NlpUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import com.oxyethylene.easynote.viewmodel.factory.MainViewModelFactory
 import kotlinx.coroutines.launch
@@ -91,9 +96,20 @@ class MainActivity : ComponentActivity() {
         // 初始化工具类
         initFileUtil(viewModel, database, handler)
         initEventUtil(viewModel, database, handler)
-//        initSearchBoxUtil(handler)
 
+        // 初始化默认备份目录
         FileUtil.initDefaultBackupDir()
+
+        // 初始化 Net 全局配置
+        NetConfig.initialize {
+            connectTimeout(15, java.util.concurrent.TimeUnit.MINUTES)
+            setErrorHandler(GPTErrorHandler())
+        }
+
+        // 初始化 hanlp 工具类
+        NlpUtil.init(this)
+        // 初始化 gpt 工具类
+        GPTUtil.init(this)
 
         // 初始化目录结构
         initDirectory()

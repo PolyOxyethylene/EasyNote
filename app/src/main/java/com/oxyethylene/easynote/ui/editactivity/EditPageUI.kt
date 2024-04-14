@@ -54,6 +54,8 @@ import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
 import com.kongzue.dialogx.interfaces.OnMenuItemSelectListener
 import com.kongzue.dialogx.style.MIUIStyle
 import com.oxyethylene.easynote.R
+import com.oxyethylene.easynote.common.constant.EXTRACTION_MODEL_DEFAULT
+import com.oxyethylene.easynote.common.constant.EXTRACTION_MODEL_GPT
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.ui.components.ShowKeywordsDialog
 import com.oxyethylene.easynote.ui.theme.GreyDarker
@@ -61,9 +63,11 @@ import com.oxyethylene.easynote.ui.theme.GreyLighter
 import com.oxyethylene.easynote.ui.theme.LightBlue
 import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.util.FileUtil
+import com.oxyethylene.easynote.util.GPTUtil
 import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NlpUtil
 import com.oxyethylene.easynote.util.NoteUtil
+import com.oxyethylene.easynote.util.SettingUtil
 import me.saket.cascade.CascadeDropdownMenu
 
 /**
@@ -365,7 +369,10 @@ fun AutoExtractionButton (modifier: Modifier = Modifier, onKeywordUpdate: () -> 
        modifier = modifier
            .clickable (
            onClick = {
-               NlpUtil.getExtractionAndKeywords(getContent(), onKeywordUpdate)
+               when (SettingUtil.extractionModel) {
+                   EXTRACTION_MODEL_DEFAULT -> NlpUtil.getExtractionAndKeywords(getContent(), onKeywordUpdate)
+                   EXTRACTION_MODEL_GPT -> GPTUtil.getExtractions(getContent(), onKeywordUpdate)
+               }
            },
            indication = null,
            interactionSource = MutableInteractionSource()

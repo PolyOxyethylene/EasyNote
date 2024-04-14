@@ -25,3 +25,10 @@ const val FONT_FAMILY_DEFAULT = "default"
  * 第三方字体-得意黑
  */
 const val FONT_FAMILY_SMILEYSANS = "SmileySans"
+
+/**
+ * 默认使用的语言分析模型
+ */
+const val EXTRACTION_MODEL_DEFAULT = "HanLP"
+
+const val EXTRACTION_MODEL_GPT = "GPT-3.5"

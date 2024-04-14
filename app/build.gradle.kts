@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.4.5.4-beta"
+        versionName = "0.4.5.5-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
@@ -99,8 +99,8 @@ dependencies {
 
     // 下面是自己导入的
     // viewmodel + livedata + Jetpack Compose State 整合
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-    implementation ("androidx.compose.runtime:runtime-livedata:1.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
 
     // navigation
 //    val nav_version = "2.5.3"
@@ -137,25 +137,25 @@ dependencies {
     // 正式版
 //    implementation ("com.kongzue.dialogx:DialogX:$dialogx_version_release")
     // 测试版
-    implementation ("com.github.kongzue.DialogX:DialogX:$dialogx_version_beta")
+    implementation("com.github.kongzue.DialogX:DialogX:$dialogx_version_beta")
 
     // DialogX MIUI 主题
     // 正式版
 //    implementation ("com.kongzue.dialogx.style:DialogXMIUIStyle:$dialogx_version_release")
     // 测试版
-    implementation ("com.github.kongzue.DialogX:DialogXMIUIStyle:$dialogx_version_beta")
+    implementation("com.github.kongzue.DialogX:DialogXMIUIStyle:$dialogx_version_beta")
 
     // DialogX 扩展组件
     val dialogx_sample_version = "0.0.13"
     //文件选择对话框
-    implementation ("com.github.kongzue.DialogXSample:FileDialog:$dialogx_sample_version")
+    implementation("com.github.kongzue.DialogXSample:FileDialog:$dialogx_sample_version")
 
     // PermissionX
-    implementation ("com.guolindev.permissionx:permissionx:1.7.1")
+    implementation("com.guolindev.permissionx:permissionx:1.7.1")
 
     // Cascade 下拉菜单
     val cascade_version = "2.3.0"
-    implementation ("me.saket.cascade:cascade-compose:$cascade_version")
+    implementation("me.saket.cascade:cascade-compose:$cascade_version")
 
     // 支持子菜单的 FAB
     implementation("com.leinardi.android:speed-dial.compose:1.0.0-alpha04")
@@ -175,6 +175,19 @@ dependencies {
 
     // 简化 Android 开发的 Kotlin 工具类集合
     val androidKTX_version = "1.1.0"
-    implementation ("io.github.androidktx:android-ktx:$androidKTX_version")
+    implementation("io.github.androidktx:android-ktx:$androidKTX_version")
+
+    // kotlin 协程
+    val coroutines_version = "1.7.3"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version") // 协程(版本自定)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
+
+    // OkHttp
+    val okhttp_version = "4.12.0"
+    implementation("com.squareup.okhttp3:okhttp:$okhttp_version") // 要求OkHttp4以上
+
+    // Net 基于协程和 OkHttp3 的网络请求框架
+    val net_version = "3.6.4"
+    implementation("com.github.liangjingkanji:Net:$net_version")
 
 }

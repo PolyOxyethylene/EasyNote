@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">EasyNote</string>
-    <string name="app_version_code">0.4.5.4-beta</string>
+    <string name="app_version_code">0.4.5.5-beta</string>
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
@@ -11,6 +11,7 @@
     <string name="title_activity_lab_setting">LabSettingActivity</string>
     <string name="title_activity_license_info">LicenseInfoActivity</string>
     <string name="title_activity_thanks">ThanksActivity</string>
+    <string name="title_activity_backup_setting">BackupSettingActivity</string>
     <string name="app_info">
         你好！\n我是 Easy Note 的开发者，很高兴你能测试使用本应用。\n目前本应用还处于开发阶段，很多功能还没有完成，如果有相关的 bug 可以联系我。
     </string>
@@ -61,6 +62,7 @@
     <!--        修复了关键词相关的 Bug-->
     <!--    </string>-->
     <string-array name="version_sketch_list">
+        <item>v0.4.5.5-beta^新增 gpt—3.5—turbo 模型可选项，用于文章分析(暂时还不太稳定)</item>
         <item>v0.4.5.4-beta^新增回收站功能</item>
         <item>v0.4.5.3-beta^修复了设置项“行高”的显示错误问题-重构了文章搜索功能的 UI</item>
         <item>v0.4.5.2-beta^修复了关键词相关的一些 bug</item>
@@ -89,6 +91,6 @@
         <item>为什么我运行这个 App 的时候感觉手机卡卡的?代码水平有限，运行卡很正常。\n建议使用骁龙™865/天玑8000系列/天玑9000系列及以上处理器的手机来使用本款应用</item>
         <item>为什么这个 App 的实际大小这么大，缓存哪来的?本应用产生的缓存主要来自您文章中插入的图片。\n为了让您放心删除设备上的原图片，文章中的图片都是保存在缓存中的副本。\n所以请您注意，如果您选择清除应用缓存(或者使用系统的垃圾清理功能)，您文章中的图片将会丢失。\n后续更新将会提供应用内清除图片的功能，并将图片副本移至应用存储中(即无需担心因为清除应用缓存而删除图片)</item>
     </string-array>
-    <string name="title_activity_backup_setting">BackupSettingActivity</string>
-
+    
+    <string name="gpt_request_content_prefix">请从以下文字中提取出摘要，并给出用一句话总结的标题，并提供相关的关键词，返回的格式为第一行标题，并用“^标题^”开头，并在标题末尾添加结束符“^标题结束^”；第二行开始是摘要，并用“^摘要^”开头，并在摘要末尾添加结束符“^摘要结束^”；第三行开始是关键词列表，并用“^关键词^”开头，关键词之间使用|分隔, 并在关键词列表的末尾添加结束符“^关键词结束^”：</string>
 </resources>

@@ -2,6 +2,8 @@ package com.oxyethylene.easynote.util
 
 import com.drake.serialize.serialize.serialLazy
 import com.oxyethylene.easynote.common.constant.EASYNOTE_BACKUP_FOLDER
+import com.oxyethylene.easynote.common.constant.EXTRACTION_MODEL_DEFAULT
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_DEFAULT
 
 /**
  * Created with IntelliJ IDEA.
@@ -68,11 +70,16 @@ object SettingUtil {
     /**
      * 编辑器字体，默认值是系统默认字体
      */
-    var fontFamily by serialLazy("default")
+    var fontFamily by serialLazy(FONT_FAMILY_DEFAULT)
 
     /**
      * 文件导出的文件夹，默认为 Documents/EasyNote
      */
     var backupPath by serialLazy(EASYNOTE_BACKUP_FOLDER)
+
+    /**
+     * 文章分析使用的语言模型
+     */
+    var extractionModel by serialLazy(EXTRACTION_MODEL_DEFAULT)
 
 }

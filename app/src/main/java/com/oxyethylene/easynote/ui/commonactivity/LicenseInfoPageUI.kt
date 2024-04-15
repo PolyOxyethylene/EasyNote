@@ -1,7 +1,10 @@
 package com.oxyethylene.easynote.ui.commonactivity
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -57,6 +60,8 @@ fun LicenseInfoPageUI () {
                 Text(info.substring(0, i), color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold, lineHeight = 16.sp, letterSpacing = 0.sp, modifier = Modifier.padding(top = 8.dp, bottom = 0.dp))
                 Text(info.substring(i+1), color = SkyBlue, fontSize = 12.sp, lineHeight = 14.sp, letterSpacing = 0.sp, textDecoration = TextDecoration.Underline)
             }
+
+            Row(Modifier.fillMaxWidth().height(20.dp)) {  }
 
         }
     }

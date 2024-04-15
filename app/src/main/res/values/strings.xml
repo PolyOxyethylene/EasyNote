@@ -20,16 +20,19 @@
     </string>
     <string-array name="open_source_software_info">
         <item>Android Jetpack^https://developer.android.google.cn/jetpack</item>
+        <item>kotlin-coroutines^https://github.com/Kotlin/kotlinx.coroutines</item>
         <item>DialogX^https://github.com/kongzue/DialogX</item>
         <item>DialogXSample^https://github.com/kongzue/DialogXSample</item>
         <item>richeditor-android^https://github.com/wasabeef/richeditor-android</item>
         <item>cascade^https://github.com/saket/cascade</item>
         <item>Serialize^https://github.com/liangjingkanji/Serialize</item>
+        <item>Net^https://github.com/liangjingkanji/Net</item>
         <item>FloatingActionButtonSpeedDial^https://github.com/leinardi/FloatingActionButtonSpeedDial</item>
         <item>Gson^https://github.com/google/gson</item>
         <item>GsonFactory^https://github.com/getActivity/GsonFactory</item>
         <item>HanLP^https://github.com/hankcs/HanLP</item>
         <item>AndroidKTX^https://github.com/AndroidKTX/AndroidKTX</item>
+        <item>OkHttp^https://github.com/square/okhttp</item>
     </string-array>
     <string name="app_design_info">
         CopyRight © 2023 PolyOxyethylene. All Rights Reserved.\n\n本应用所使用图标部分来自 iconfont 图标库\n\n本应用使用的第三方字体 得意黑 来自 https://atelier-anchor.com/\n\n软件界面风格基于 纯纯写作 以及 椒盐笔记 二次创作\n\n软件部分对话框界面设计风格参照 MIUI (来自开源库 DialogX-MIUIStyle)

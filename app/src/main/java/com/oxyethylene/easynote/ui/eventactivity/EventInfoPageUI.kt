@@ -193,7 +193,7 @@ fun EventUtilButton (event: Event, noteList: MutableList<NoteFile>, onEventUpdat
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
         ) {
             Text(
-                text = "绑定事件",
+                text = "绑定文章",
                 fontSize = 14.sp,
                 color = SkyBlue
             )

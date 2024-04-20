@@ -1,6 +1,13 @@
-# Easy Note
+<div align="center">
+<img src="docs/assets/logo.png" style="width:50px" />
+
+<h1 align="center">Easy Note</h1> 
+
+![](https://img.shields.io/badge/EasyNote-v0.4.5.6%20beta-0099ff)
 
 🌐 View [English Document](./README_EN.md)
+
+</div>
 
 本应用是一个简单的本地富文本编辑软件。
 
@@ -14,11 +21,11 @@
 - [x] 插入图片
 - [x] 插入视频
 - [x] 插入音频
+- [x] 无序列表
+- [x] 有序列表
 
 **后续准备加入的编辑功能**：
 
-- [ ] 无序列表
-- [ ] 有序列表
 - [ ] 上标/下标
 
 **后续准备加入/完善的其他功能**：
@@ -28,7 +35,7 @@
 - [x] 回收站
 - [x] 简易归档
 - [x] 手动编辑关键词
-- [x] 文章关键词提取（实验性功能，By [HanLP](https://github.com/hankcs/HanLP)）
+- [x] 文章关键词提取（实验性功能，By [HanLP](https://github.com/hankcs/HanLP) and [chatanywhere](https://github.com/chatanywhere/GPT_API_free)）
 
 ## 快照 Snapshot
 

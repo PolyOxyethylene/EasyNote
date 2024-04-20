@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.Gravity
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
+import com.drake.net.utils.TipUtils
 import com.hankcs.hanlp.restful.HanLPClient
 import com.kongzue.dialogx.dialogs.FullScreenDialog
 import com.kongzue.dialogx.dialogs.MessageDialog
@@ -17,6 +18,7 @@ import com.oxyethylene.easynote.ui.components.ShowExtractionDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.Properties
 import java.util.TreeSet
 
@@ -95,26 +97,38 @@ object NlpUtil {
 
         // 上传服务端获取分析结果
         CoroutineScope(Dispatchers.IO).launch {
-            val keywords = nlpClient?.keyphraseExtraction(content)
-            val summarization = nlpClient?.abstractiveSummarization(content)
-            // 封装分析结果
-            CoroutineScope(Dispatchers.Main).launch {
-                result = NLPResult(summarization?:"", keywords?.keys?:TreeSet<String>())
-                WaitDialog.dismiss()
-                FullScreenDialog.show(object : OnBindView<FullScreenDialog>(R.layout.text_extraction_dialog_layout){
-                    override fun onBind(dialog: FullScreenDialog?, v: View?) {
-                        val composeView = v?.findViewById<ComposeView>(R.id.text_extraction_compose_view)
+            try {
+                val keywords = nlpClient!!.keyphraseExtraction(content)
+                val summarization = nlpClient!!.abstractiveSummarization(content)
+                // 封装分析结果
+                if (keywords.isNotEmpty() && summarization.isNotEmpty() && summarization.isNotBlank()) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        result = NLPResult(summarization?:"", keywords?.keys?: TreeSet<String>())
+                        WaitDialog.dismiss()
+                        FullScreenDialog.show(object : OnBindView<FullScreenDialog>(R.layout.text_extraction_dialog_layout){
+                            override fun onBind(dialog: FullScreenDialog?, v: View?) {
+                                val composeView = v?.findViewById<ComposeView>(R.id.text_extraction_compose_view)
 
-                        composeView?.setContent {
-                            ShowExtractionDialog(
-                                extraction = result?:NLPResult(),
-                                onKeywordUpdate = onKeywordUpdate
-                            ) {
-                                dialog?.dismiss()
+                                composeView?.setContent {
+                                    ShowExtractionDialog(
+                                        extraction = result?:NLPResult(),
+                                        onKeywordUpdate = onKeywordUpdate
+                                    ) {
+                                        dialog?.dismiss()
+                                    }
+                                }
                             }
-                        }
+                        })
                     }
-                })
+                }
+
+            } catch (ex: IOException) {
+                CoroutineScope(Dispatchers.Main).launch {
+
+                    WaitDialog.dismiss()
+                    TipUtils.toast("请求失败，请检查文章内容或者网络情况")
+
+                }
             }
         }
     }

@@ -24,7 +24,23 @@ const val FONT_FAMILY_DEFAULT = "default"
 /**
  * 第三方字体-得意黑
  */
-const val FONT_FAMILY_SMILEYSANS = "SmileySans"
+//const val FONT_FAMILY_SMILEYSANS = "SmileySans"
+
+/**
+ * 第三方字体-霞鹜新晰黑
+ */
+const val FONT_FAMILY_NEO_XIHEI = "NeoXiHei"
+
+/**
+ * 第三方字体-霞鹜文楷
+ */
+const val FONT_FAMILY_WENKAI = "WenKai"
+
+/**
+ * 第三方字体-霞鹜悠哉
+ */
+const val FONT_FAMILY_YOZAI = "YoZai"
+
 
 /**
  * 默认使用的语言分析模型

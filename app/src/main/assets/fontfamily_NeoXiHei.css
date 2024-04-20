@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'lxgwNeoXiHei';
+    src: url('fonts/LXGWNeoXiHei.ttf') format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
+#editor {
+    font-family: 'lxgwNeoXiHei';
+}

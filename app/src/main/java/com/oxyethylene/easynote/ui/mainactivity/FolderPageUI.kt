@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.view.Gravity
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -69,7 +68,6 @@ import com.oxyethylene.easynote.domain.Dir
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.ui.components.BackIcon
 import com.oxyethylene.easynote.ui.components.FolderIcon
-import com.oxyethylene.easynote.ui.components.MultiSelectIcon
 import com.oxyethylene.easynote.ui.components.SearchIcon
 import com.oxyethylene.easynote.ui.components.SettingIcon
 import com.oxyethylene.easynote.ui.components.TitleBar
@@ -233,16 +231,14 @@ fun FileControllerBar(viewModel: MainViewModel) {
     val currentFolder by viewModel.currentFolder.observeAsState(FileUtil.getCurrentDir())
 
     // 最上方的目录指示条
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+    Box (
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
     ) {
 
-        Row {
-
-            /**
-             *  返回上一级目录
-             */
+        /**
+         *  返回上一级目录
+         */
+        Row (Modifier.align(Alignment.CenterStart)) {
             Button(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
@@ -251,9 +247,10 @@ fun FileControllerBar(viewModel: MainViewModel) {
                 onClick = {
                     if (!isRootDir()) toParentDir()
                     else PopNotification.build(MIUIStyle()).setMessage("你现在已经在根目录了").show()
-                }
+                },
+                modifier = Modifier.align(Alignment.CenterVertically)
             ) {
-                BackIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
+                BackIcon(Modifier.size(20.dp))
             }
             Spacer(Modifier.size(12.dp))
             FolderIcon(Modifier.align(Alignment.CenterVertically).size(22.dp))
@@ -265,47 +262,35 @@ fun FileControllerBar(viewModel: MainViewModel) {
                 modifier = Modifier.align(Alignment.CenterVertically),
                 animationSpec = tween(durationMillis = 250), label = ""
             ) {
-                Text(it.fileName, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold)
+                Text(
+                    text = FileUtil.getNoteFilePath(it.fileId),
+                    fontSize = 16.sp,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(end = 100.dp)
+                )
             }
         }
 
-        Row {
-            /**
-             *  搜索功能按钮
-             *  TODO：搜索功能待优化
-             */
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.DarkGray
-                ),
-                modifier = Modifier.wrapContentWidth(),
-                onClick = {
-                    val intent = Intent("com.oxyethylene.COMMON")
-                    intent.`package` = context.packageName
-                    intent.putExtra("title", "search")
-                    context.startActivity(intent)
-                }
-            ) {
-                SearchIcon(Modifier.size(18.dp).align(Alignment.CenterVertically))
+        /**
+         *  搜索功能按钮
+         *  TODO：搜索功能待优化
+         */
+        Button(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.DarkGray
+            ),
+            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 20.dp).wrapContentWidth(),
+            onClick = {
+                val intent = Intent("com.oxyethylene.COMMON")
+                intent.`package` = context.packageName
+                intent.putExtra("title", "search")
+                context.startActivity(intent)
             }
-
-            /**
-             *  多选按钮，删除文件用的
-             *  TODO：做完基础功能再做这个吧
-             */
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.DarkGray
-                ),
-                modifier = Modifier.wrapContentWidth(),
-                onClick = {
-                    Toast.makeText(context, "多选(还没做)", Toast.LENGTH_SHORT).show()
-                }
-            ) {
-                MultiSelectIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
-            }
+        ) {
+            SearchIcon(Modifier.size(18.dp).align(Alignment.CenterVertically))
         }
 
     }

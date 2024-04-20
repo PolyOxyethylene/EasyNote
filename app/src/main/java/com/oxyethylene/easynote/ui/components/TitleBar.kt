@@ -65,6 +65,7 @@ fun TitleBar(
  *  简单的标题栏，只有返回上一级界面以及一个文字标题
  *  @param title 页面的文字标题
  *  @param modifier 定制外观
+ *  @param rightContent 右边的内容
  */
 @Composable
 fun SimpleTitleBar (
@@ -89,6 +90,39 @@ fun SimpleTitleBar (
         rightContent = { rightContent() }
     ) {
         Text(text = title, color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+    }
+
+}
+
+/**
+ *  简单的标题栏，左边按钮固定为返回上一级界面，中间和右边可定制
+ *  @param modifier 定制外观
+ *  @param centerContent 中间的内容
+ *  @param rightContent 右边的内容
+ */
+@Composable
+fun SimpleTitleBar (
+    modifier: Modifier = Modifier,
+    centerContent: @Composable RowScope.() -> Unit = {},
+    rightContent: @Composable RowScope.() -> Unit = {}
+) {
+
+    val context = LocalContext.current
+
+    TitleBar(
+        modifier = modifier,
+        leftContent = {
+            Button(
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.DarkGray),
+                onClick = {
+                    (context as Activity).finish()
+                }) {
+                BackIcon(Modifier.size(20.dp).align(Alignment.CenterVertically))
+            }
+        },
+        rightContent = { rightContent() }
+    ) {
+        centerContent()
     }
 
 }

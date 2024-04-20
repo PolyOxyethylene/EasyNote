@@ -379,6 +379,13 @@ public class RichEditor extends WebView {
     exec("javascript:RE.setJustifyRight();");
   }
 
+  /**
+   * 新增方法：文字两端对齐
+   */
+  public void setAlignJustify() {
+    exec("javascript:RE.setJustifyFull();");
+  }
+
   public void setBlockquote() {
     exec("javascript:RE.setBlockquote();");
   }
@@ -493,12 +500,7 @@ public class RichEditor extends WebView {
     if (isReady) {
       load(trigger);
     } else {
-      postDelayed(new Runnable() {
-        @Override
-        public void run() {
-          exec(trigger);
-        }
-      }, 100);
+      postDelayed(() -> exec(trigger), 100);
     }
   }
 
@@ -558,15 +560,16 @@ public class RichEditor extends WebView {
 
   private int height;
 
-  //实例化WebView后，调用此方法可滚动到底部
+  /**
+   * 实例化WebView后，调用此方法可滚动到底部
+   */
   public void scrollToBottom() {
     int temp = computeVerticalScrollRange();
     ValueAnimator valueAnimator = ValueAnimator.ofInt(height, temp);
     valueAnimator.setInterpolator(new LinearInterpolator());
     valueAnimator.setDuration(200);
     valueAnimator.addUpdateListener(animation -> {
-      int nowHeight = (int) animation.getAnimatedValue();
-      height = nowHeight;
+      height = (int) animation.getAnimatedValue();
       scrollTo(0, height);
       if (height == temp) {
         //再调用一次，解决不能滑倒底部

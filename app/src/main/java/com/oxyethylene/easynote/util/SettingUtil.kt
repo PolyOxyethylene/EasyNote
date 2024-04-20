@@ -21,28 +21,6 @@ import com.oxyethylene.easynote.common.constant.FONT_FAMILY_DEFAULT
 object SettingUtil {
 
     /**
-     * 字号大小，取值为 1~7 的整数
-     */
-    private var fontSize: Int by serialLazy(1)
-
-    /**
-     * 获取字体大小
-     */
-    fun fontSize() = fontSize
-
-    /**
-     * 设置编辑器字体大小，取值为 1~7 的整数
-     * @param size 字体大小
-     */
-    fun setFontSize(size: Int): Boolean {
-        if (size in 1..7) {
-            fontSize = size
-            return true
-        }
-        return false
-    }
-
-    /**
      * 行高，默认为 1 倍，可选 1.5 倍
      */
     var lineHeight by serialLazy(1.0f)
@@ -81,5 +59,10 @@ object SettingUtil {
      * 文章分析使用的语言模型
      */
     var extractionModel by serialLazy(EXTRACTION_MODEL_DEFAULT)
+
+    /**
+     * 开启自动定位，默认关闭
+     */
+    var enableLocation by serialLazy(false)
 
 }

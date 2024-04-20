@@ -1,7 +1,9 @@
 package com.oxyethylene.easynote.common.arrays
 
 import com.oxyethylene.easynote.common.constant.FONT_FAMILY_DEFAULT
-import com.oxyethylene.easynote.common.constant.FONT_FAMILY_SMILEYSANS
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_NEO_XIHEI
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_WENKAI
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_YOZAI
 import com.oxyethylene.easynote.domain.DropDownMenuSetting
 import com.oxyethylene.easynote.domain.PlainSetting
 import com.oxyethylene.easynote.domain.SettingEntry
@@ -26,31 +28,19 @@ val mainSettingList =
         PlainSetting("统计", "com.oxyethylene.COMMON", "statistics"),
         PlainSetting("备份与导出", "com.oxyethylene.BACKUP"),
         PlainSetting("实验性功能", "com.oxyethylene.COMMON", "lab"),
+        PlainSetting("隐私", "com.oxyethylene.COMMON", "privacy"),
         PlainSetting("关于应用", "com.oxyethylene.INFO")
     )
 
 val editorSettingList =
     listOf(
-        DropDownMenuSetting(
-            settingName = "字体大小",
-            menuList = listOf(
-                Pair(-1, "1"),
-                Pair(-1, "2"),
-                Pair(-1, "3"),
-                Pair(-1, "4"),
-                Pair(-1, "5"),
-                Pair(-1, "6"),
-                Pair(-1, "7")
-            ),
-            value = SettingUtil.fontSize().toString(),
-            onValueChanged = { SettingUtil.setFontSize(it.toInt()) },
-            warning = "有 Bug，暂时不可用"),
 
         DropDownMenuSetting(
-            settingName = "行高",
+            settingName = "编辑器行高",
             menuList = listOf(
                 Pair(-1, "1.0"),
-                Pair(-1, "1.5")
+                Pair(-1, "1.5"),
+                Pair(-1, "2.0"),
             ),
             value = SettingUtil.lineHeight.toString(),
             onValueChanged = { SettingUtil.lineHeight = it.toFloat() },
@@ -74,7 +64,9 @@ val editorSettingList =
             settingName = "字体选择",
             menuList = listOf(
                 Pair(-1, FONT_FAMILY_DEFAULT),
-                Pair(-1, FONT_FAMILY_SMILEYSANS),
+                Pair(-1, FONT_FAMILY_NEO_XIHEI),
+                Pair(-1, FONT_FAMILY_WENKAI),
+                Pair(-1, FONT_FAMILY_YOZAI),
             ),
             value = SettingUtil.fontFamily,
             onValueChanged = { SettingUtil.fontFamily = it }

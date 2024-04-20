@@ -43,6 +43,11 @@ object GPTUtil {
     private var gptUrl: String? = null
 
     /**
+     * gpt 请求参数
+     */
+    private var gptTemperature: String? = null
+
+    /**
      * 每次请求的固定前缀
      */
     private var contentPrefix: String? = null
@@ -60,6 +65,8 @@ object GPTUtil {
         gptAuthKey = prop.getProperty("GPT_AUTH")
 
         gptUrl = prop.getProperty("GPT_URL")
+
+        gptTemperature = prop.getProperty("GPT_TEMPERATURE")
 
         contentPrefix = context.resources.getString(R.string.gpt_request_content_prefix)
 
@@ -100,7 +107,7 @@ object GPTUtil {
         jsonString.append("{\n  \"model\": \"gpt-3.5-turbo\",\n  \"messages\": [{\"role\": \"user\", \"content\": \"")
             .append(contentPrefix)
             .append(content)
-            .append("\"}],\n\"temperature\": 0.2}")
+            .append("\"}],\n\"temperature\": $gptTemperature}")
 
         gptUrl?.let {
 

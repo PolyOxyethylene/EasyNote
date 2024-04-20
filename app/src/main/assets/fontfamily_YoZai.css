@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'lxgwYoZai';
+    src: url('fonts/Yozai-Regular.ttf') format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
+#editor {
+    font-family: 'lxgwYoZai';
+}

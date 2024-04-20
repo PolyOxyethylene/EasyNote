@@ -34,6 +34,8 @@ import com.kongzue.albumdialog.util.SelectPhotoCallback
 import com.kongzue.filedialog.FileDialog
 import com.kongzue.filedialog.interfaces.FileSelectCallBack
 import com.oxyethylene.easynote.common.arrays.headerSizeList
+import com.oxyethylene.easynote.common.arrays.listInsertList
+import com.oxyethylene.easynote.common.arrays.textAlignList
 import com.oxyethylene.easynote.richeditor.RichEditor
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.editactivity.AutoExtractionButton
@@ -119,38 +121,45 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 字体加粗
                                 EditActionBarButton(R.mipmap.ic_set_bold) {
-                                    richEditor.focusEditor()
+//                                    richEditor.focusEditor()
                                     richEditor.setBold()
                                 }
                                 // 字体倾斜
                                 EditActionBarButton(R.mipmap.ic_set_italic) {
-                                    richEditor.focusEditor()
+//                                    richEditor.focusEditor()
                                     richEditor.setItalic()
                                 }
                                 // 添加下划线
                                 EditActionBarButton(R.mipmap.ic_set_underline) {
-                                    richEditor.focusEditor()
+//                                    richEditor.focusEditor()
                                     richEditor.setUnderline()
                                 }
                                 // 添加删除线
                                 EditActionBarButton(R.mipmap.ic_set_strike_through) {
-                                    richEditor.focusEditor()
+//                                    richEditor.focusEditor()
                                     richEditor.setStrikeThrough()
                                 }
-                                // 左对齐
-                                EditActionBarButton(R.mipmap.ic_set_align_left) {
-                                    richEditor.setAlignLeft()
+                                // 文本对齐方式
+                                EditActionBarMenu(textAlignList, false) {
+                                    _, optionName ->
+                                    when (optionName) {
+                                        "居中对齐" -> richEditor.setAlignCenter()
+                                        "两端对齐" -> richEditor.setAlignJustify()
+                                        "左对齐" -> richEditor.setAlignLeft()
+                                        "右对齐" -> richEditor.setAlignRight()
+                                    }
                                 }
-                                // 右对齐
-                                EditActionBarButton(R.mipmap.ic_set_align_right) {
-                                    richEditor.setAlignRight()
-                                }
-                                // 居中对齐
-                                EditActionBarButton(R.mipmap.ic_set_align_center) {
-                                    richEditor.setAlignCenter()
+                                // 插入列表
+                                EditActionBarMenu(listInsertList, false) {
+                                        _, optionName ->
+                                    when (optionName) {
+                                        "无序列表" -> richEditor.setBullets()
+                                        "有序列表" -> richEditor.setNumbers()
+                                    }
                                 }
                                 // 插入图片
                                 EditActionBarButton(R.mipmap.ic_insert_photo) {
+//                                    richEditor.focusEditor()
                                     PhotoAlbumDialog.build()
                                         .setMaxSelectPhotoCount(1)
                                         .setCompressQuality(80)
@@ -172,6 +181,7 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 插入视频
                                 EditActionBarButton(R.mipmap.ic_insert_video) {
+//                                    richEditor.focusEditor()
                                     FileDialog.build()
                                         .setShowFileDate(true)
                                         .setSuffixArray(arrayOf(".mp4"))
@@ -186,6 +196,7 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 插入音频
                                 EditActionBarButton(R.mipmap.ic_insert_audio) {
+//                                    richEditor.focusEditor()
                                     FileDialog.build()
                                         .setShowFileDate(true)
                                         .setSuffixArray(arrayOf(".ogg", ".mp3", ".flac"))

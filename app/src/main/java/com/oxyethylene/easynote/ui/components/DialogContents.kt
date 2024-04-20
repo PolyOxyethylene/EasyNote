@@ -143,9 +143,10 @@ fun ShowKeywordsDialog (keywordMap: HashMap<String, Int>) {
 /**
  * 展示关键词关联的文章的对话框
  * @param keywordId 关键词的 id
+ * @param onClick 点击事件，这里专指关闭对话框
  */
 @Composable
-fun ShowBindedNotesDialog (keywordId: Int) {
+fun ShowBindedNotesDialog (keywordId: Int, onClick: () -> Unit) {
 
     val noteList = FileUtil.getNotes(KeywordUtil.getBindedNotes(keywordId))
 
@@ -167,6 +168,7 @@ fun ShowBindedNotesDialog (keywordId: Int) {
                     .height(50.dp)
                     .clickable {
                         if (isNotRecycled) {
+                            onClick()
                             val intent = Intent("com.oxyethylene.EDIT")
                             NoteUtil.beforeEdit(note.fileName, note.fileId)
                             context.startActivity(intent)
@@ -477,7 +479,7 @@ fun ShowExtractionDialog (extraction: GPTResult, onKeywordUpdate: () -> Unit = {
 
         Row (Modifier.padding(top = 20.dp)) {
             Text(
-                text = "点击文章摘要可以创建以其为名的事件\n点击下方关键词可以快捷创建并添加到当前文章",
+                text = "点击标题可以创建以其为名，以下方文章摘要为事件描述的事件\n点击下方关键词可以快捷创建并添加到当前文章",
                 fontSize = 10.sp,
                 color = Color.Gray,
                 lineHeight = 11.sp
@@ -621,7 +623,7 @@ fun VersionSketchDialog () {
 
             val versionCode = it.substring(0, it.indexOf('^'))
 
-            val infoList = it.substring(it.indexOf('^') + 1).split('-')
+            val infoList = it.substring(it.indexOf('^') + 1).split('|')
 
             Text(
                 text = versionCode,

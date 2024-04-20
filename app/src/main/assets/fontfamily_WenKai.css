@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'lxgwWenKai';
+    src: url('fonts/LXGWWenKaiLite-Regular.ttf') format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
+#editor {
+    font-family: 'lxgwWenKai';
+}

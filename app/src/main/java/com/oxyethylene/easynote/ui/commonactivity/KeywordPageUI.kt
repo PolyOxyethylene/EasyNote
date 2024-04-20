@@ -208,7 +208,11 @@ fun onKeywordCapClick (keywordId: Int, keyword: String, onClick: () -> Unit) {
                             override fun onBind(dialog: MessageDialog?, v: View?) {
                                 val composeView = v?.findViewById<ComposeView>(R.id.show_notes_compose_view)
 
-                                composeView?.setContent { ShowBindedNotesDialog(keywordId) }
+                                composeView?.setContent {
+                                    ShowBindedNotesDialog(keywordId) {
+                                        dialog?.dismiss()
+                                    }
+                                }
                             }
                         })
                         .setOkButton("确定")

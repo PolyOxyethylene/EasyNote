@@ -1,5 +1,6 @@
 package com.oxyethylene.easynote.ui.eventactivity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.Gravity
 import androidx.compose.animation.Crossfade
@@ -8,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -36,12 +39,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.BottomMenu
 import com.kongzue.dialogx.dialogs.InputDialog
+import com.kongzue.dialogx.dialogs.MessageDialog
 import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.interfaces.OnBottomMenuButtonClickListener
 import com.kongzue.dialogx.interfaces.OnIconChangeCallBack
@@ -72,6 +77,7 @@ import me.saket.cascade.CascadeDropdownMenu
  * @author       : Polyoxyethylene
  * @Description  :
  */
+@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 fun EventInfoPageArea (event: Event, modifier: Modifier = Modifier) {
 
@@ -90,7 +96,32 @@ fun EventInfoPageArea (event: Event, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        SimpleTitleBar(if (eventInfo.eventName.length > 8) "${eventInfo.eventName.substring(0,8)}..." else eventInfo.eventName, modifier) {
+        SimpleTitleBar(
+            centerContent = {
+                Text(
+                    text = eventInfo.eventName,
+                    color = Color.DarkGray,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(140.dp)
+                        .clickable(
+                            onClick = {
+                            MessageDialog.build(MIUIStyle())
+                                .setTitle("事件名称")
+                                .setMessageTextInfo(TextInfo().setGravity(Gravity.CENTER))
+                                .setMessage(eventInfo.eventName)
+                                .setOkButton("确定")
+                                .show()
+                            },
+                            indication = null,
+                            interactionSource = MutableInteractionSource()
+                        )
+                )
+            }
+        ) {
             EventUtilButton(event, noteList)
         }
 

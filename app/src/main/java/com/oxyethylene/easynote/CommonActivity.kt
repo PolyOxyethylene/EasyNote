@@ -10,6 +10,7 @@ import com.oxyethylene.easynote.ui.commonactivity.EditorSettingPageUI
 import com.oxyethylene.easynote.ui.commonactivity.KeywordPageUI
 import com.oxyethylene.easynote.ui.commonactivity.LabSettingPageUI
 import com.oxyethylene.easynote.ui.commonactivity.LicenseInfoPageUI
+import com.oxyethylene.easynote.ui.commonactivity.PrivacySettingPageUI
 import com.oxyethylene.easynote.ui.commonactivity.QuestionPageUI
 import com.oxyethylene.easynote.ui.commonactivity.RecyclePageUI
 import com.oxyethylene.easynote.ui.commonactivity.SearchPageUI
@@ -54,6 +55,8 @@ class CommonActivity : ComponentActivity() {
                         "keywords" -> KeywordPageUI()
                         // 搜索界面
                         "search" -> SearchPageUI()
+                        // 隐私功能界面
+                        "privacy" -> PrivacySettingPageUI()
 
                         else -> {}
                     }

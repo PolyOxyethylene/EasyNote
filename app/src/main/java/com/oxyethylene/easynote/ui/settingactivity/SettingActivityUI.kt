@@ -9,7 +9,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,8 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -101,18 +98,19 @@ fun SettingPageArea () {
                 verticalArrangement = Arrangement.Center
             ) {
                 // app logo
-                Row {
-                    Text("Easy No", fontSize = 34.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily(Font(R.font.smileysans_oblique)))
-                    Text("te", fontSize = 34.sp, fontWeight = FontWeight.Bold , color = Color(0xFF2654FF), fontFamily = FontFamily(Font(R.font.smileysans_oblique)))
-                }
+                Image(
+                    painter = painterResource(R.drawable.app_title_image),
+                    contentDescription = null,
+                    modifier = Modifier.height(60.dp)
+                )
 
                 // 版本号
                 Text(
                     text = appVersion,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.sp,
                     color = GreyDarker,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily(Font(R.font.smileysans_oblique))
+                    fontWeight = FontWeight.Bold
                 )
 
                 Text(
@@ -149,9 +147,9 @@ fun SettingPageArea () {
 
                 SettingSubList(mainSettingList.subList(0, 3))
 
-                SettingSubList(mainSettingList.subList(3, 5))
+                SettingSubList(mainSettingList.subList(3, 6))
 
-                SettingSubList(mainSettingList.subList(5, 6), Modifier.padding(bottom = 20.dp))
+                SettingSubList(mainSettingList.subList(6, 7), Modifier.padding(bottom = 20.dp))
             }
         }
 

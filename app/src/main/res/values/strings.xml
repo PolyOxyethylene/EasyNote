@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">EasyNote</string>
-    <string name="app_version_code">0.4.5.5-beta</string>
+    <string name="app_version_code">0.4.5.6-beta</string>
     <string name="title_activity_setting">Setting</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="title_activity_app_info">AppInfoActivity</string>
@@ -12,6 +12,7 @@
     <string name="title_activity_license_info">LicenseInfoActivity</string>
     <string name="title_activity_thanks">ThanksActivity</string>
     <string name="title_activity_backup_setting">BackupSettingActivity</string>
+    <string name="title_activity_common">CommonActivity</string>
     <string name="app_info">
         你好！\n我是 Easy Note 的开发者，很高兴你能测试使用本应用。\n目前本应用还处于开发阶段，很多功能还没有完成，如果有相关的 bug 可以联系我。
     </string>
@@ -35,7 +36,7 @@
         <item>OkHttp^https://github.com/square/okhttp</item>
     </string-array>
     <string name="app_design_info">
-        CopyRight © 2023 PolyOxyethylene. All Rights Reserved.\n\n本应用所使用图标部分来自 iconfont 图标库\n\n本应用使用的第三方字体 得意黑 来自 https://atelier-anchor.com/\n\n软件界面风格基于 纯纯写作 以及 椒盐笔记 二次创作\n\n软件部分对话框界面设计风格参照 MIUI (来自开源库 DialogX-MIUIStyle)
+        CopyRight © 2023 PolyOxyethylene. All Rights Reserved.\n\n本应用所使用图标部分来自 iconfont 图标库\n\n本应用使用的第三方字体来自 https://github.com/lxgw\n\n软件界面风格基于 椒盐笔记 二次创作\n\n软件部分对话框界面设计风格参照 MIUI (来自开源库 DialogX-MIUIStyle)
     </string>
     <string name="permission_request_info">
         本应用需要您授予如下权限才能正常运行, \n请前往应用权限设置，检查以下所有权限是否已同意
@@ -65,12 +66,12 @@
     <!--        修复了关键词相关的 Bug-->
     <!--    </string>-->
     <string-array name="version_sketch_list">
-        <item>v0.4.5.5-beta^新增 gpt—3.5—turbo 模型可选项，用于文章分析(暂时还不太稳定)</item>
+        <item>v0.4.5.6-beta^新增编辑器可选字体：霞鹜新晰黑、霞鹜文楷、霞鹜悠哉|去除字体：得意黑，因为不适合作为写作字体|编辑器新增插入有序/无序列表的选项/调整了编辑器工具栏的一部分 UI|去除了工具栏按钮点击会优先获取焦点的功能，原因是与正常编辑功能有冲突</item>
+        <item>v0.4.5.5-beta^新增 gpt-3.5-turbo 模型可选项，用于文章分析(暂时还不太稳定)</item>
         <item>v0.4.5.4-beta^新增回收站功能</item>
-        <item>v0.4.5.3-beta^修复了设置项“行高”的显示错误问题-重构了文章搜索功能的 UI</item>
+        <item>v0.4.5.3-beta^修复了设置项“行高”的显示错误问题|重构了文章搜索功能的 UI</item>
         <item>v0.4.5.2-beta^修复了关键词相关的一些 bug</item>
-        <item>v0.4.5.1-beta^新增修改编辑器内容行高和内容字体的设置选项-首次进入编辑页时自动滚动到内容最底部；编辑器未获取焦点时，点击部分功能按钮优先获取焦点-修复了退出编辑页，原编辑页内文章中正在播放的视频或音频仍会继续播放的问题-修复了分析文章时可能会出现的若干 Bug</item>
-        <item>v0.4.5.0-beta^新增文章关键词提取与摘要功能-新增了一些编辑器的功能开关-修复了 Android 14 闪退的 Bug-修复了文章插入图片时出现的图片模糊问题</item>
+        <item>v0.4.5.1-beta^新增修改编辑器内容行高和内容字体的设置选项|首次进入编辑页时自动滚动到内容最底部；编辑器未获取焦点时，点击部分功能按钮优先获取焦点|修复了退出编辑页，原编辑页内文章中正在播放的视频或音频仍会继续播放的问题|修复了分析文章时可能会出现的若干 Bug</item>
     </string-array>
     <!--    <string-array name="very_thanks_list">-->
     <!--        <item>🍸</item>-->
@@ -85,11 +86,10 @@
         <item>逐</item>
         <item>国宝</item>
     </string-array>
-    <string name="title_activity_common">CommonActivity</string>
 
     <string-array name="question_list">
-        <item>分析文章内容只支持最多 1000 个文字?服务器限制一次请求只能 1000 字，后续想办法解决</item>
-        <item>文章分析有点慢，有时候会闪退?麻烦输入点正常的文章内容</item>
+        <item>分析文章内容有字数限制?这是服务器方面的限制，对于 HanLp 来说是一次请求 1000 字，对于 gpt-3.5-turbo 是一次请求约 3800 字左右</item>
+        <item>文章分析有点慢，有时候会闪退?本软件通过向服务器传输文章内容来获取文章分析结果，分析速度取决于您的文章内容长度、复杂程度以及网络因素</item>
         <item>为什么不能创建同名的事件?你可以创建同名的文章，同名文章可以通过创建时间和关键词进行区分，你可以用许多同名的文章来代替多个同名事件，比如将多篇跟\"吃饭\"有关的文章放进事件\"吃饭\"里</item>
         <item>为什么我运行这个 App 的时候感觉手机卡卡的?代码水平有限，运行卡很正常。\n建议使用骁龙™865/天玑8000系列/天玑9000系列及以上处理器的手机来使用本款应用</item>
         <item>为什么这个 App 的实际大小这么大，缓存哪来的?本应用产生的缓存主要来自您文章中插入的图片。\n为了让您放心删除设备上的原图片，文章中的图片都是保存在缓存中的副本。\n所以请您注意，如果您选择清除应用缓存(或者使用系统的垃圾清理功能)，您文章中的图片将会丢失。\n后续更新将会提供应用内清除图片的功能，并将图片副本移至应用存储中(即无需担心因为清除应用缓存而删除图片)</item>

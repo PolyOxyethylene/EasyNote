@@ -20,14 +20,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.oxyethylene.easynote.R
 import com.oxyethylene.easynote.common.arrays.editorSettingList
 import com.oxyethylene.easynote.common.constant.FONT_FAMILY_DEFAULT
-import com.oxyethylene.easynote.common.constant.FONT_FAMILY_SMILEYSANS
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_NEO_XIHEI
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_WENKAI
+import com.oxyethylene.easynote.common.constant.FONT_FAMILY_YOZAI
+import com.oxyethylene.easynote.common.typefaces.EasyNoteTypefaces.lxgwNeoXiHei
+import com.oxyethylene.easynote.common.typefaces.EasyNoteTypefaces.lxgwWenKai
+import com.oxyethylene.easynote.common.typefaces.EasyNoteTypefaces.lxgwYoZai
 import com.oxyethylene.easynote.domain.DropDownMenuSetting
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
 import com.oxyethylene.easynote.ui.settingactivity.DropDownMenuSettingItem
@@ -60,7 +64,9 @@ fun EditorSettingPageUI () {
 
             var fontFamily by remember { mutableStateOf(SettingUtil.fontFamily) }
 
-            SettingSubList(editorSettingList.subList(0,4))
+            val context = LocalContext.current
+
+            SettingSubList(editorSettingList.subList(0,3))
 
             Row (
                 modifier = Modifier.wrapContentHeight()
@@ -70,7 +76,7 @@ fun EditorSettingPageUI () {
                     .background(Color.White),
             ) {
 
-                DropDownMenuSettingItem(editorSettingList[4] as DropDownMenuSetting) {
+                DropDownMenuSettingItem(editorSettingList[3] as DropDownMenuSetting) {
                     fontFamily = it
                 }
 
@@ -102,12 +108,33 @@ fun EditorSettingPageUI () {
                                 .padding(top = 20.dp)
                         )
 
-                    FONT_FAMILY_SMILEYSANS ->
+
+                    FONT_FAMILY_NEO_XIHEI ->
                         Text(
-                            text = "得意黑",
+                            text = "霞鹜新晰黑",
                             fontSize = 24.sp,
                             color = Color.DarkGray,
-                            fontFamily = FontFamily(Font(R.font.smileysans_oblique)),
+                            fontFamily = FontFamily(lxgwNeoXiHei(context)),
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                                .padding(top = 20.dp)
+                        )
+
+                    FONT_FAMILY_WENKAI ->
+                        Text(
+                            text = "霞鹜文楷",
+                            fontSize = 24.sp,
+                            color = Color.DarkGray,
+                            fontFamily = FontFamily(lxgwWenKai(context)),
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                                .padding(top = 20.dp)
+                        )
+
+                    FONT_FAMILY_YOZAI ->
+                        Text(
+                            text = "霞鹜悠哉",
+                            fontSize = 24.sp,
+                            color = Color.DarkGray,
+                            fontFamily = FontFamily(lxgwYoZai(context)),
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                                 .padding(top = 20.dp)
                         )

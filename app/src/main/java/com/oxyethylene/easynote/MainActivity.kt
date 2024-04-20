@@ -135,7 +135,7 @@ class MainActivity : ComponentActivity() {
                         TopMenuBar {
                             Text(
                                 text = "文档",
-                                color = Color.DarkGray,
+                                color = if (pageState.currentPage == 0) Color.DarkGray else Color.LightGray,
                                 fontSize = 16.sp,
                                 fontWeight = if (pageState.currentPage == 0) FontWeight.Bold else FontWeight.Normal,
                                 modifier = Modifier.clickable (
@@ -152,7 +152,7 @@ class MainActivity : ComponentActivity() {
                             )
                             Text(
                                 text = "事件",
-                                color = Color.DarkGray,
+                                color = if (pageState.currentPage == 1) Color.DarkGray else Color.LightGray,
                                 fontSize = 16.sp,
                                 fontWeight = if (pageState.currentPage == 1) FontWeight.Bold else FontWeight.Normal,
                                 modifier = Modifier.padding(start = 20.dp)

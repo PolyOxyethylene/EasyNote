@@ -1,9 +1,11 @@
 <div align="center">
+<img src="docs/assets/header_banner.png" style="width:100%"/>
+<br><br>
 <img src="docs/assets/logo.png" style="width:50px" />
-
 <h1 align="center">Easy Note</h1> 
-
-![](https://img.shields.io/badge/EasyNote-v0.4.5.6%20beta-0099ff)
+<a herf="https://github.com/PolyOxyethylene/EasyNote/releases/latest">
+<img src="https://img.shields.io/badge/EasyNote-v0.4.5.6%20beta-0099ff.png"/>
+</a>
 
 🌐 View [简体中文文档](./README.md)
 

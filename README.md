@@ -4,11 +4,12 @@
 <img src="docs/assets/logo.png" style="width:50px" />
 <h1 align="center">Easy Note</h1> 
 <a herf="https://github.com/PolyOxyethylene/EasyNote/releases/latest">
-<img src="https://img.shields.io/badge/EasyNote-v0.4.5.6%20beta-0099ff.png"/>
+<img src="https://img.shields.io/badge/release-v0.4.5.6%20beta-0099ff.png"/>
 </a>
 
 
-🌐 View [English Document](./README_EN.md)
+
+🌐 View [繁體中文檔案](./README_TC.md) | [English Document](./README_EN.md)
 
 </div>
 
@@ -35,10 +36,11 @@
 
 - [ ] 本地备份/文件导出
 - [ ] 编辑器外观部分定制
+- [x] 文章修改的简单记录(包括修改时间和地点信息)
 - [x] 回收站
 - [x] 简易归档
 - [x] 手动编辑关键词
-- [x] 文章关键词提取（实验性功能，By [HanLP](https://github.com/hankcs/HanLP) and [chatanywhere](https://github.com/chatanywhere/GPT_API_free)）
+- [x] 文章关键词提取(实验性功能，By [HanLP](https://github.com/hankcs/HanLP) and [chatanywhere](https://github.com/chatanywhere/GPT_API_free))
 
 ## 快照 Snapshot
 

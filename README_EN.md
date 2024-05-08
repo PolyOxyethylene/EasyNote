@@ -7,7 +7,7 @@
 <img src="https://img.shields.io/badge/EasyNote-v0.4.5.6%20beta-0099ff.png"/>
 </a>
 
-🌐 View [简体中文文档](./README.md)
+🌐 View [简体中文文档](./README.md) | [繁體中文檔案](./README_TC.md)
 
 </div>
 
@@ -34,10 +34,11 @@ This application is a simple local rich text editing software.
 
 - [ ] Local backup/file export
 - [ ] Partial customization of editor appearance
-- [x] recycle bin
+- [x] Brief record of article revisions(including the information of revision time and location)
+- [x] Recycle bin
 - [x] Simple archiving
 - [x] Manual editing of keywords
-- [x] Article keyword extraction (experimental feature，By [HanLP](https://github.com/hankcs/HanLP) and [chatanywhere](https://github.com/chatanywhere/GPT_API_free))
+- [x] Article keyword extraction(experimental feature，By [HanLP](https://github.com/hankcs/HanLP) and [chatanywhere](https://github.com/chatanywhere/GPT_API_free))
 
 ## Snapshot
 

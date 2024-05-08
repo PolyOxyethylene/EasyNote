@@ -1,5 +1,6 @@
 package com.oxyethylene.easynote.ui.mainactivity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -30,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.MessageDialog
 import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.interfaces.OnBindView
-import com.kongzue.dialogx.interfaces.OnDialogButtonClickListener
 import com.kongzue.dialogx.style.MIUIStyle
 import com.oxyethylene.easynote.R
 import com.oxyethylene.easynote.ui.components.MoreIcon
@@ -196,31 +196,36 @@ fun MoreFeatureButton () {
 /**
  * 发起权限检查请求
  * @param context 当前栈顶的 Activity
+ * @param mandatoryCheck 是否强制检查，强制检查意味着不通过所有权限将会导致应用闪退
  */
-fun callPermissionCheck (context: Context) {
+fun callPermissionCheck (context: Context, mandatoryCheck: Boolean = false) {
 
     MessageDialog.build(MIUIStyle())
         .setTitle("关于权限设置")
-        .setCustomView(object : OnBindView<MessageDialog>(R.layout.permission_dialog_layout){
+        .setCustomView(object : OnBindView<MessageDialog>(R.layout.compose_layout){
             override fun onBind(dialog: MessageDialog?, v: View?) {
-                val composeView = v?.findViewById<ComposeView>(R.id.permission_dialog_compose_view)
+                val composeView = v?.findViewById<ComposeView>(R.id.compose_view)
 
                 composeView?.setContent { PermissionDialog() }
             }
         })
+        .setCancelable(!mandatoryCheck) // 强制检查将不允许直接退出对话框
         .setCancelButton("取消")
-        .setCancelButtonClickListener { dialog, v -> false }
-        .setOkButton("前往检查")
-        .setOkButtonClickListener(object : OnDialogButtonClickListener<MessageDialog> {
-            override fun onClick(dialog: MessageDialog?, v: View?): Boolean {
-                val intent = Intent()
-                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                val uri = Uri.fromParts("package", context.packageName, null)
-                intent.data = uri
-                context.startActivity(intent)
-                return false
+        .setCancelButtonClickListener { _, _ ->
+            if (mandatoryCheck) {
+                (context as Activity).finish()
             }
-        })
+            return@setCancelButtonClickListener false
+        }
+        .setOkButton("前往检查")
+        .setOkButtonClickListener { _, _ ->
+            val intent = Intent()
+            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            val uri = Uri.fromParts("package", context.packageName, null)
+            intent.data = uri
+            context.startActivity(intent)
+            false
+        }
         .show()
 
 }

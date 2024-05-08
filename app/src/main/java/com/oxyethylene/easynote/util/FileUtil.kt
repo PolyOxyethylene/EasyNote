@@ -12,10 +12,12 @@ import com.oxyethylene.easynote.common.constant.FILE_RENAME_SUCCESS
 import com.oxyethylene.easynote.common.constant.FILE_UPDATE_SUCCESS
 import com.oxyethylene.easynote.common.enumeration.FileType
 import com.oxyethylene.easynote.dao.FileDao
+import com.oxyethylene.easynote.dao.RecordDao
 import com.oxyethylene.easynote.database.AppDatabase
 import com.oxyethylene.easynote.domain.Dentry
 import com.oxyethylene.easynote.domain.Dir
 import com.oxyethylene.easynote.domain.NoteFile
+import com.oxyethylene.easynote.domain.entity.NoteRecord
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -93,6 +95,8 @@ object FileUtil {
      */
     private var fileDao: FileDao? = null
 
+    private var recordDao: RecordDao? = null
+
     /**
      * 是否已经初始化，用于保证初始化目录操作只发生一次
      */
@@ -112,19 +116,20 @@ object FileUtil {
     /**
      *  初始化 viewModel 和 context
      */
-    fun initFileUtil(viewModel: MainViewModel, _database: AppDatabase, _handler: Handler) {
+    fun initFileUtil(viewModel: MainViewModel, database: AppDatabase, handler: Handler) {
         if (mainViewModel == null || mainViewModel != viewModel) {
             mainViewModel = viewModel
         }
-        if (database == null) {
-            database = _database
+        if (this.database == null) {
+            this.database = database
         }
-        if (handler == null) {
-            handler = _handler
+        if (this.handler == null) {
+            this.handler = handler
         }
         // 初始化 fileDao
-        database?.let {
+        this.database?.let {
             fileDao =  it.FileDao()
+            recordDao = it.RecordDao()
         }
     }
 
@@ -259,6 +264,11 @@ object FileUtil {
      */
     fun saveFileEntry (file : Dentry) {
         thread {
+            if (file is NoteFile) {
+                // 首次创建一个文章时需要创建其对应的文章记录
+                val record = NoteRecord(file.fileId, ArrayList(), ArrayList())
+                recordDao?.insertRecord(record)
+            }
             fileDao?.insertFile(file.toFileEntity())
         }
     }
@@ -303,6 +313,8 @@ object FileUtil {
                                     (it as Dir).removeFile(deleteItem)
                                 }
                             }
+                            // 还需要把对应的文章记录删除
+                            recordDao?.deleteRecordById(it.fileId)
                         }
                     }
                     // 如果删除成功，则从数据库中删除该文章的记录
@@ -585,11 +597,12 @@ object FileUtil {
     /**
      * 更新文章的修改时间
      * @param fileId 文章 id
+     * @param updateTime 文章更新时间，只接受字符串
      */
-    fun setNoteUpdateTime (fileId: Int) {
+    fun setNoteUpdateTime (fileId: Int, updateTime: String) {
         fileMap.get(fileId)?.let {
             if (it is NoteFile) {
-                it.updateTime = DateUtil.getCurrentDateTime()
+                it.updateTime = updateTime
                 thread {
                     fileDao?.updateFile(it.toFileEntity())
 

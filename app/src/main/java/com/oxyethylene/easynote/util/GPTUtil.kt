@@ -126,9 +126,9 @@ object GPTUtil {
 
                     result?.let {
 
-                        FullScreenDialog.show(object : OnBindView<FullScreenDialog>(R.layout.text_extraction_dialog_layout){
+                        FullScreenDialog.show(object : OnBindView<FullScreenDialog>(R.layout.compose_layout){
                             override fun onBind(dialog: FullScreenDialog?, v: View?) {
-                                val composeView = v?.findViewById<ComposeView>(R.id.text_extraction_compose_view)
+                                val composeView = v?.findViewById<ComposeView>(R.id.compose_view)
 
                                 composeView?.setContent {
                                     ShowExtractionDialog(

@@ -29,6 +29,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.baidu.location.BDAbstractLocationListener
+import com.baidu.location.BDLocation
+import com.baidu.location.LocationClient
+import com.baidu.location.LocationClientOption
+import com.drake.net.utils.TipUtils
 import com.kongzue.albumdialog.PhotoAlbumDialog
 import com.kongzue.albumdialog.util.SelectPhotoCallback
 import com.kongzue.filedialog.FileDialog
@@ -43,9 +48,11 @@ import com.oxyethylene.easynote.ui.editactivity.EditActionBarButton
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarHelper
 import com.oxyethylene.easynote.ui.editactivity.EditActionBarMenu
 import com.oxyethylene.easynote.ui.editactivity.KeywordUtilButton
+import com.oxyethylene.easynote.ui.editactivity.LocationInfoButton
 import com.oxyethylene.easynote.ui.editactivity.TitleLine
 import com.oxyethylene.easynote.ui.theme.BackGround
 import com.oxyethylene.easynote.ui.theme.EasyNoteTheme
+import com.oxyethylene.easynote.util.DateUtil
 import com.oxyethylene.easynote.util.FileUtil
 import com.oxyethylene.easynote.util.KeywordUtil
 import com.oxyethylene.easynote.util.NoteUtil
@@ -55,17 +62,61 @@ import java.io.File
 
 class EditActivity : ComponentActivity() {
 
-    // 富文本编辑器
+    /**
+     * 富文本编辑器
+     */
     private lateinit var richEditor: RichEditor
 
-    // 编辑器纯文本内容
+    /**
+     * 编辑器纯文本内容
+     */
     private var plainText = ""
 
-    // 获取当前编辑的文章
+    /**
+     * 文本是否被修改过
+     */
+    private var modified = false
+
+    /**
+     * 当前编辑的文章
+     */
     private val note = FileUtil.getNote(NoteUtil.getNoteId())
+
+    /**
+     * 百度地图 SDK 请求客户端
+     */
+    private var mLocationClient: LocationClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        try {
+            mLocationClient = LocationClient(applicationContext)
+        } catch (ex : Exception) {
+            TipUtils.toast(ex.message)
+        }
+
+        val option = LocationClientOption().apply {
+            setIsNeedAddress(true)
+        }
+
+        mLocationClient?.locOption = option
+
+        mLocationClient?.registerLocationListener(
+            object : BDAbstractLocationListener() {
+                override fun onReceiveLocation(location: BDLocation?) {
+                    val updateTime = DateUtil.getCurrentDateTime()
+
+                    val address = location?.addrStr ?: SettingUtil.defaultLocation
+
+                    // 更新修改地点
+                    NoteUtil.updateRecord(address, updateTime)
+
+                    FileUtil.setNoteUpdateTime(NoteUtil.getNoteId(), updateTime)
+                    mLocationClient!!.stop()
+                }
+            }
+        )
 
         setContent {
             EasyNoteTheme {
@@ -90,6 +141,9 @@ class EditActivity : ComponentActivity() {
                                         modifier = Modifier.align(Alignment.CenterVertically),
                                         onKeywordUpdate = { keywordMap = KeywordUtil.getBindedKeywords(note!!.keywordList) }
                                     ) { plainText }
+                                }
+                                if (SettingUtil.enableLocation) {
+                                    LocationInfoButton(Modifier.align(Alignment.CenterVertically).padding(start = 20.dp))
                                 }
                                 KeywordUtilButton(NoteUtil.getNoteId()) {
                                     keywordMap = KeywordUtil.getBindedKeywords(note!!.keywordList)
@@ -121,22 +175,18 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 字体加粗
                                 EditActionBarButton(R.mipmap.ic_set_bold) {
-//                                    richEditor.focusEditor()
                                     richEditor.setBold()
                                 }
                                 // 字体倾斜
                                 EditActionBarButton(R.mipmap.ic_set_italic) {
-//                                    richEditor.focusEditor()
                                     richEditor.setItalic()
                                 }
                                 // 添加下划线
                                 EditActionBarButton(R.mipmap.ic_set_underline) {
-//                                    richEditor.focusEditor()
                                     richEditor.setUnderline()
                                 }
                                 // 添加删除线
                                 EditActionBarButton(R.mipmap.ic_set_strike_through) {
-//                                    richEditor.focusEditor()
                                     richEditor.setStrikeThrough()
                                 }
                                 // 文本对齐方式
@@ -159,7 +209,6 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 插入图片
                                 EditActionBarButton(R.mipmap.ic_insert_photo) {
-//                                    richEditor.focusEditor()
                                     PhotoAlbumDialog.build()
                                         .setMaxSelectPhotoCount(1)
                                         .setCompressQuality(80)
@@ -181,7 +230,6 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 插入视频
                                 EditActionBarButton(R.mipmap.ic_insert_video) {
-//                                    richEditor.focusEditor()
                                     FileDialog.build()
                                         .setShowFileDate(true)
                                         .setSuffixArray(arrayOf(".mp4"))
@@ -196,7 +244,6 @@ class EditActivity : ComponentActivity() {
                                 }
                                 // 插入音频
                                 EditActionBarButton(R.mipmap.ic_insert_audio) {
-//                                    richEditor.focusEditor()
                                     FileDialog.build()
                                         .setShowFileDate(true)
                                         .setSuffixArray(arrayOf(".ogg", ".mp3", ".flac"))
@@ -227,7 +274,12 @@ class EditActivity : ComponentActivity() {
                                         richEditor = findViewById(R.id.editor)
                                         richEditor.setBackgroundColor(Color.Transparent.toArgb())
                                         richEditor.settings.allowFileAccess = true
-                                        richEditor.setOnTextChangeListener { plainText = richEditor.plainText }
+                                        richEditor.setOnTextChangeListener {
+                                            // 更新纯文本内容
+                                            plainText = richEditor.plainText
+                                            // 更新修改标记
+                                            modified = true
+                                        }
                                         // 加载已有内容
                                         richEditor.html = NoteUtil.loadFile(this@EditActivity)
                                         // 初始化纯文本内容
@@ -257,7 +309,9 @@ class EditActivity : ComponentActivity() {
         super.onDestroy()
         richEditor.html?.let { NoteUtil.saveFile(this, it) }
         richEditor.pauseMediaPlayers()
-        FileUtil.setNoteUpdateTime(NoteUtil.getNoteId())
+        if (modified && SettingUtil.enableLocation) {
+            mLocationClient?.start()
+        }
     }
 
     override fun onStop() {

@@ -1,6 +1,7 @@
 package com.oxyethylene.easynote.util
 
 import com.drake.serialize.serialize.serialLazy
+import com.oxyethylene.easynote.common.constant.DEFAULT_LOCATION
 import com.oxyethylene.easynote.common.constant.EASYNOTE_BACKUP_FOLDER
 import com.oxyethylene.easynote.common.constant.EXTRACTION_MODEL_DEFAULT
 import com.oxyethylene.easynote.common.constant.FONT_FAMILY_DEFAULT
@@ -64,5 +65,10 @@ object SettingUtil {
      * 开启自动定位，默认关闭
      */
     var enableLocation by serialLazy(false)
+
+    /**
+     * 默认定位地址
+     */
+    var defaultLocation by serialLazy(DEFAULT_LOCATION)
 
 }

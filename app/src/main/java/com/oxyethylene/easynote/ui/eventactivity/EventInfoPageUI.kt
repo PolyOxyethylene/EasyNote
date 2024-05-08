@@ -57,14 +57,17 @@ import com.kongzue.dialogx.style.MIUIStyle
 import com.kongzue.dialogx.util.InputInfo
 import com.kongzue.dialogx.util.TextInfo
 import com.oxyethylene.easynote.R
+import com.oxyethylene.easynote.common.enumeration.ComponentSize
 import com.oxyethylene.easynote.domain.NoteFile
 import com.oxyethylene.easynote.domain.entity.Event
 import com.oxyethylene.easynote.ui.components.SimpleTitleBar
+import com.oxyethylene.easynote.ui.editactivity.KeywordSketch
 import com.oxyethylene.easynote.ui.mainactivity.ListItem
 import com.oxyethylene.easynote.ui.theme.GreyLighter
 import com.oxyethylene.easynote.ui.theme.SkyBlue
 import com.oxyethylene.easynote.util.EventUtil
 import com.oxyethylene.easynote.util.FileUtil
+import com.oxyethylene.easynote.util.KeywordUtil
 import me.saket.cascade.CascadeDropdownMenu
 
 /**
@@ -176,7 +179,13 @@ fun EventInfoPageArea (event: Event, modifier: Modifier = Modifier) {
                     itemsIndexed(it) {
                             index, item ->
                         if (item.fileId > 0)
-                            ListItem(item, context) { onAlterButtonClick(index, item, it) }
+                            ListItem(
+                                item = item,
+                                context = context,
+                                appendix = {
+                                    KeywordSketch(KeywordUtil.getBindedKeywords(item.keywordList), Modifier.padding(start = 14.dp), keywordSize = ComponentSize.SMALL)
+                                }
+                            ) { onAlterButtonClick(index, item, it) }
                     }
                 } else {
 

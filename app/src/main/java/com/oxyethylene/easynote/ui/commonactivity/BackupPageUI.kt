@@ -68,7 +68,7 @@ fun BackupPageUI () {
     val backupSettingList =
         listOf<SettingEntry>(
             DialogSetting(
-                SettingName = "备份/导出文件夹",
+                settingName = "备份/导出文件夹",
                 description = "当前选中文件夹: ${SettingUtil.backupPath}"
             ) {
                 MessageDialog.build(MIUIStyle())

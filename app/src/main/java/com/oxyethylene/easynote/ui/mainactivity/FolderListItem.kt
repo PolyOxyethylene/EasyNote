@@ -5,12 +5,14 @@ import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -56,14 +58,15 @@ import com.oxyethylene.easynote.util.NoteUtil
  *  普通的列表项
  *  @param item 列表项要使用的类对象
  *  @param context 应用上下文
+ *  @param appendix 列表项附加的 UI，位于列表项底部
  *  @param onAlterRequest 右侧按钮打开“更改”菜单的方法
  */
 @Composable
-fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
+fun ListItem(item: Dentry, context: Context, appendix: @Composable() (ColumnScope.() -> Unit)? = null, onAlterRequest: () -> Unit) {
 
-    Row(
+    Column (
         modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)
-            .height(56.dp)
+            .wrapContentHeight()
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
@@ -81,7 +84,8 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
                 }
             }
     ) {
-        Box(modifier = Modifier.padding(start = 14.dp).fillMaxSize()) {
+
+        Box(modifier = Modifier.padding(start = 14.dp).height(56.dp).fillMaxWidth()) {
 
             // 左上角显示 文件类型图标 以及 文件名 的部分
             Row(modifier = Modifier.align(Alignment.TopStart)) {
@@ -111,7 +115,7 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
                     "创建于 ${item.createTime}",
                 fontSize = 10.sp,
                 color = Color.Gray,
-                modifier = Modifier.align(Alignment.BottomStart).padding(bottom = 10.dp)
+                modifier = Modifier.align(Alignment.BottomStart).padding(bottom = 8.dp)
             )
 
             // 右侧正中间的 修改按钮
@@ -127,6 +131,14 @@ fun ListItem(item: Dentry, context: Context, onAlterRequest: () -> Unit) {
                 MoreIcon(Modifier.size(24.dp), Color.DarkGray)
             }
 
+        }
+
+        appendix?.let {
+            Column (
+                Modifier.padding(bottom = 10.dp)
+            ) {
+                it()
+            }
         }
 
     }

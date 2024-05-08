@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kongzue.dialogx.dialogs.BottomMenu
@@ -56,7 +57,9 @@ import com.kongzue.dialogx.style.MIUIStyle
 import com.oxyethylene.easynote.R
 import com.oxyethylene.easynote.common.constant.EXTRACTION_MODEL_DEFAULT
 import com.oxyethylene.easynote.common.constant.EXTRACTION_MODEL_GPT
+import com.oxyethylene.easynote.common.enumeration.ComponentSize
 import com.oxyethylene.easynote.domain.NoteFile
+import com.oxyethylene.easynote.ui.components.RecordInfoDialog
 import com.oxyethylene.easynote.ui.components.ShowKeywordsDialog
 import com.oxyethylene.easynote.ui.theme.GreyDarker
 import com.oxyethylene.easynote.ui.theme.GreyLighter
@@ -85,54 +88,85 @@ import me.saket.cascade.CascadeDropdownMenu
 /**
  *  文章的标题栏
  *  @param noteTitle 文章的标题
+ *  @param keywordMap 关键词集合
  *  @param modifier 定制组件外观
  */
-@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 fun TitleLine(note: NoteFile, keywordMap: HashMap<String, Int>, modifier: Modifier) {
 
     Column (
-        modifier = modifier.fillMaxWidth().wrapContentHeight().padding(start = 30.dp)
+        modifier = modifier.fillMaxWidth().wrapContentHeight().padding(start = 30.dp, end = 30.dp)
     ) {
         // 标题
         Text(
             text = note.fileName,
             fontSize = 26.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.ExtraBold
         )
 
-        // 显示前两个绑定的关键词
-        Row (
-            Modifier.padding(top = 4.dp)
-                .clickable(
-                    onClick =  {
+        KeywordSketch(keywordMap, Modifier.padding(top = 4.dp))
+
+        Text(text = FileUtil.getNoteUpdateTime(NoteUtil.getNoteId()), fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 10.dp))
+
+    }
+
+}
+
+/**
+ * 显示省略关键词的控件
+ * @param keywordMap 关键词集合
+ * @param modifier 控件的位置
+ * @param keywordSize 关键词的大小，默认中等，不支持 large
+ */
+@SuppressLint("UnrememberedMutableInteractionSource")
+@Composable
+fun KeywordSketch (keywordMap: HashMap<String, Int>, modifier: Modifier = Modifier, keywordSize: ComponentSize = ComponentSize.MEDIUM) {
+
+    // 显示前两个绑定的关键词
+    Row (
+        modifier.clickable(
+                onClick =  {
                     MessageDialog.build(MIUIStyle())
                         .setTitle("相关关键词")
-                        .setCustomView(object : OnBindView<MessageDialog>(R.layout.show_keyword_dialog_layout){
+                        .setCustomView(object : OnBindView<MessageDialog>(R.layout.compose_layout){
                             override fun onBind(dialog: MessageDialog?, v: View?) {
-                                val composeView = v?.findViewById<ComposeView>(R.id.show_keywords_compose_view)
+                                val composeView = v?.findViewById<ComposeView>(R.id.compose_view)
 
                                 composeView?.setContent { ShowKeywordsDialog(keywordMap) }
                             }
                         })
                         .setOkButton("确定")
                         .show()
-                    },
-                    indication = null,
-                    interactionSource = MutableInteractionSource()
-                )
-        ) {
-            keywordMap.keys.forEachIndexed { index, keyword ->
-                if (index < 2) {
-                    Row (Modifier.wrapContentSize(Alignment.Center).padding(end = 10.dp).clip(RoundedCornerShape(4.dp)).background(GreyLighter)) {
-                        Text(text = keyword, color = Color.DarkGray, fontSize = 12.sp, modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp))
-                    }
-                }
-            }
-            if (keywordMap.isNotEmpty()) Image(painter = painterResource(R.mipmap.ic_arrow_right), contentDescription = null, modifier = Modifier.align(Alignment.CenterVertically).size(14.dp))
-        }
+                },
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            )
+    ) {
+        keywordMap.keys.forEachIndexed { index, keyword ->
 
-        Text(text = FileUtil.getNoteUpdateTime(NoteUtil.getNoteId()), fontSize = 10.sp, color = GreyDarker, modifier = Modifier.padding(top = 10.dp))
+            when (keywordSize) {
+                ComponentSize.SMALL ->
+                    if (index < 3) {
+                        Row (Modifier.wrapContentSize(Alignment.Center).padding(end = 8.dp).clip(RoundedCornerShape(2.dp)).background(GreyLighter)) {
+                            Text(text = keyword, color = Color.DarkGray, fontSize = 8.sp, modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 2.dp, bottom = 2.dp))
+                        }
+                    }
+
+                ComponentSize.MEDIUM ->
+                    if (index < 2) {
+                        Row (Modifier.wrapContentSize(Alignment.Center).padding(end = 10.dp).clip(RoundedCornerShape(4.dp)).background(GreyLighter)) {
+                            Text(text = keyword, color = Color.DarkGray, fontSize = 12.sp, modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp))
+                        }
+                    }
+
+                else -> {}
+            }
+
+
+        }
+        if (keywordMap.isNotEmpty()) Image(painter = painterResource(R.mipmap.ic_arrow_right), contentDescription = null, modifier = Modifier.align(Alignment.CenterVertically).size(14.dp))
     }
 
 }
@@ -378,6 +412,37 @@ fun AutoExtractionButton (modifier: Modifier = Modifier, onKeywordUpdate: () -> 
            interactionSource = MutableInteractionSource()
        )
    )
+}
+
+@SuppressLint("UnrememberedMutableInteractionSource")
+@Composable
+fun LocationInfoButton(modifier: Modifier) {
+    Image(
+        painter = painterResource(R.mipmap.ic_location),
+        contentDescription = "",
+        modifier = modifier.size(18.dp)
+            .clickable (
+                onClick = {
+                    MessageDialog.build(MIUIStyle())
+                        .setTitle("编辑记录\n")
+                        .setCustomView(object  : OnBindView<MessageDialog>(R.layout.compose_layout){
+                            override fun onBind(dialog: MessageDialog?, v: View?) {
+
+                                val composeView = v?.findViewById<ComposeView>(R.id.compose_view)
+
+                                composeView?.setContent {
+                                    RecordInfoDialog()
+                                }
+
+                            }
+                        })
+                        .setOkButton("确定")
+                        .show()
+                },
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            )
+    )
 }
 
 /**

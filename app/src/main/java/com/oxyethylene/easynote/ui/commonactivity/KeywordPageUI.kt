@@ -204,9 +204,9 @@ fun onKeywordCapClick (keywordId: Int, keyword: String, onClick: () -> Unit) {
                 "查看关联的文章" -> {
                     MessageDialog.build(MIUIStyle())
                         .setTitle("关联的文章")
-                        .setCustomView(object : OnBindView<MessageDialog>(R.layout.show_binded_notes_dialog_layout) {
+                        .setCustomView(object : OnBindView<MessageDialog>(R.layout.compose_layout) {
                             override fun onBind(dialog: MessageDialog?, v: View?) {
-                                val composeView = v?.findViewById<ComposeView>(R.id.show_notes_compose_view)
+                                val composeView = v?.findViewById<ComposeView>(R.id.compose_view)
 
                                 composeView?.setContent {
                                     ShowBindedNotesDialog(keywordId) {

@@ -51,7 +51,7 @@ class PlainSetting (settingName : String, val actionName: String, val commonActi
  * @param description 设置项的描述
  * @param warning 设置项的警示信息
  */
-class DialogSetting (SettingName : String, description: String? = null, warning: String? = null, val dialogAction: () -> Unit) : SettingEntry(SettingName, description, warning)
+class DialogSetting (settingName : String, description: String? = null, warning: String? = null, val dialogAction: () -> Unit) : SettingEntry(settingName, description, warning)
 
 /**
  * 打开一个下拉菜单的设置项

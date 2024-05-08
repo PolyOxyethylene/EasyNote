@@ -1,6 +1,8 @@
 package com.oxyethylene.easynote
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -24,8 +26,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
+import com.baidu.location.LocationClient
 import com.drake.net.NetConfig
 import com.drake.net.okhttp.setErrorHandler
+import com.hjq.permissions.OnPermissionCallback
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
 import com.kongzue.dialogx.DialogX
 import com.kongzue.dialogx.dialogs.PopNotification
 import com.kongzue.dialogx.style.MIUIStyle
@@ -41,6 +47,7 @@ import com.oxyethylene.easynote.errorhandler.GPTErrorHandler
 import com.oxyethylene.easynote.ui.mainactivity.EventPageArea
 import com.oxyethylene.easynote.ui.mainactivity.FolderMenuArea
 import com.oxyethylene.easynote.ui.mainactivity.TopMenuBar
+import com.oxyethylene.easynote.ui.mainactivity.callPermissionCheck
 import com.oxyethylene.easynote.ui.theme.BackGround
 import com.oxyethylene.easynote.ui.theme.EasyNoteTheme
 import com.oxyethylene.easynote.util.EventUtil.initEventList
@@ -52,9 +59,11 @@ import com.oxyethylene.easynote.util.FileUtil.initFileUtil
 import com.oxyethylene.easynote.util.FileUtil.updateDirectory
 import com.oxyethylene.easynote.util.GPTUtil
 import com.oxyethylene.easynote.util.NlpUtil
+import com.oxyethylene.easynote.util.NoteUtil.initNoteUtil
 import com.oxyethylene.easynote.viewmodel.MainViewModel
 import com.oxyethylene.easynote.viewmodel.factory.MainViewModelFactory
 import kotlinx.coroutines.launch
+import java.util.Properties
 
 
 class MainActivity : ComponentActivity() {
@@ -63,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
     lateinit var database: AppDatabase
 
-    val handler = object : Handler(Looper.getMainLooper()) {
+    private val handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             // 在这里可以进行UI操作
             when (msg.what) {
@@ -93,9 +102,19 @@ class MainActivity : ComponentActivity() {
 
         database = AppDatabase.getDatabase(this)
 
+        checkPermission(this)
+
         // 初始化工具类
         initFileUtil(viewModel, database, handler)
+        initNoteUtil(database)
         initEventUtil(viewModel, database, handler)
+
+        // 初始化定位工具
+        val prop = Properties();
+        prop.load(applicationContext.assets.open("auth.properties"))
+        LocationClient.setKey(prop.getProperty("BD_MAP_SDK"))
+        LocationClient.setAgreePrivacy(true)
+
 
         // 初始化默认备份目录
         FileUtil.initDefaultBackupDir()
@@ -116,7 +135,7 @@ class MainActivity : ComponentActivity() {
         initEventList()
 
         // 初始化 DialogX
-        DialogX.init(this)
+        DialogX.init(applicationContext)
         DialogX.autoShowInputKeyboard = false
         DialogX.cancelableTipDialog = false
 
@@ -186,6 +205,42 @@ class MainActivity : ComponentActivity() {
             }
 
         }
+
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        checkPermission(this)
+    }
+
+    fun checkPermission (context: Context) {
+
+        val requestList= ArrayList<String>().apply {
+            add(Permission.ACCESS_FINE_LOCATION)
+            add(Permission.ACCESS_COARSE_LOCATION)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
+                add(Permission.MANAGE_EXTERNAL_STORAGE)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                add(Permission.READ_MEDIA_AUDIO)
+                add(Permission.READ_MEDIA_VIDEO)
+                add(Permission.READ_MEDIA_IMAGES)
+            }
+        }
+
+        XXPermissions.with(context)
+            .permission(requestList)
+            .request(
+                object : OnPermissionCallback {
+                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+
+                    }
+
+                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+                        callPermissionCheck(context, true)
+                    }
+                }
+            )
 
     }
 

@@ -6,8 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.oxyethylene.easynote.dao.EventDao
 import com.oxyethylene.easynote.dao.FileDao
+import com.oxyethylene.easynote.dao.RecordDao
 import com.oxyethylene.easynote.domain.entity.Event
 import com.oxyethylene.easynote.domain.entity.FileEntity
+import com.oxyethylene.easynote.domain.entity.NoteRecord
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,12 +21,14 @@ import com.oxyethylene.easynote.domain.entity.FileEntity
  * @author       : Polyoxyethylene
  * @Description  :
  */
-@Database(version = 1, entities = [FileEntity::class, Event::class], exportSchema = false)
+@Database(version = 1, entities = [FileEntity::class, Event::class, NoteRecord::class], exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun FileDao() : FileDao
 
     abstract fun EventDao() : EventDao
+
+    abstract fun RecordDao() : RecordDao
 
     companion object {
 

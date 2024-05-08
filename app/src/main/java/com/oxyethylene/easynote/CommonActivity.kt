@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.kongzue.dialogx.DialogX
 import com.oxyethylene.easynote.ui.commonactivity.EditorSettingPageUI
 import com.oxyethylene.easynote.ui.commonactivity.KeywordPageUI
 import com.oxyethylene.easynote.ui.commonactivity.LabSettingPageUI
@@ -28,6 +29,8 @@ class CommonActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val UITitle = intent.getStringExtra("title") ?: ""
+
+        DialogX.init(applicationContext)
 
         setContent {
             EasyNoteTheme {

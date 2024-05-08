@@ -45,7 +45,7 @@ class BackupSettingActivity : ComponentActivity() {
      val backupSettingList =
          listOf<SettingEntry>(
              DialogSetting(
-                 SettingName = "修改备份/导出文件夹"
+                 settingName = "修改备份/导出文件夹"
              ) {
                  MessageDialog.build(MIUIStyle())
                      .setTitle("修改备份文件夹")
@@ -63,7 +63,7 @@ class BackupSettingActivity : ComponentActivity() {
                      .show()
              },
              DialogSetting(
-                 SettingName = "恢复默认导出文件夹",
+                 settingName = "恢复默认导出文件夹",
                  warning = "原备份文件夹下的文件将会保留，需要自行删除"
              ) {
                  MessageDialog.build(MIUIStyle())
@@ -81,13 +81,13 @@ class BackupSettingActivity : ComponentActivity() {
                      .show()
              },
              DialogSetting(
-                 SettingName = "手动备份",
+                 settingName = "手动备份",
                  description = "将所有文章备份到指定的文件夹"
              ) {
                DebugInfoDial.todoDialog("手动备份")
              },
              DialogSetting(
-                 SettingName = "从本地恢复文章备份",
+                 settingName = "从本地恢复文章备份",
                  description = "将所有文章备份到指定的文件夹"
              ) {
                  DebugInfoDial.todoDialog("从本地恢复文章备份")

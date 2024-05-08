@@ -3,6 +3,8 @@ package com.oxyethylene.easynote.ui.settingactivity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.View
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -88,9 +90,23 @@ fun SettingPageArea () {
 
     Column {
 
-        SettingPageTopBar("", Modifier)
+        val state = rememberScrollState()
 
-        Column(Modifier.verticalScroll(rememberScrollState())) {
+        SimpleTitleBar (
+            centerContent = {
+                Crossfade(
+                    targetState = state.value in 0 .. 300,
+                    label = "",
+                    animationSpec = tween(durationMillis = 300)
+                ) {
+                    if (!it) Text(text = "设置", color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        ) {
+
+        }
+
+        Column(Modifier.verticalScroll(state)) {
             // 中间的 logo
             Column (
                 modifier = Modifier.height(260.dp).fillMaxWidth(),
@@ -123,9 +139,9 @@ fun SettingPageArea () {
                             onClick = {
                                 MessageDialog.build(MIUIStyle())
                                     .setTitle("版本更新内容")
-                                    .setCustomView(object : OnBindView<MessageDialog>(R.layout.version_sketch_dialog_layout){
+                                    .setCustomView(object : OnBindView<MessageDialog>(R.layout.compose_layout){
                                         override fun onBind(dialog: MessageDialog?, v: View?) {
-                                            val composeView = v?.findViewById<ComposeView>(R.id.version_sketch_compose_view)
+                                            val composeView = v?.findViewById<ComposeView>(R.id.compose_view)
                                             composeView?.setContent { VersionSketchDialog() }
                                         }
                                     })
@@ -156,14 +172,6 @@ fun SettingPageArea () {
     }
 
 }
-
-/**
- *  顶部导航栏
- *  @param title 顶部的标题
- *  @param modifier 设置导航栏外观
- */
-@Composable
-fun SettingPageTopBar (title : String, modifier: Modifier = Modifier) = SimpleTitleBar(title, modifier)
 
 
 @Composable
@@ -222,11 +230,11 @@ fun SwitchSettingItem (entry: SwitchSetting) {
             Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             entry.description?.let {
                 Spacer(Modifier.size(4.dp))
-                Text(it, color = GreyDarker, fontSize = 8.sp, maxLines = 2, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
+                Text(it, color = GreyDarker, fontSize = 8.sp, maxLines = 3, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
             }
             entry.warning?.let {
                 Spacer(Modifier.size(4.dp))
-                Text(it, color = Tomato, fontSize = 8.sp, maxLines = 2, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
+                Text(it, color = Tomato, fontSize = 8.sp, maxLines = 3, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -278,11 +286,11 @@ fun PlainSettingItem (entry: PlainSetting) {
             Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             entry.description?.let {
                 Spacer(Modifier.size(4.dp))
-                Text(it, color = GreyDarker, fontSize = 8.sp, maxLines = 2, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
+                Text(it, color = GreyDarker, fontSize = 8.sp, maxLines = 3, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
             }
             entry.warning?.let {
                 Spacer(Modifier.size(4.dp))
-                Text(it, color = Tomato, fontSize = 8.sp, maxLines = 2, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
+                Text(it, color = Tomato, fontSize = 8.sp, maxLines = 3, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -316,11 +324,11 @@ fun DialogSettingItem (entry: DialogSetting) {
             Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             entry.description?.let {
                 Spacer(Modifier.size(4.dp))
-                Text(it, color = GreyDarker, fontSize = 8.sp, maxLines = 2, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
+                Text(it, color = GreyDarker, fontSize = 8.sp, maxLines = 3, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
             }
             entry.warning?.let {
                 Spacer(Modifier.size(4.dp))
-                Text(it, color = Tomato, fontSize = 8.sp, maxLines = 2, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
+                Text(it, color = Tomato, fontSize = 8.sp, maxLines = 3, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -357,11 +365,11 @@ fun DropDownMenuSettingItem (entry: DropDownMenuSetting, moreAction: (String) ->
             Text(entry.settingName, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             entry.description?.let {
                 Spacer(Modifier.size(4.dp))
-                Text(it, color = GreyDarker, fontSize = 8.sp, maxLines = 2, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
+                Text(it, color = GreyDarker, fontSize = 8.sp, maxLines = 3, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
             }
             entry.warning?.let {
                 Spacer(Modifier.size(4.dp))
-                Text(it, color = Tomato, fontSize = 8.sp, maxLines = 2, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
+                Text(it, color = Tomato, fontSize = 8.sp, maxLines = 3, lineHeight = 10.sp, fontWeight = FontWeight.Bold)
             }
         }
 

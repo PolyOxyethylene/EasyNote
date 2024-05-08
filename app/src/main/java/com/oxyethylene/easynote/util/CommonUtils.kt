@@ -21,3 +21,13 @@ fun dpToPx(context: Context, dp: Int): Float {
     val density = context.resources.displayMetrics.density
     return dp * density
 }
+
+/**
+ * 将 px 单位的数值转换为以 dp 做单位的对应值
+ * @param context 获取设备屏幕密度
+ * @param px 要转换的值
+ */
+fun pxToDp(context: Context, px: Float): Int {
+    val density = context.resources.displayMetrics.density
+    return (px/density + 0.5f).toInt()
+}

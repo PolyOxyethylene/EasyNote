@@ -13,11 +13,17 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.4.5.6-beta"
+        versionName = "0.4.6.0-beta"
 
         // 使 DialogX 的实时模糊效果生效
         renderscriptTargetApi = 21
         renderscriptSupportModeEnabled = true
+
+        ndk {
+            abiFilters.add("armeabi")
+            abiFilters.add("armeabi-v7a")
+            abiFilters.add("arm64-v8a")
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -150,9 +156,6 @@ dependencies {
     //文件选择对话框
     implementation("com.github.kongzue.DialogXSample:FileDialog:$dialogx_sample_version")
 
-    // PermissionX
-    implementation("com.guolindev.permissionx:permissionx:1.7.1")
-
     // Cascade 下拉菜单
     val cascade_version = "2.3.0"
     implementation("me.saket.cascade:cascade-compose:$cascade_version")
@@ -189,5 +192,15 @@ dependencies {
     // Net 基于协程和 OkHttp3 的网络请求框架
     val net_version = "3.6.4"
     implementation("com.github.liangjingkanji:Net:$net_version")
+
+    // 权限请求框架：https://github.com/getActivity/XXPermissions
+    val xxpermission_version = "18.63"
+    implementation ("com.github.getActivity:XXPermissions:$xxpermission_version")
+
+    // 百度地图 SDK
+    // 地图组件
+//    implementation ("com.baidu.lbsyun:BaiduMapSDK_Map:7.6.1")
+    // 基础定位组件
+    implementation ("com.baidu.lbsyun:BaiduMapSDK_Location:9.3.7")
 
 }
